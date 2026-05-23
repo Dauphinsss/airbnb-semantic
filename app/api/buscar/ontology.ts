@@ -1,25 +1,65 @@
-import { readFile, stat } from "node:fs/promises";
-import path from "node:path";
+const NS = "http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/";
+const FUSEKI_ENDPOINT =
+  process.env.FUSEKI_ENDPOINT ?? "http://localhost:3030/airbnb/sparql";
 
-const ONTOLOGY_PATH = path.join(process.cwd(), "ontology", "Airbnb.owl");
-const PROP_URI = "http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Propiedad";
-const AMENIDAD_URI = "http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Amenidad";
-const PERFIL_URI = "http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PerfilHuesped";
-const ZONA_URI = "http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ZonaGeografica";
-const ABSTRACT_PROPERTY_TYPES = new Set([
-  PROP_URI,
-  "http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/AlojamientoCompleto",
-  "http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/AlojamientoHabitacion",
-]);
+const PREFIXES = `
+PREFIX : <${NS}>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+`.trim();
 
-type StringMap = Map<string, string[]>;
+const CATALOG_QUERY = `
+SELECT ?propiedad ?tipo ?nombre ?descripcion ?urlImagen ?precio ?capacidad
+       ?calificacion ?ciudad ?zona ?zonaTipo
+WHERE {
+  ?propiedad a ?tipo .
+  ?tipo rdfs:subClassOf* :Propiedad .
+  FILTER(?tipo NOT IN (:Propiedad, :AlojamientoCompleto, :AlojamientoHabitacion, owl:NamedIndividual))
+  OPTIONAL { ?propiedad :nombrePropiedad     ?nombre }
+  OPTIONAL { ?propiedad :descripcionPropiedad ?descripcion }
+  OPTIONAL { ?propiedad :urlImagen           ?urlImagen }
+  OPTIONAL { ?propiedad :precioNoche         ?precio }
+  OPTIONAL { ?propiedad :capacidadMaxima     ?capacidad }
+  OPTIONAL { ?propiedad :calificacionPromedio ?calificacion }
+  OPTIONAL {
+    ?propiedad :ubicadaEn ?z .
+    OPTIONAL { ?z :ciudad     ?ciudad }
+    OPTIONAL { ?z :nombreZona ?zona }
+    OPTIONAL { ?z :tipoZona   ?zonaTipo }
+  }
+}
+ORDER BY ?propiedad
+`;
 
-type ParsedIndividual = {
-  uri: string;
-  types: string[];
-  objectProps: StringMap;
-  dataProps: StringMap;
-};
+const AMENIDADES_QUERY = `
+SELECT ?propiedad ?amenidad ?nombre ?categoria
+WHERE {
+  ?propiedad a/rdfs:subClassOf* :Propiedad ;
+             :tieneAmenidad ?amenidad .
+  OPTIONAL { ?amenidad :nombreAmenidad    ?nombre }
+  OPTIONAL { ?amenidad :categoriaAmenidad ?categoria }
+}
+`;
+
+const PERFILES_QUERY = `
+SELECT ?propiedad ?perfil ?tipoViajero
+       (GROUP_CONCAT(DISTINCT ?propositoTipo; SEPARATOR="||") AS ?propositos)
+WHERE {
+  ?propiedad a/rdfs:subClassOf* :Propiedad ;
+             :compatibleCon ?perfil .
+  OPTIONAL { ?perfil :tipoViajero ?tipoViajero }
+  OPTIONAL {
+    ?perfil :tienePropositoViaje ?p .
+    OPTIONAL { ?p :tipoPropositoViaje ?propositoTipo }
+  }
+}
+GROUP BY ?propiedad ?perfil ?tipoViajero
+`;
+
+type SparqlBinding = Record<string, { type: string; value: string } | undefined>;
+type SparqlResults = { results: { bindings: SparqlBinding[] } };
 
 type Amenidad = { uri: string; nombre: string; categoria?: string };
 type Perfil = { uri: string; nombre: string; tipoViajero?: string };
@@ -40,13 +80,6 @@ type Propiedad = {
 
 type IndexedPropiedad = Propiedad & { searchable: string };
 
-type CacheEntry = {
-  mtimeMs: number;
-  propiedades: IndexedPropiedad[];
-};
-
-let cache: CacheEntry | null = null;
-
 export type { Amenidad, Perfil, Propiedad };
 
 function localName(uri: string): string {
@@ -55,33 +88,7 @@ function localName(uri: string): string {
 }
 
 function normalize(value: string): string {
-  return value
-    .normalize("NFD")
-    .replace(/\p{Diacritic}/gu, "")
-    .toLowerCase();
-}
-
-function decodeXml(value: string): string {
-  return value
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"')
-    .replace(/&apos;/g, "'")
-    .replace(/&amp;/g, "&")
-    .trim();
-}
-
-function pushValue(map: StringMap, key: string, value: string) {
-  const current = map.get(key);
-  if (current) {
-    current.push(value);
-    return;
-  }
-  map.set(key, [value]);
-}
-
-function firstValue(map: StringMap, key: string): string | undefined {
-  return map.get(key)?.[0];
+  return value.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
 }
 
 function parseNumber(value?: string): number | undefined {
@@ -90,92 +97,29 @@ function parseNumber(value?: string): number | undefined {
   return Number.isFinite(parsed) ? parsed : undefined;
 }
 
-function parseClassHierarchy(xml: string): Map<string, string[]> {
-  const hierarchy = new Map<string, string[]>();
-  const classRegex =
-    /<owl:Class rdf:about="([^"]+)">([\s\S]*?)<\/owl:Class>/g;
+function val(binding: SparqlBinding, key: string): string | undefined {
+  return binding[key]?.value;
+}
 
-  for (const match of xml.matchAll(classRegex)) {
-    const [, uri, body] = match;
-    const parents = [...body.matchAll(/<rdfs:subClassOf rdf:resource="([^"]+)"\s*\/>/g)].map(
-      ([, parent]) => parent,
-    );
-    hierarchy.set(uri, parents);
+async function sparqlSelect(query: string): Promise<SparqlResults> {
+  const response = await fetch(FUSEKI_ENDPOINT, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      Accept: "application/sparql-results+json",
+    },
+    body: new URLSearchParams({ query: `${PREFIXES}\n${query}` }),
+    cache: "no-store",
+  });
+  if (!response.ok) {
+    const text = await response.text().catch(() => "");
+    throw new Error(`SPARQL failed (${response.status}): ${text.slice(0, 200)}`);
   }
-
-  return hierarchy;
-}
-
-function parseIndividuals(xml: string): Map<string, ParsedIndividual> {
-  const individuals = new Map<string, ParsedIndividual>();
-  const individualRegex =
-    /<owl:NamedIndividual rdf:about="([^"]+)">([\s\S]*?)<\/owl:NamedIndividual>/g;
-
-  for (const match of xml.matchAll(individualRegex)) {
-    const [, uri, body] = match;
-    const types: string[] = [];
-    const objectProps: StringMap = new Map();
-    const dataProps: StringMap = new Map();
-
-    for (const objectMatch of body.matchAll(
-      /<([A-Za-z0-9:_-]+)\s+rdf:resource="([^"]+)"\s*\/>/g,
-    )) {
-      const [, rawKey, value] = objectMatch;
-      const key = rawKey.includes(":") ? rawKey.split(":").pop()! : rawKey;
-      if (key === "type") {
-        types.push(value);
-        continue;
-      }
-      pushValue(objectProps, key, value);
-    }
-
-    for (const dataMatch of body.matchAll(
-      /<([A-Za-z0-9:_-]+)(?:\s+rdf:datatype="[^"]+")?>([^<]*)<\/\1>/g,
-    )) {
-      const [, rawKey, rawValue] = dataMatch;
-      const key = rawKey.includes(":") ? rawKey.split(":").pop()! : rawKey;
-      pushValue(dataProps, key, decodeXml(rawValue));
-    }
-
-    individuals.set(uri, { uri, types, objectProps, dataProps });
-  }
-
-  return individuals;
-}
-
-function isSubclassOf(
-  child: string,
-  ancestor: string,
-  hierarchy: Map<string, string[]>,
-  memo = new Map<string, boolean>(),
-): boolean {
-  if (child === ancestor) return true;
-
-  const memoKey = `${child}|${ancestor}`;
-  const cached = memo.get(memoKey);
-  if (cached !== undefined) return cached;
-
-  const parents = hierarchy.get(child) ?? [];
-  const result = parents.some((parent) =>
-    isSubclassOf(parent, ancestor, hierarchy, memo),
-  );
-  memo.set(memoKey, result);
-  return result;
-}
-
-function mostSpecificType(
-  types: string[],
-  hierarchy: Map<string, string[]>,
-  ancestor: string,
-): string | undefined {
-  return types.find(
-    (type) =>
-      isSubclassOf(type, ancestor, hierarchy) && !ABSTRACT_PROPERTY_TYPES.has(type),
-  );
+  return (await response.json()) as SparqlResults;
 }
 
 function buildIndex(propiedad: Propiedad, extras: Array<string | undefined>): string {
-  const parts = [
+  const parts: Array<string | undefined> = [
     propiedad.uri,
     propiedad.nombre,
     propiedad.descripcion,
@@ -185,187 +129,102 @@ function buildIndex(propiedad: Propiedad, extras: Array<string | undefined>): st
     propiedad.precioNoche?.toString(),
     propiedad.capacidadMaxima?.toString(),
     propiedad.calificacion?.toString(),
-    ...propiedad.amenidades.flatMap((amenidad) => [
-      amenidad.uri,
-      amenidad.nombre,
-      amenidad.categoria,
-    ]),
-    ...propiedad.perfiles.flatMap((perfil) => [
-      perfil.uri,
-      perfil.nombre,
-      perfil.tipoViajero,
-    ]),
+    ...propiedad.amenidades.flatMap((a) => [localName(a.uri), a.nombre, a.categoria]),
+    ...propiedad.perfiles.flatMap((p) => [localName(p.uri), p.nombre, p.tipoViajero]),
     ...extras,
   ];
-
-  return normalize(parts.filter(Boolean).join(" "));
+  return normalize(parts.filter((p): p is string => Boolean(p)).join(" "));
 }
 
-function buildCatalog(xml: string): IndexedPropiedad[] {
-  const hierarchy = parseClassHierarchy(xml);
-  const individuals = parseIndividuals(xml);
-  const subclassMemo = new Map<string, boolean>();
+async function loadCatalog(): Promise<IndexedPropiedad[]> {
+  const [catalogRes, amenidadesRes, perfilesRes] = await Promise.all([
+    sparqlSelect(CATALOG_QUERY),
+    sparqlSelect(AMENIDADES_QUERY),
+    sparqlSelect(PERFILES_QUERY),
+  ]);
 
-  const amenidades = new Map<string, Amenidad>();
-  const perfiles = new Map<
-    string,
-    Perfil & { propositos: string[]; propositoTipos: string[] }
-  >();
-  const zonas = new Map<
-    string,
-    {
-      uri: string;
-      ciudad?: string;
-      nombreZona?: string;
-      tipoZona?: string;
-      puntoInteres: string[];
-    }
-  >();
+  const amenidadesPorPropiedad = new Map<string, Amenidad[]>();
+  for (const b of amenidadesRes.results.bindings) {
+    const propUri = val(b, "propiedad");
+    const amenUri = val(b, "amenidad");
+    if (!propUri || !amenUri) continue;
+    const list = amenidadesPorPropiedad.get(propUri) ?? [];
+    list.push({
+      uri: amenUri,
+      nombre: val(b, "nombre") ?? localName(amenUri),
+      categoria: val(b, "categoria"),
+    });
+    amenidadesPorPropiedad.set(propUri, list);
+  }
 
-  for (const entity of individuals.values()) {
-    if (entity.types.some((type) => isSubclassOf(type, AMENIDAD_URI, hierarchy, subclassMemo))) {
-      amenidades.set(entity.uri, {
-        uri: entity.uri,
-        nombre: firstValue(entity.dataProps, "nombreAmenidad") ?? localName(entity.uri),
-        categoria: firstValue(entity.dataProps, "categoriaAmenidad"),
-      });
-      continue;
-    }
+  const perfilesPorPropiedad = new Map<string, Perfil[]>();
+  const propositosExtra = new Map<string, string[]>();
+  for (const b of perfilesRes.results.bindings) {
+    const propUri = val(b, "propiedad");
+    const perfilUri = val(b, "perfil");
+    if (!propUri || !perfilUri) continue;
+    const list = perfilesPorPropiedad.get(propUri) ?? [];
+    list.push({
+      uri: perfilUri,
+      nombre: localName(perfilUri),
+      tipoViajero: val(b, "tipoViajero"),
+    });
+    perfilesPorPropiedad.set(propUri, list);
 
-    if (entity.types.some((type) => isSubclassOf(type, PERFIL_URI, hierarchy, subclassMemo))) {
-      const propositoUris = entity.objectProps.get("tienePropositoViaje") ?? [];
-      const propositoTipos = propositoUris
-        .map((uri) => individuals.get(uri))
-        .flatMap((proposito) =>
-          proposito
-            ? [
-                firstValue(proposito.dataProps, "tipoPropositoViaje"),
-                localName(proposito.uri),
-              ]
-            : [],
-        )
-        .filter((value): value is string => Boolean(value));
-
-      perfiles.set(entity.uri, {
-        uri: entity.uri,
-        nombre: localName(entity.uri),
-        tipoViajero: firstValue(entity.dataProps, "tipoViajero"),
-        propositos: propositoUris.map(localName),
-        propositoTipos,
-      });
-      continue;
-    }
-
-    if (entity.types.some((type) => isSubclassOf(type, ZONA_URI, hierarchy, subclassMemo))) {
-      zonas.set(entity.uri, {
-        uri: entity.uri,
-        ciudad: firstValue(entity.dataProps, "ciudad"),
-        nombreZona: firstValue(entity.dataProps, "nombreZona"),
-        tipoZona: firstValue(entity.dataProps, "tipoZona"),
-        puntoInteres: (entity.objectProps.get("tienePuntoInteres") ?? []).map(localName),
-      });
+    const propositosRaw = val(b, "propositos");
+    if (propositosRaw) {
+      const extras = propositosExtra.get(propUri) ?? [];
+      extras.push(...propositosRaw.split("||").filter(Boolean));
+      propositosExtra.set(propUri, extras);
     }
   }
 
   const propiedades: IndexedPropiedad[] = [];
-
-  for (const entity of individuals.values()) {
-    if (!entity.types.some((type) => isSubclassOf(type, PROP_URI, hierarchy, subclassMemo))) {
-      continue;
-    }
-
-    const tipoUri = mostSpecificType(entity.types, hierarchy, PROP_URI);
-    const zona = entity.objectProps.get("ubicadaEn")?.[0];
+  for (const b of catalogRes.results.bindings) {
+    const uri = val(b, "propiedad");
+    if (!uri) continue;
+    const tipoUri = val(b, "tipo");
 
     const propiedad: Propiedad = {
-      uri: entity.uri,
-      nombre: firstValue(entity.dataProps, "nombrePropiedad") ?? localName(entity.uri),
-      descripcion: firstValue(entity.dataProps, "descripcionPropiedad"),
-      urlImagen: firstValue(entity.dataProps, "urlImagen"),
+      uri,
+      nombre: val(b, "nombre") ?? localName(uri),
+      descripcion: val(b, "descripcion"),
+      urlImagen: val(b, "urlImagen"),
       tipo: tipoUri ? localName(tipoUri) : undefined,
-      precioNoche: parseNumber(firstValue(entity.dataProps, "precioNoche")),
-      capacidadMaxima: parseNumber(firstValue(entity.dataProps, "capacidadMaxima")),
-      calificacion: parseNumber(firstValue(entity.dataProps, "calificacionPromedio")),
-      ciudad: zona ? zonas.get(zona)?.ciudad : undefined,
-      zona: zona ? zonas.get(zona)?.nombreZona : undefined,
-      amenidades: (entity.objectProps.get("tieneAmenidad") ?? [])
-        .map((uri) => amenidades.get(uri))
-        .filter((item): item is Amenidad => Boolean(item)),
-      perfiles: (entity.objectProps.get("compatibleCon") ?? [])
-        .map((uri) => perfiles.get(uri))
-        .filter((item): item is NonNullable<typeof item> => Boolean(item))
-        .map((perfil) => ({
-          uri: perfil.uri,
-          nombre: perfil.nombre,
-          tipoViajero: perfil.tipoViajero,
-        })),
+      precioNoche: parseNumber(val(b, "precio")),
+      capacidadMaxima: parseNumber(val(b, "capacidad")),
+      calificacion: parseNumber(val(b, "calificacion")),
+      ciudad: val(b, "ciudad"),
+      zona: val(b, "zona"),
+      amenidades: amenidadesPorPropiedad.get(uri) ?? [],
+      perfiles: perfilesPorPropiedad.get(uri) ?? [],
     };
-
-    const perfilExtras = (entity.objectProps.get("compatibleCon") ?? [])
-      .map((uri) => perfiles.get(uri))
-      .filter((item): item is NonNullable<typeof item> => Boolean(item))
-      .flatMap((perfil) => [...perfil.propositos, ...perfil.propositoTipos]);
-
-    const zonaExtras = zona
-      ? [
-          zonas.get(zona)?.tipoZona,
-          localName(zona),
-          ...(zonas.get(zona)?.puntoInteres ?? []),
-        ]
-      : [];
 
     propiedades.push({
       ...propiedad,
       searchable: buildIndex(propiedad, [
-        localName(entity.uri),
-        tipoUri ? localName(tipoUri) : undefined,
-        ...perfilExtras,
-        ...zonaExtras,
+        val(b, "zonaTipo"),
+        ...(propositosExtra.get(uri) ?? []),
       ]),
     });
   }
 
-  return propiedades.sort((a, b) => a.uri.localeCompare(b.uri));
-}
-
-async function loadCatalog(): Promise<IndexedPropiedad[]> {
-  const ontologyStat = await stat(ONTOLOGY_PATH);
-  if (cache && cache.mtimeMs === ontologyStat.mtimeMs) {
-    return cache.propiedades;
-  }
-
-  const xml = await readFile(ONTOLOGY_PATH, "utf8");
-  const propiedades = buildCatalog(xml);
-  cache = { mtimeMs: ontologyStat.mtimeMs, propiedades };
   return propiedades;
 }
 
 function toPublicPropiedad(propiedad: IndexedPropiedad): Propiedad {
-  return {
-    uri: propiedad.uri,
-    nombre: propiedad.nombre,
-    descripcion: propiedad.descripcion,
-    urlImagen: propiedad.urlImagen,
-    tipo: propiedad.tipo,
-    precioNoche: propiedad.precioNoche,
-    capacidadMaxima: propiedad.capacidadMaxima,
-    calificacion: propiedad.calificacion,
-    ciudad: propiedad.ciudad,
-    zona: propiedad.zona,
-    amenidades: propiedad.amenidades,
-    perfiles: propiedad.perfiles,
-  };
+  const { searchable: _s, ...rest } = propiedad;
+  void _s;
+  return rest;
 }
 
 export async function searchOntology(query: string): Promise<Propiedad[]> {
   const propiedades = await loadCatalog();
   const term = normalize(query.trim());
-
-  if (!term) {
-    return propiedades.map(toPublicPropiedad);
-  }
-
-  return propiedades.filter((propiedad) => propiedad.searchable.includes(term)).map(toPublicPropiedad);
+  if (!term) return propiedades.map(toPublicPropiedad);
+  return propiedades
+    .filter((p) => p.searchable.includes(term))
+    .map(toPublicPropiedad);
 }
 
 export async function getCatalog(): Promise<Propiedad[]> {
@@ -407,10 +266,7 @@ function matchesAnyInList(values: string[], candidates: string[] | undefined): b
   });
 }
 
-function countMatchesInList(
-  values: string[],
-  candidates: string[],
-): number {
+function countMatchesInList(values: string[], candidates: string[]): number {
   if (candidates.length === 0 || values.length === 0) return 0;
   const normValues = values.map(normalize);
   let count = 0;
@@ -434,18 +290,12 @@ function sanitizeFiltersForCatalog(
   if (!hasCandidates(filters.ciudades) || !hasCandidates(filters.zonas)) {
     return filters;
   }
-
   const hasCityZoneMatch = propiedades.some(
     (propiedad) =>
       matchesAny(propiedad.ciudad, filters.ciudades) &&
       matchesAny(propiedad.zona, filters.zonas),
   );
-
-  if (hasCityZoneMatch) {
-    return filters;
-  }
-
-  return { ...filters, zonas: [] };
+  return hasCityZoneMatch ? filters : { ...filters, zonas: [] };
 }
 
 export async function sanitizeStructuredFilters(
@@ -453,6 +303,57 @@ export async function sanitizeStructuredFilters(
 ): Promise<StructuredFilters> {
   const propiedades = await loadCatalog();
   return sanitizeFiltersForCatalog(filters, propiedades);
+}
+
+function sparqlString(value: string): string {
+  return value.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+}
+
+function buildHardFilterQuery(filters: StructuredFilters): string {
+  const clauses: string[] = [];
+
+  if (hasCandidates(filters.ciudades)) {
+    const conds = filters.ciudades!
+      .map((c) => `CONTAINS(LCASE(STR(?ciudad)), "${sparqlString(normalize(c))}")`)
+      .join(" || ");
+    clauses.push(`?propiedad :ubicadaEn/:ciudad ?ciudad .`);
+    clauses.push(`FILTER(${conds})`);
+  }
+
+  if (filters.precioMax !== undefined || filters.precioMin !== undefined) {
+    clauses.push(`?propiedad :precioNoche ?precio .`);
+    if (filters.precioMax !== undefined) {
+      const max = filters.precioMax * 1.25;
+      clauses.push(`FILTER(?precio <= ${max})`);
+    }
+    if (filters.precioMin !== undefined) {
+      clauses.push(`FILTER(?precio >= ${filters.precioMin})`);
+    }
+  }
+
+  if (filters.capacidadMin !== undefined) {
+    clauses.push(`?propiedad :capacidadMaxima ?capacidad .`);
+    clauses.push(`FILTER(?capacidad >= ${filters.capacidadMin})`);
+  }
+
+  return `
+SELECT DISTINCT ?propiedad WHERE {
+  ?propiedad a ?tipoP .
+  ?tipoP rdfs:subClassOf* :Propiedad .
+  FILTER(?tipoP NOT IN (:Propiedad, :AlojamientoCompleto, :AlojamientoHabitacion, owl:NamedIndividual))
+  ${clauses.join("\n  ")}
+}
+`.trim();
+}
+
+async function fetchHardFilteredUris(filters: StructuredFilters): Promise<Set<string>> {
+  const query = buildHardFilterQuery(filters);
+  const result = await sparqlSelect(query);
+  return new Set(
+    result.results.bindings
+      .map((b) => val(b, "propiedad"))
+      .filter((uri): uri is string => Boolean(uri)),
+  );
 }
 
 export async function applyStructuredSearch(
@@ -464,11 +365,6 @@ export async function applyStructuredSearch(
     .map((k) => normalize(k.trim()))
     .filter(Boolean);
 
-  const precioMaxConMargen =
-    sanitizedFilters.precioMax !== undefined ? sanitizedFilters.precioMax * 1.25 : undefined;
-  const precioMinConMargen =
-    sanitizedFilters.precioMin !== undefined ? sanitizedFilters.precioMin : undefined;
-
   const shouldApplyZoneFilter =
     hasCandidates(sanitizedFilters.zonas) &&
     (!hasCandidates(sanitizedFilters.ciudades) ||
@@ -478,28 +374,9 @@ export async function applyStructuredSearch(
           matchesAny(propiedad.zona, sanitizedFilters.zonas),
       ));
 
-  const hardFiltered = propiedades.filter((propiedad) => {
-    if (hasCandidates(sanitizedFilters.ciudades) && !matchesAny(propiedad.ciudad, sanitizedFilters.ciudades)) {
-      return false;
-    }
-    if (precioMaxConMargen !== undefined) {
-      if (propiedad.precioNoche === undefined) return false;
-      if (propiedad.precioNoche > precioMaxConMargen) return false;
-    }
-    if (precioMinConMargen !== undefined) {
-      if (propiedad.precioNoche === undefined) return false;
-      if (propiedad.precioNoche < precioMinConMargen) return false;
-    }
-    if (sanitizedFilters.capacidadMin !== undefined) {
-      if (
-        propiedad.capacidadMaxima === undefined ||
-        propiedad.capacidadMaxima < sanitizedFilters.capacidadMin
-      ) {
-        return false;
-      }
-    }
-    return true;
-  });
+  // Filtros DUROS en SPARQL: precio, capacidad, ciudad. Fuseki devuelve solo URIs.
+  const allowedUris = await fetchHardFilteredUris(sanitizedFilters);
+  const hardFiltered = propiedades.filter((p) => allowedUris.has(p.uri));
 
   const strictCategorical = hardFiltered.filter((propiedad) => {
     if (shouldApplyZoneFilter && !matchesAny(propiedad.zona, sanitizedFilters.zonas)) {
@@ -531,7 +408,6 @@ export async function applyStructuredSearch(
   });
 
   const rankingPool = strictCategorical.length > 0 ? strictCategorical : hardFiltered;
-
   const hasSoftCriteria =
     normalizedKeywords.length > 0 ||
     hasCandidates(sanitizedFilters.zonas) ||
@@ -545,65 +421,47 @@ export async function applyStructuredSearch(
     return rankingPool.map(toPublicPropiedad);
   }
 
-  type Scored = { propiedad: IndexedPropiedad; score: number };
-  const scored: Scored[] = rankingPool.map((propiedad) => {
+  const scored = rankingPool.map((propiedad) => {
     let score = 0;
-
     for (const kw of normalizedKeywords) {
       if (propiedad.searchable.includes(kw)) score += 1;
     }
-
     if (shouldApplyZoneFilter && matchesAny(propiedad.zona, sanitizedFilters.zonas)) {
       score += 3;
     }
-
     if (
       hasCandidates(sanitizedFilters.tiposPropiedad) &&
       matchesAny(propiedad.tipo, sanitizedFilters.tiposPropiedad)
     ) {
       score += 4;
     }
-
     if (hasCandidates(sanitizedFilters.tiposViajero)) {
       const tipos = propiedad.perfiles
         .map((p) => p.tipoViajero)
         .filter((t): t is string => Boolean(t));
-      score +=
-        countMatchesInList(tipos, sanitizedFilters.tiposViajero ?? []) * 2;
+      score += countMatchesInList(tipos, sanitizedFilters.tiposViajero ?? []) * 2;
     }
-
     if (hasCandidates(sanitizedFilters.categoriasAmenidad)) {
       const cats = propiedad.amenidades
         .map((a) => a.categoria)
         .filter((c): c is string => Boolean(c));
-      score += countMatchesInList(
-        cats,
-        sanitizedFilters.categoriasAmenidad ?? [],
-      );
+      score += countMatchesInList(cats, sanitizedFilters.categoriasAmenidad ?? []);
     }
-
     if (hasCandidates(sanitizedFilters.amenidades)) {
       const nombres = propiedad.amenidades.map((a) => a.nombre);
-      score +=
-        countMatchesInList(nombres, sanitizedFilters.amenidades ?? []) * 3;
+      score += countMatchesInList(nombres, sanitizedFilters.amenidades ?? []) * 3;
     }
-
     if (sanitizedFilters.calificacionMin !== undefined) {
-      if (
+      score +=
         propiedad.calificacion !== undefined &&
         propiedad.calificacion >= sanitizedFilters.calificacionMin
-      ) {
-        score += 2;
-      } else {
-        score -= 1;
-      }
+          ? 2
+          : -1;
     }
-
     return { propiedad, score };
   });
 
   const positives = scored.filter((s) => s.score > 0);
-
   if (positives.length === 0) {
     return rankingPool.map(toPublicPropiedad);
   }
