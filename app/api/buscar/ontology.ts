@@ -27,6 +27,7 @@ type Propiedad = {
   uri: string;
   nombre: string;
   descripcion?: string;
+  urlImagen?: string;
   tipo?: string;
   precioNoche?: number;
   capacidadMaxima?: number;
@@ -280,6 +281,7 @@ function buildCatalog(xml: string): IndexedPropiedad[] {
       uri: entity.uri,
       nombre: firstValue(entity.dataProps, "nombrePropiedad") ?? localName(entity.uri),
       descripcion: firstValue(entity.dataProps, "descripcionPropiedad"),
+      urlImagen: firstValue(entity.dataProps, "urlImagen"),
       tipo: tipoUri ? localName(tipoUri) : undefined,
       precioNoche: parseNumber(firstValue(entity.dataProps, "precioNoche")),
       capacidadMaxima: parseNumber(firstValue(entity.dataProps, "capacidadMaxima")),
@@ -343,6 +345,7 @@ function toPublicPropiedad(propiedad: IndexedPropiedad): Propiedad {
     uri: propiedad.uri,
     nombre: propiedad.nombre,
     descripcion: propiedad.descripcion,
+    urlImagen: propiedad.urlImagen,
     tipo: propiedad.tipo,
     precioNoche: propiedad.precioNoche,
     capacidadMaxima: propiedad.capacidadMaxima,

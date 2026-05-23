@@ -31,14 +31,13 @@ import {
   Wifi,
 } from "lucide-react";
 
-import { mediaForProperty } from "./listing-media";
-
 type Amenidad = { uri: string; nombre: string; categoria?: string };
 type Perfil = { uri: string; nombre: string; tipoViajero?: string };
 type Propiedad = {
   uri: string;
   nombre: string;
   descripcion?: string;
+  urlImagen?: string;
   tipo?: string;
   precioNoche?: number;
   capacidadMaxima?: number;
@@ -367,7 +366,9 @@ function ListingCard({
   index: number;
 }) {
   const TipoIcon = iconoTipoPropiedad(propiedad.tipo);
-  const media = mediaForProperty(propiedad, index);
+  const imageAlt = [propiedad.tipo, propiedad.zona, propiedad.ciudad]
+    .filter(Boolean)
+    .join(" en ");
 
   return (
     <article
@@ -376,15 +377,19 @@ function ListingCard({
     >
       <div className="overflow-hidden rounded-md">
         <div className="relative">
-          <Image
-            src={media.src}
-            alt={media.alt}
-            width={media.width}
-            height={media.height}
-            loading={index < 3 ? "eager" : "lazy"}
-            sizes="(min-width: 1280px) 31vw, (min-width: 640px) 48vw, 100vw"
-            className="h-40 w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-          />
+          {propiedad.urlImagen ? (
+            <Image
+              src={propiedad.urlImagen}
+              alt={imageAlt ? `Foto de ${imageAlt}` : propiedad.nombre}
+              width={1200}
+              height={800}
+              loading={index < 3 ? "eager" : "lazy"}
+              sizes="(min-width: 1280px) 31vw, (min-width: 640px) 48vw, 100vw"
+              className="h-40 w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+            />
+          ) : (
+            <div className="h-40 w-full bg-[var(--color-cactus-soft)]" />
+          )}
           <span className="absolute left-2 top-2 rounded-full bg-black/65 px-2 py-0.5 text-[10px] font-medium uppercase text-white backdrop-blur-sm">
             Foto referencial
           </span>
