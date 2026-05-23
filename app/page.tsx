@@ -1,34 +1,37 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import Image from "next/image";
+import { useEffect, useState, type FormEvent } from "react";
 import {
-  Search,
-  Loader2,
-  MapPin,
-  Users,
-  Star,
-  Home as HomeIcon,
-  Wifi,
-  Snowflake,
+  Accessibility,
+  BedDouble,
+  Briefcase,
+  Building2,
+  Car,
   ChefHat,
   Coffee,
-  Sparkles,
-  ShieldCheck,
-  Waves,
-  Car,
-  Laptop,
-  Accessibility,
-  Building2,
-  Palmtree,
-  BedDouble,
-  UserRound,
-  Tag,
-  Heart,
-  Briefcase,
   GraduationCap,
+  Heart,
+  Home as HomeIcon,
+  Laptop,
+  Loader2,
+  MapPin,
+  Palmtree,
   Plane,
+  Search,
+  ShieldCheck,
+  Snowflake,
+  Sparkles,
+  Star,
   Sun,
+  Tag,
+  UserRound,
+  Users,
+  Waves,
+  Wifi,
 } from "lucide-react";
+
+import { mediaForProperty } from "./listing-media";
 
 type Amenidad = { uri: string; nombre: string; categoria?: string };
 type Perfil = { uri: string; nombre: string; tipoViajero?: string };
@@ -46,6 +49,32 @@ type Propiedad = {
   perfiles: Perfil[];
 };
 
+type AIFilters = {
+  keywords?: string[];
+  ciudades?: string[];
+  zonas?: string[];
+  tiposPropiedad?: string[];
+  tiposViajero?: string[];
+  categoriasAmenidad?: string[];
+  amenidades?: string[];
+  precioMin?: number;
+  precioMax?: number;
+  capacidadMin?: number;
+  calificacionMin?: number;
+};
+
+type AIInfo = {
+  source: "deepseek" | "fallback";
+  filters: AIFilters | null;
+  explanation: string | null;
+};
+
+type SearchResponse = {
+  propiedades?: Propiedad[];
+  ai?: AIInfo | null;
+  error?: string;
+};
+
 const SUGERENCIAS: { label: string; icon: typeof Wifi }[] = [
   { label: "wifi", icon: Wifi },
   { label: "familia", icon: Heart },
@@ -55,6 +84,16 @@ const SUGERENCIAS: { label: string; icon: typeof Wifi }[] = [
   { label: "villa", icon: HomeIcon },
   { label: "apartamento", icon: Building2 },
 ];
+
+function IconGlyph({
+  icon: Icon,
+  className,
+}: {
+  icon: typeof Wifi;
+  className: string;
+}) {
+  return <Icon className={className} />;
+}
 
 function iconoAmenidad(nombre: string) {
   const n = nombre.toLowerCase();
@@ -89,12 +128,10 @@ function iconoCategoria(categoria: string) {
 function iconoTipoViajero(tipo?: string) {
   if (!tipo) return UserRound;
   const t = tipo.toLowerCase();
-  if (t.includes("familia")) return Heart;
-  if (t.includes("pareja")) return Heart;
+  if (t.includes("familia") || t.includes("pareja")) return Heart;
   if (t.includes("grupoamigos") || t.includes("grupo")) return Users;
   if (t.includes("negocios")) return Briefcase;
   if (t.includes("estudiantil")) return GraduationCap;
-  if (t.includes("individual")) return UserRound;
   return UserRound;
 }
 
@@ -110,33 +147,424 @@ function iconoTipoPropiedad(tipo?: string) {
 
 function agruparPorCategoria(amenidades: Amenidad[]) {
   const map = new Map<string, Amenidad[]>();
-  for (const a of amenidades) {
-    const key = a.categoria ?? "Otros";
-    if (!map.has(key)) map.set(key, []);
-    map.get(key)!.push(a);
+  for (const amenidad of amenidades) {
+    const key = amenidad.categoria ?? "Otros";
+    map.set(key, [...(map.get(key) ?? []), amenidad]);
   }
   return [...map.entries()].sort(([a], [b]) => a.localeCompare(b));
+}
+
+function formatoPrecioBolivianos(valor: number) {
+  return `Bs ${new Intl.NumberFormat("es-BO", {
+    maximumFractionDigits: Number.isInteger(valor) ? 0 : 1,
+  }).format(valor)}`;
+}
+
+function chipsDeFiltros(filters: AIFilters) {
+  const chips = [
+    ...(filters.precioMax !== undefined
+      ? [`<= ${formatoPrecioBolivianos(filters.precioMax)}/noche`]
+      : []),
+    ...(filters.precioMin !== undefined
+      ? [`>= ${formatoPrecioBolivianos(filters.precioMin)}/noche`]
+      : []),
+    ...(filters.capacidadMin !== undefined
+      ? [`${filters.capacidadMin}+ huespedes`]
+      : []),
+    ...(filters.calificacionMin !== undefined
+      ? [`* ${filters.calificacionMin}+`]
+      : []),
+    ...(filters.ciudades ?? []),
+    ...(filters.zonas ?? []),
+    ...(filters.tiposPropiedad ?? []),
+    ...(filters.tiposViajero ?? []),
+    ...(filters.categoriasAmenidad ?? []),
+    ...(filters.amenidades ?? []),
+    ...(filters.keywords ?? []),
+  ];
+
+  return chips.filter(Boolean);
+}
+
+async function obtenerResultados(termino = ""): Promise<SearchResponse> {
+  const params = new URLSearchParams();
+  if (termino.trim()) params.set("q", termino.trim());
+
+  const suffix = params.toString();
+  const res = await fetch(`/api/buscar${suffix ? `?${suffix}` : ""}`);
+  const data = (await res.json()) as SearchResponse;
+  if (!res.ok) throw new Error(data.error ?? "Error de busqueda");
+  return data;
+}
+
+function SearchBox({
+  cargando,
+  q,
+  setQ,
+  onSubmit,
+}: {
+  cargando: boolean;
+  q: string;
+  setQ: (value: string) => void;
+  onSubmit: (event: FormEvent) => void;
+}) {
+  return (
+    <section className="mx-auto flex max-w-3xl flex-col items-center gap-6 pt-6 pb-2 text-center">
+      <header className="animate-fade-up">
+        <h1 className="flex items-baseline justify-center gap-3 text-4xl font-semibold text-[var(--color-ink)] md:text-5xl">
+          <Sparkles className="animate-pulse-glow h-8 w-8 translate-y-1 text-[var(--color-terracotta)]" />
+          <span>
+            Encuentra{" "}
+            <span className="font-serif font-semibold italic tracking-tight text-[var(--color-cactus)]">
+              tu lugar
+            </span>
+          </span>
+        </h1>
+      </header>
+
+      <form
+        onSubmit={onSubmit}
+        className="animate-fade-up flex w-full flex-col gap-3 rounded-lg border border-[var(--color-line)] bg-[var(--color-paper)] p-4 text-left shadow-sm transition-shadow focus-within:shadow-md sm:flex-row sm:items-end"
+      >
+        <label className="flex flex-1 flex-col gap-1">
+          <span className="text-xs font-semibold uppercase text-[var(--color-muted)]">
+            Buscar
+          </span>
+          <div className="relative">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-cactus)]" />
+            <input
+              type="text"
+              value={q}
+              onChange={(event) => setQ(event.target.value)}
+              placeholder="villa para familia en Santa Cruz con piscina, hasta Bs 120 por noche..."
+              className="w-full rounded-md border border-[var(--color-line)] bg-white/80 py-2 pl-9 pr-3 text-sm text-[var(--color-ink)] outline-none transition focus:border-[var(--color-cactus)] dark:bg-black/20"
+            />
+          </div>
+        </label>
+
+        <button
+          type="submit"
+          disabled={cargando}
+          className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-[var(--color-terracotta)] px-5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-[var(--color-terracotta-dark)] hover:shadow-md active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100"
+        >
+          {cargando ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Buscando...
+            </>
+          ) : (
+            <>
+              <Search className="h-4 w-4" />
+              Buscar
+            </>
+          )}
+        </button>
+      </form>
+    </section>
+  );
+}
+
+function SuggestionBar({
+  cargando,
+  total,
+  onSelect,
+}: {
+  cargando: boolean;
+  total: number;
+  onSelect: (value: string) => void;
+}) {
+  return (
+    <div
+      className="animate-fade-up mt-4 flex flex-col gap-3 border-y border-[var(--color-line)] py-3 sm:flex-row sm:items-center sm:justify-between"
+      style={{ animationDelay: "80ms" }}
+    >
+      <span className="text-sm font-semibold text-[var(--color-ink)]">
+        {cargando ? "Cargando catalogo" : `${total} alojamientos`}
+      </span>
+      <div className="flex flex-wrap items-center gap-2">
+        {SUGERENCIAS.map(({ label, icon: Icon }, index) => (
+          <button
+            key={label}
+            type="button"
+            onClick={() => onSelect(label)}
+            style={{ animationDelay: `${120 + index * 40}ms` }}
+            className="animate-fade-up inline-flex items-center gap-1.5 rounded-full border border-[var(--color-line)] bg-[var(--color-paper)] px-3 py-1 text-xs font-medium text-[var(--color-muted)] shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-[var(--color-cactus)] hover:text-[var(--color-cactus)] hover:shadow"
+          >
+            <IconGlyph icon={Icon} className="h-3 w-3" />
+            {label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function AiPanel({ ai }: { ai: AIInfo | null }) {
+  if (ai?.source !== "deepseek" || (!ai.explanation && !ai.filters)) {
+    return null;
+  }
+
+  const chips = ai.filters ? chipsDeFiltros(ai.filters) : [];
+
+  return (
+    <div className="mt-3 flex flex-col gap-2">
+      <div className="animate-fade-up rounded-lg border border-[var(--color-line)] bg-[var(--color-cactus-soft)] p-3 text-xs text-[var(--color-ink)]">
+        {ai.explanation && <p className="mb-1.5">{ai.explanation}</p>}
+        {chips.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {chips.map((tag, index) => (
+              <span
+                key={`${tag}-${index}`}
+                className="rounded-full bg-white/70 px-2 py-0.5 dark:bg-black/20"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function SkeletonGrid() {
+  return (
+    <section className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+      {Array.from({ length: 6 }).map((_, index) => (
+        <div
+          key={index}
+          style={{ animationDelay: `${index * 60}ms` }}
+          className="animate-fade-up flex flex-col gap-3 rounded-lg border border-[var(--color-line)] bg-[var(--color-paper)] p-3 shadow-sm"
+        >
+          <div className="skeleton h-40 w-full rounded-md" />
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex-1 space-y-2">
+              <div className="skeleton h-5 w-2/3 rounded" />
+              <div className="skeleton h-3 w-1/3 rounded" />
+            </div>
+            <div className="skeleton h-8 w-16 rounded" />
+          </div>
+          <div className="space-y-2">
+            <div className="skeleton h-3 w-full rounded" />
+            <div className="skeleton h-3 w-5/6 rounded" />
+          </div>
+          <div className="flex gap-2">
+            <div className="skeleton h-5 w-20 rounded-full" />
+            <div className="skeleton h-5 w-16 rounded-full" />
+            <div className="skeleton h-5 w-24 rounded-full" />
+          </div>
+        </div>
+      ))}
+    </section>
+  );
+}
+
+function ListingCard({
+  propiedad,
+  index,
+}: {
+  propiedad: Propiedad;
+  index: number;
+}) {
+  const TipoIcon = iconoTipoPropiedad(propiedad.tipo);
+  const media = mediaForProperty(propiedad, index);
+
+  return (
+    <article
+      style={{ animationDelay: `${Math.min(index * 50, 400)}ms` }}
+      className="animate-fade-up group flex flex-col gap-3 rounded-lg border border-[var(--color-line)] bg-[var(--color-paper)] p-3 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-[var(--color-cactus)] hover:shadow-lg"
+    >
+      <div className="overflow-hidden rounded-md">
+        <div className="relative">
+          <Image
+            src={media.src}
+            alt={media.alt}
+            width={media.width}
+            height={media.height}
+            loading={index < 3 ? "eager" : "lazy"}
+            sizes="(min-width: 1280px) 31vw, (min-width: 640px) 48vw, 100vw"
+            className="h-40 w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+          />
+          <span className="absolute left-2 top-2 rounded-full bg-black/65 px-2 py-0.5 text-[10px] font-medium uppercase text-white backdrop-blur-sm">
+            Foto referencial
+          </span>
+        </div>
+      </div>
+
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h2 className="text-base font-semibold leading-tight text-[var(--color-ink)]">
+            {propiedad.nombre}
+          </h2>
+          <div className="mt-1 flex flex-wrap items-center gap-1.5 text-xs text-[var(--color-muted)]">
+            {propiedad.tipo && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-[var(--color-sky-soft)] px-2 py-0.5 text-[var(--color-sky)]">
+                <IconGlyph icon={TipoIcon} className="h-3 w-3" />
+                {propiedad.tipo}
+              </span>
+            )}
+            {(propiedad.ciudad || propiedad.zona) && (
+              <span className="inline-flex items-center gap-1">
+                <MapPin className="h-3 w-3" />
+                {[propiedad.zona, propiedad.ciudad].filter(Boolean).join(" · ")}
+              </span>
+            )}
+          </div>
+        </div>
+
+        {propiedad.precioNoche !== undefined && (
+          <div className="shrink-0 text-right transition-transform duration-300 group-hover:scale-105">
+            <div className="text-base font-bold text-[var(--color-terracotta)]">
+              {formatoPrecioBolivianos(propiedad.precioNoche)}
+            </div>
+            <div className="text-[10px] uppercase text-[var(--color-muted)]">
+              por noche
+            </div>
+          </div>
+        )}
+      </div>
+
+      {propiedad.descripcion && (
+        <p className="text-xs leading-5 text-[var(--color-muted)]">
+          {propiedad.descripcion}
+        </p>
+      )}
+
+      <div className="flex flex-wrap gap-3 text-xs text-[var(--color-muted)]">
+        {propiedad.capacidadMaxima !== undefined && (
+          <span className="inline-flex items-center gap-1">
+            <Users className="h-3.5 w-3.5" />
+            hasta {propiedad.capacidadMaxima} huespedes
+          </span>
+        )}
+        {propiedad.calificacion !== undefined && (
+          <span className="inline-flex items-center gap-1">
+            <Star className="h-3.5 w-3.5 fill-[var(--color-maize)] text-[var(--color-maize)]" />
+            {propiedad.calificacion.toFixed(1)}
+          </span>
+        )}
+      </div>
+
+      {propiedad.amenidades.length > 0 && (
+        <Amenidades amenidades={propiedad.amenidades} />
+      )}
+
+      {propiedad.perfiles.length > 0 && (
+        <Perfiles perfiles={propiedad.perfiles} />
+      )}
+    </article>
+  );
+}
+
+function Amenidades({ amenidades }: { amenidades: Amenidad[] }) {
+  return (
+    <div>
+      <h3 className="text-xs font-semibold uppercase text-[var(--color-muted)]">
+        Amenidades
+      </h3>
+      <div className="mt-1.5 space-y-1.5">
+        {agruparPorCategoria(amenidades).map(([categoria, items]) => {
+          const CategoriaIcon = iconoCategoria(categoria);
+          return (
+            <div
+              key={categoria}
+              className="flex flex-wrap items-center gap-1"
+            >
+              <span className="inline-flex items-center gap-1 text-[10px] uppercase text-[var(--color-muted)]">
+                <IconGlyph icon={CategoriaIcon} className="h-3 w-3" />
+                {categoria}:
+              </span>
+              {items.map((amenidad) => {
+                const AmenidadIcon = iconoAmenidad(amenidad.nombre);
+                return (
+                  <span
+                    key={amenidad.uri}
+                    className="inline-flex items-center gap-1 rounded-full bg-[var(--color-cactus-soft)] px-2 py-0.5 text-[11px] text-[var(--color-cactus)] transition-colors hover:bg-[var(--color-maize-soft)]"
+                  >
+                    <IconGlyph icon={AmenidadIcon} className="h-3 w-3" />
+                    {amenidad.nombre}
+                  </span>
+                );
+              })}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function Perfiles({ perfiles }: { perfiles: Perfil[] }) {
+  return (
+    <div>
+      <h3 className="text-xs font-semibold uppercase text-[var(--color-muted)]">
+        Compatible con
+      </h3>
+      <ul className="mt-1 flex flex-wrap gap-1">
+        {perfiles.map((perfil) => {
+          const PerfilIcon = iconoTipoViajero(perfil.tipoViajero);
+          return (
+            <li
+              key={perfil.uri}
+              className="inline-flex items-center gap-1 rounded-full bg-[var(--color-maize-soft)] px-2 py-0.5 text-[11px] text-[var(--color-terracotta-dark)] transition-colors hover:bg-[var(--color-rose-soft)]"
+              title={perfil.tipoViajero}
+            >
+              <IconGlyph icon={PerfilIcon} className="h-3 w-3" />
+              {perfil.nombre}
+              {perfil.tipoViajero && (
+                <span className="text-[var(--color-muted)]">
+                  · {perfil.tipoViajero}
+                </span>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
 }
 
 export default function Home() {
   const [q, setQ] = useState("");
   const [resultados, setResultados] = useState<Propiedad[]>([]);
-  const [cargando, setCargando] = useState(false);
+  const [cargando, setCargando] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [buscado, setBuscado] = useState(false);
+  const [ai, setAi] = useState<AIInfo | null>(null);
+
+  useEffect(() => {
+    let cancelado = false;
+
+    async function cargarCatalogo() {
+      try {
+        const data = await obtenerResultados();
+        if (cancelado) return;
+        setResultados(data.propiedades ?? []);
+        setAi(data.ai ?? null);
+      } catch (err) {
+        if (cancelado) return;
+        setError(err instanceof Error ? err.message : "Error desconocido");
+        setResultados([]);
+      } finally {
+        if (!cancelado) setCargando(false);
+      }
+    }
+
+    cargarCatalogo();
+
+    return () => {
+      cancelado = true;
+    };
+  }, []);
 
   async function buscar(termino: string) {
     setCargando(true);
     setError(null);
-    setBuscado(true);
+    setAi(null);
 
     try {
-      const params = new URLSearchParams();
-      if (termino.trim()) params.set("q", termino.trim());
-      const res = await fetch(`/api/buscar?${params.toString()}`);
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.error ?? "Error de búsqueda");
+      const data = await obtenerResultados(termino);
       setResultados(data.propiedades ?? []);
+      setAi(data.ai ?? null);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error desconocido");
       setResultados([]);
@@ -145,264 +573,55 @@ export default function Home() {
     }
   }
 
-  function onSubmit(e: FormEvent) {
-    e.preventDefault();
+  function onSubmit(event: FormEvent) {
+    event.preventDefault();
     buscar(q);
   }
 
-  function onSugerencia(s: string) {
-    setQ(s);
-    buscar(s);
+  function onSugerencia(value: string) {
+    setQ(value);
+    buscar(value);
   }
 
   return (
-    <main className="min-h-screen bg-zinc-50 dark:bg-zinc-950 px-6 py-12">
-      <div className="mx-auto max-w-5xl">
-        <header className="animate-fade-up mb-10">
-          <h1 className="flex items-baseline gap-3 text-5xl font-normal tracking-tight text-zinc-900 dark:text-zinc-50">
-            <Sparkles className="animate-pulse-glow h-8 w-8 translate-y-1 text-emerald-500" />
-            <span>
-              Buscador <span className="font-serif italic text-emerald-600 dark:text-emerald-400">semántico</span>
-            </span>
-          </h1>
-          <p className="mt-3 max-w-2xl text-base leading-relaxed text-zinc-600 dark:text-zinc-400">
-            Escribe lo que buscas: amenidad, perfil, ciudad, tipo de propiedad,
-            propósito de viaje o categoría. La búsqueda navega la ontología.
-          </p>
-        </header>
-
-        <form
+    <main className="min-h-screen px-4 py-6 text-[var(--color-ink)] sm:px-6">
+      <div className="mx-auto max-w-7xl">
+        <SearchBox
+          cargando={cargando}
+          q={q}
+          setQ={setQ}
           onSubmit={onSubmit}
-          className="animate-fade-up flex flex-col gap-3 rounded-xl border border-zinc-200 bg-white p-6 shadow-sm transition-shadow focus-within:shadow-md dark:border-zinc-800 dark:bg-zinc-900 sm:flex-row sm:items-end"
-        >
-          <label className="flex flex-1 flex-col gap-1">
-            <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-              Buscar
-            </span>
-            <div className="relative">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
-              <input
-                type="text"
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-                placeholder="wifi, familia, vacacional, La Paz, villa…"
-                className="w-full rounded-lg border border-zinc-300 bg-white py-2 pl-9 pr-3 text-zinc-900 outline-none focus:border-zinc-900 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50 dark:focus:border-zinc-200"
-              />
-            </div>
-          </label>
+        />
 
-          <button
-            type="submit"
-            disabled={cargando}
-            className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-zinc-900 px-5 font-medium text-white shadow-sm transition-all duration-200 hover:bg-zinc-700 hover:shadow-md active:scale-[0.97] disabled:opacity-50 disabled:active:scale-100 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
-          >
-            {cargando ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                Buscando…
-              </>
-            ) : (
-              <>
-                <Search className="h-4 w-4" />
-                Buscar
-              </>
-            )}
-          </button>
-        </form>
-
-        <div className="animate-fade-up mt-3 flex flex-wrap items-center gap-2" style={{ animationDelay: "80ms" }}>
-          <span className="text-xs text-zinc-500 dark:text-zinc-500">
-            Sugerencias:
-          </span>
-          {SUGERENCIAS.map(({ label, icon: Icon }, i) => (
-            <button
-              key={label}
-              type="button"
-              onClick={() => onSugerencia(label)}
-              style={{ animationDelay: `${120 + i * 40}ms` }}
-              className="animate-fade-up inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-white px-3 py-1 text-xs text-zinc-700 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-zinc-400 hover:bg-zinc-100 hover:shadow dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:border-zinc-600 dark:hover:bg-zinc-800"
-            >
-              <Icon className="h-3 w-3" />
-              {label}
-            </button>
-          ))}
-        </div>
+        <SuggestionBar
+          cargando={cargando}
+          total={resultados.length}
+          onSelect={onSugerencia}
+        />
 
         {error && (
-          <div className="animate-fade-up mt-6 rounded-lg border border-red-300 bg-red-50 p-4 text-red-800 dark:border-red-900 dark:bg-red-950 dark:text-red-200">
+          <div className="animate-fade-up mt-4 rounded-lg border border-[var(--color-rose)] bg-[var(--color-rose-soft)] p-4 text-[var(--color-ink)]">
             {error}
           </div>
         )}
 
-        {buscado && !cargando && !error && (
-          <p key={resultados.length} className="animate-fade-in mt-6 text-sm text-zinc-500 dark:text-zinc-400">
-            {resultados.length} resultado
-            {resultados.length === 1 ? "" : "s"}
-          </p>
-        )}
+        {!cargando && !error && <AiPanel ai={ai} />}
+        {cargando && <SkeletonGrid />}
 
-        {cargando && (
-          <section className="mt-4 grid gap-4 sm:grid-cols-2">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div
-                key={i}
-                style={{ animationDelay: `${i * 60}ms` }}
-                className="animate-fade-up flex flex-col gap-3 rounded-xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex-1 space-y-2">
-                    <div className="skeleton h-5 w-2/3 rounded" />
-                    <div className="skeleton h-3 w-1/3 rounded" />
-                  </div>
-                  <div className="skeleton h-8 w-16 rounded" />
-                </div>
-                <div className="space-y-2">
-                  <div className="skeleton h-3 w-full rounded" />
-                  <div className="skeleton h-3 w-5/6 rounded" />
-                </div>
-                <div className="flex gap-2">
-                  <div className="skeleton h-5 w-20 rounded-full" />
-                  <div className="skeleton h-5 w-16 rounded-full" />
-                  <div className="skeleton h-5 w-24 rounded-full" />
-                </div>
-              </div>
+        {!cargando && (
+          <section className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            {resultados.map((propiedad, index) => (
+              <ListingCard
+                key={propiedad.uri}
+                propiedad={propiedad}
+                index={index}
+              />
             ))}
           </section>
         )}
 
-        <section className="mt-4 grid gap-4 sm:grid-cols-2">
-          {!cargando && resultados.map((p, i) => {
-            const TipoIcon = iconoTipoPropiedad(p.tipo);
-            return (
-              <article
-                key={p.uri}
-                style={{ animationDelay: `${Math.min(i * 50, 400)}ms` }}
-                className="animate-fade-up group flex flex-col gap-3 rounded-xl border border-zinc-200 bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-zinc-300 hover:shadow-lg dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-zinc-700"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">
-                      {p.nombre}
-                    </h2>
-                    <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-zinc-500 dark:text-zinc-400">
-                      {p.tipo && (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-zinc-900 px-2 py-0.5 text-white dark:bg-zinc-50 dark:text-zinc-900">
-                          <TipoIcon className="h-3 w-3" />
-                          {p.tipo}
-                        </span>
-                      )}
-                      {(p.ciudad || p.zona) && (
-                        <span className="inline-flex items-center gap-1">
-                          <MapPin className="h-3 w-3" />
-                          {[p.zona, p.ciudad].filter(Boolean).join(" · ")}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  {p.precioNoche !== undefined && (
-                    <div className="shrink-0 text-right transition-transform duration-300 group-hover:scale-105">
-                      <div className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">
-                        ${p.precioNoche}
-                      </div>
-                      <div className="text-xs text-zinc-500 dark:text-zinc-400">
-                        por noche
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {p.descripcion && (
-                  <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                    {p.descripcion}
-                  </p>
-                )}
-
-                <div className="flex flex-wrap gap-4 text-xs text-zinc-600 dark:text-zinc-400">
-                  {p.capacidadMaxima !== undefined && (
-                    <span className="inline-flex items-center gap-1">
-                      <Users className="h-3.5 w-3.5" />
-                      hasta {p.capacidadMaxima} huéspedes
-                    </span>
-                  )}
-                  {p.calificacion !== undefined && (
-                    <span className="inline-flex items-center gap-1">
-                      <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-                      {p.calificacion.toFixed(1)}
-                    </span>
-                  )}
-                </div>
-
-                {p.amenidades.length > 0 && (
-                  <div>
-                    <h3 className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
-                      Amenidades
-                    </h3>
-                    <div className="mt-2 space-y-2">
-                      {agruparPorCategoria(p.amenidades).map(([cat, items]) => {
-                        const CatIcon = iconoCategoria(cat);
-                        return (
-                          <div
-                            key={cat}
-                            className="flex flex-wrap items-center gap-1.5"
-                          >
-                            <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
-                              <CatIcon className="h-3 w-3" />
-                              {cat}:
-                            </span>
-                            {items.map((a) => {
-                              const AmIcon = iconoAmenidad(a.nombre);
-                              return (
-                                <span
-                                  key={a.uri}
-                                  className="inline-flex items-center gap-1 rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs text-zinc-700 transition-colors hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700"
-                                >
-                                  <AmIcon className="h-3 w-3" />
-                                  {a.nombre}
-                                </span>
-                              );
-                            })}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-
-                {p.perfiles.length > 0 && (
-                  <div>
-                    <h3 className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
-                      Compatible con
-                    </h3>
-                    <ul className="mt-1 flex flex-wrap gap-1.5">
-                      {p.perfiles.map((perf) => {
-                        const PerfIcon = iconoTipoViajero(perf.tipoViajero);
-                        return (
-                          <li
-                            key={perf.uri}
-                            className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs text-emerald-800 transition-colors hover:bg-emerald-200 dark:bg-emerald-900/40 dark:text-emerald-200 dark:hover:bg-emerald-900/60"
-                            title={perf.tipoViajero}
-                          >
-                            <PerfIcon className="h-3 w-3" />
-                            {perf.nombre}
-                            {perf.tipoViajero && (
-                              <span className="text-emerald-600 dark:text-emerald-400">
-                                · {perf.tipoViajero}
-                              </span>
-                            )}
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </div>
-                )}
-              </article>
-            );
-          })}
-        </section>
-
-        {buscado && !cargando && !error && resultados.length === 0 && (
-          <div className="animate-fade-up mt-12 flex flex-col items-center gap-3 text-zinc-500 dark:text-zinc-400">
+        {!cargando && !error && resultados.length === 0 && (
+          <div className="animate-fade-up mt-12 flex flex-col items-center gap-3 text-[var(--color-muted)]">
             <Plane className="animate-pulse-glow h-10 w-10 opacity-40" />
             <p>No se encontraron propiedades.</p>
           </div>

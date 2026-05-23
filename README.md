@@ -1,6 +1,6 @@
 # Airbnb Semantic
 
-Buscador semántico de propiedades con **Next.js 16** + **Apache Jena Fuseki** sobre una ontología RDF/OWL.
+Buscador semántico de propiedades con **Next.js 16** sobre una ontología RDF/OWL.
 
 La búsqueda navega la ontología (jerarquía de clases, categorías de amenidad, tipo de viajero, propósito de viaje, ubicación), no solo strings.
 
@@ -9,44 +9,22 @@ La búsqueda navega la ontología (jerarquía de clases, categorías de amenidad
 ## Requisitos
 
 - Node 20+ o [Bun](https://bun.sh)
-- Java 17+
-- [Apache Jena Fuseki 6.1.0](https://dlcdn.apache.org/jena/binaries/apache-jena-fuseki-6.1.0.zip) — descarga y descomprime
+- Ontología disponible en [`ontology/Airbnb.owl`](ontology/Airbnb.owl)
 
 ---
 
-## 1. Fuseki
-
-Desde la carpeta de Fuseki descomprimido:
-
-```bash
-# Windows
-fuseki-server.bat
-
-# Linux / macOS
-./fuseki-server
-```
-
-Abre `http://localhost:3030` y:
-
-1. `Manage datasets` → `Add new dataset` → nombre `airbnb`, tipo `Persistent` → `Create`.
-2. Entra al dataset → pestaña `add data` → sube [`ontology/bd.ttl`](ontology/bd.ttl) → `upload now`.
-
-Endpoint resultante: `http://localhost:3030/airbnb/sparql` (ya hardcodeado en [`app/api/buscar/route.ts`](app/api/buscar/route.ts)).
-
----
-
-## 2. Next.js
+## 1. Next.js
 
 ```bash
 bun install
 bun run dev
 ```
 
-Abre `http://localhost:3000`.
+Abre `http://localhost:3000`. La API `GET /api/buscar` lee y parsea directamente `ontology/Airbnb.owl`.
 
 ---
 
-## 3. Ejemplos de búsqueda
+## 2. Ejemplos de búsqueda
 
 | Búsqueda       | Encuentra                                                              |
 | -------------- | ---------------------------------------------------------------------- |
@@ -62,6 +40,6 @@ Abre `http://localhost:3000`.
 
 ## Troubleshooting
 
-- **`{"propiedades":[]}`** → el TTL no se cargó. Vuelve a Fuseki → `add data`.
-- **`ECONNREFUSED`** → Fuseki no está corriendo o el dataset no se llama `airbnb`.
+- **`{"propiedades":[]}`** → revisa que [`ontology/Airbnb.owl`](ontology/Airbnb.owl) exista y contenga instancias `owl:NamedIndividual`.
+- **Cambiaste el `.owl` y no ves cambios** → guarda el archivo; la API invalida caché cuando cambia la fecha de modificación.
 - **Hot-reload no toma cambios en la API** → reinicia `bun run dev`.
