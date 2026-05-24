@@ -1,3 +1,5 @@
+import { type Locale, translateAmenityCategory } from "@/lib/i18n";
+
 const NS = "http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/";
 const FUSEKI_ENDPOINT =
   process.env.FUSEKI_ENDPOINT ?? "http://localhost:3030/airbnb/sparql";
@@ -10,53 +12,84 @@ PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 `.trim();
 
-const CATALOG_QUERY = `
+function labelBinding(subject: string, alias: string, locale: Locale, legacy?: string): string {
+  const fallbackLocales = locale === "es" ? ["en", "fr"] : locale === "en" ? ["es", "fr"] : ["es", "en"];
+  const legacyClause = legacy ? `OPTIONAL { ${subject} ${legacy} ?${alias}Legacy }` : "";
+  const legacySource = legacy ? `, ?${alias}Legacy` : "";
+  return `
+  OPTIONAL { ${subject} rdfs:label ?${alias}Preferred . FILTER(LANGMATCHES(LANG(?${alias}Preferred), "${locale}")) }
+  OPTIONAL { ${subject} rdfs:label ?${alias}Fallback1 . FILTER(LANGMATCHES(LANG(?${alias}Fallback1), "${fallbackLocales[0]}")) }
+  OPTIONAL { ${subject} rdfs:label ?${alias}Fallback2 . FILTER(LANGMATCHES(LANG(?${alias}Fallback2), "${fallbackLocales[1]}")) }
+  ${legacyClause}
+  BIND(COALESCE(?${alias}Preferred, ?${alias}Fallback1, ?${alias}Fallback2${legacySource}) AS ?${alias})
+`.trim();
+}
+
+function commentBinding(subject: string, alias: string, locale: Locale, legacy: string): string {
+  const fallbackLocales = locale === "es" ? ["en", "fr"] : locale === "en" ? ["es", "fr"] : ["es", "en"];
+  return `
+  OPTIONAL { ${subject} rdfs:comment ?${alias}Preferred . FILTER(LANGMATCHES(LANG(?${alias}Preferred), "${locale}")) }
+  OPTIONAL { ${subject} rdfs:comment ?${alias}Fallback1 . FILTER(LANGMATCHES(LANG(?${alias}Fallback1), "${fallbackLocales[0]}")) }
+  OPTIONAL { ${subject} rdfs:comment ?${alias}Fallback2 . FILTER(LANGMATCHES(LANG(?${alias}Fallback2), "${fallbackLocales[1]}")) }
+  OPTIONAL { ${subject} ${legacy} ?${alias}Legacy }
+  BIND(COALESCE(?${alias}Preferred, ?${alias}Fallback1, ?${alias}Fallback2, ?${alias}Legacy) AS ?${alias})
+`.trim();
+}
+
+function buildCatalogQuery(locale: Locale): string {
+  return `
 SELECT ?propiedad ?tipo ?nombre ?descripcion ?urlImagen ?precio ?capacidad
-       ?calificacion ?ciudad ?zona ?zonaTipo
+       ?tipoLabel ?calificacion ?ciudad ?zona ?zonaTipo
 WHERE {
   ?propiedad a ?tipo .
   ?tipo rdfs:subClassOf* :Propiedad .
   FILTER(?tipo NOT IN (:Propiedad, :AlojamientoCompleto, :AlojamientoHabitacion, owl:NamedIndividual))
-  OPTIONAL { ?propiedad :nombrePropiedad     ?nombre }
-  OPTIONAL { ?propiedad :descripcionPropiedad ?descripcion }
+  ${labelBinding("?propiedad", "nombre", locale, ":nombrePropiedad")}
+  ${commentBinding("?propiedad", "descripcion", locale, ":descripcionPropiedad")}
   OPTIONAL { ?propiedad :urlImagen           ?urlImagen }
   OPTIONAL { ?propiedad :precioNoche         ?precio }
   OPTIONAL { ?propiedad :capacidadMaxima     ?capacidad }
   OPTIONAL { ?propiedad :calificacionPromedio ?calificacion }
   OPTIONAL {
     ?propiedad :ubicadaEn ?z .
-    OPTIONAL { ?z :ciudad     ?ciudad }
-    OPTIONAL { ?z :nombreZona ?zona }
-    OPTIONAL { ?z :tipoZona   ?zonaTipo }
+    OPTIONAL { ?z :ciudad ?ciudad }
+    ${labelBinding("?z", "zona", locale, ":nombreZona")}
+    OPTIONAL { ?z :tipoZona ?zonaTipo }
   }
+  ${labelBinding("?tipo", "tipoLabel", locale)}
 }
 ORDER BY ?propiedad
-`;
+`.trim();
+}
 
-const AMENIDADES_QUERY = `
+function buildAmenidadesQuery(locale: Locale): string {
+  return `
 SELECT ?propiedad ?amenidad ?nombre ?categoria
 WHERE {
   ?propiedad a/rdfs:subClassOf* :Propiedad ;
              :tieneAmenidad ?amenidad .
-  OPTIONAL { ?amenidad :nombreAmenidad    ?nombre }
+  ${labelBinding("?amenidad", "nombre", locale, ":nombreAmenidad")}
   OPTIONAL { ?amenidad :categoriaAmenidad ?categoria }
 }
-`;
+`.trim();
+}
 
-const PERFILES_QUERY = `
+function buildPerfilesQuery(locale: Locale): string {
+  return `
 SELECT ?propiedad ?perfil ?tipoViajero
-       (GROUP_CONCAT(DISTINCT ?propositoTipo; SEPARATOR="||") AS ?propositos)
+       (GROUP_CONCAT(DISTINCT ?propositoLabel; SEPARATOR="||") AS ?propositos)
 WHERE {
   ?propiedad a/rdfs:subClassOf* :Propiedad ;
              :compatibleCon ?perfil .
-  OPTIONAL { ?perfil :tipoViajero ?tipoViajero }
+  ${labelBinding("?perfil", "tipoViajero", locale)}
   OPTIONAL {
     ?perfil :tienePropositoViaje ?p .
-    OPTIONAL { ?p :tipoPropositoViaje ?propositoTipo }
+    ${labelBinding("?p", "propositoLabel", locale)}
   }
 }
 GROUP BY ?propiedad ?perfil ?tipoViajero
-`;
+`.trim();
+}
 
 type SparqlBinding = Record<string, { type: string; value: string } | undefined>;
 type SparqlResults = { results: { bindings: SparqlBinding[] } };
@@ -136,11 +169,11 @@ function buildIndex(propiedad: Propiedad, extras: Array<string | undefined>): st
   return normalize(parts.filter((p): p is string => Boolean(p)).join(" "));
 }
 
-async function loadCatalog(): Promise<IndexedPropiedad[]> {
+async function loadCatalog(locale: Locale): Promise<IndexedPropiedad[]> {
   const [catalogRes, amenidadesRes, perfilesRes] = await Promise.all([
-    sparqlSelect(CATALOG_QUERY),
-    sparqlSelect(AMENIDADES_QUERY),
-    sparqlSelect(PERFILES_QUERY),
+    sparqlSelect(buildCatalogQuery(locale)),
+    sparqlSelect(buildAmenidadesQuery(locale)),
+    sparqlSelect(buildPerfilesQuery(locale)),
   ]);
 
   const amenidadesPorPropiedad = new Map<string, Amenidad[]>();
@@ -152,7 +185,7 @@ async function loadCatalog(): Promise<IndexedPropiedad[]> {
     list.push({
       uri: amenUri,
       nombre: val(b, "nombre") ?? localName(amenUri),
-      categoria: val(b, "categoria"),
+      categoria: translateAmenityCategory(val(b, "categoria"), locale),
     });
     amenidadesPorPropiedad.set(propUri, list);
   }
@@ -166,7 +199,7 @@ async function loadCatalog(): Promise<IndexedPropiedad[]> {
     const list = perfilesPorPropiedad.get(propUri) ?? [];
     list.push({
       uri: perfilUri,
-      nombre: localName(perfilUri),
+      nombre: val(b, "tipoViajero") ?? localName(perfilUri),
       tipoViajero: val(b, "tipoViajero"),
     });
     perfilesPorPropiedad.set(propUri, list);
@@ -183,14 +216,14 @@ async function loadCatalog(): Promise<IndexedPropiedad[]> {
   for (const b of catalogRes.results.bindings) {
     const uri = val(b, "propiedad");
     if (!uri) continue;
-    const tipoUri = val(b, "tipo");
+    const tipoLabel = val(b, "tipoLabel");
 
     const propiedad: Propiedad = {
       uri,
       nombre: val(b, "nombre") ?? localName(uri),
       descripcion: val(b, "descripcion"),
       urlImagen: val(b, "urlImagen"),
-      tipo: tipoUri ? localName(tipoUri) : undefined,
+      tipo: tipoLabel,
       precioNoche: parseNumber(val(b, "precio")),
       capacidadMaxima: parseNumber(val(b, "capacidad")),
       calificacion: parseNumber(val(b, "calificacion")),
@@ -218,8 +251,8 @@ function toPublicPropiedad(propiedad: IndexedPropiedad): Propiedad {
   return rest;
 }
 
-export async function searchOntology(query: string): Promise<Propiedad[]> {
-  const propiedades = await loadCatalog();
+export async function searchOntology(query: string, locale: Locale): Promise<Propiedad[]> {
+  const propiedades = await loadCatalog(locale);
   const term = normalize(query.trim());
   if (!term) return propiedades.map(toPublicPropiedad);
   return propiedades
@@ -227,8 +260,8 @@ export async function searchOntology(query: string): Promise<Propiedad[]> {
     .map(toPublicPropiedad);
 }
 
-export async function getCatalog(): Promise<Propiedad[]> {
-  const propiedades = await loadCatalog();
+export async function getCatalog(locale: Locale): Promise<Propiedad[]> {
+  const propiedades = await loadCatalog(locale);
   return propiedades.map(toPublicPropiedad);
 }
 
@@ -300,8 +333,9 @@ function sanitizeFiltersForCatalog(
 
 export async function sanitizeStructuredFilters(
   filters: StructuredFilters,
+  locale: Locale,
 ): Promise<StructuredFilters> {
-  const propiedades = await loadCatalog();
+  const propiedades = await loadCatalog(locale);
   return sanitizeFiltersForCatalog(filters, propiedades);
 }
 
@@ -358,8 +392,9 @@ async function fetchHardFilteredUris(filters: StructuredFilters): Promise<Set<st
 
 export async function applyStructuredSearch(
   filters: StructuredFilters,
+  locale: Locale,
 ): Promise<Propiedad[]> {
-  const propiedades = await loadCatalog();
+  const propiedades = await loadCatalog(locale);
   const sanitizedFilters = sanitizeFiltersForCatalog(filters, propiedades);
   const normalizedKeywords = (filters.keywords ?? [])
     .map((k) => normalize(k.trim()))

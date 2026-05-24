@@ -1107,8 +1107,16 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/AlojamientoCompleto -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/AlojamientoCompleto">
+
+
+
+
+
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Propiedad"/>
         <owl:disjointWith rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/AlojamientoHabitacion"/>
+        <rdfs:label xml:lang="es">Alojamiento completo</rdfs:label>
+        <rdfs:label xml:lang="en">Entire place</rdfs:label>
+        <rdfs:label xml:lang="fr">Logement entier</rdfs:label>
     </owl:Class>
     
 
@@ -1116,21 +1124,43 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/AlojamientoHabitacion -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/AlojamientoHabitacion">
+
+
+
+
+
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Propiedad"/>
+        <rdfs:label xml:lang="es">Alojamiento en habitacion</rdfs:label>
+        <rdfs:label xml:lang="en">Room accommodation</rdfs:label>
+        <rdfs:label xml:lang="fr">Sejour en chambre</rdfs:label>
     </owl:Class>
     
 
 
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Amenidad -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Amenidad"/>
+    <owl:Class rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Amenidad">
+
+        <rdfs:label xml:lang="es">Amenidad</rdfs:label>
+        <rdfs:label xml:lang="en">Amenity</rdfs:label>
+        <rdfs:label xml:lang="fr">Equipement</rdfs:label>
+    </owl:Class>
     
 
 
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apartamento -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apartamento">
+
+
+
+
+
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/AlojamientoCompleto"/>
+        <rdfs:label xml:lang="es">Apartamento</rdfs:label>
+        <rdfs:label xml:lang="en">Apartment</rdfs:label>
+        <rdfs:label xml:lang="fr">Appartement</rdfs:label>
+        <owl:equivalentClass rdf:resource="http://dbpedia.org/ontology/Apartment"/>
     </owl:Class>
     
 
@@ -1138,7 +1168,16 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Casa -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Casa">
+
+
+
+
+
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/AlojamientoCompleto"/>
+        <rdfs:label xml:lang="es">Casa</rdfs:label>
+        <rdfs:label xml:lang="en">House</rdfs:label>
+        <rdfs:label xml:lang="fr">Maison</rdfs:label>
+        <owl:equivalentClass rdf:resource="http://dbpedia.org/ontology/House"/>
     </owl:Class>
     
 
@@ -1146,8 +1185,17 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/HabitacionCompartida -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/HabitacionCompartida">
+
+
+
+
+
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/AlojamientoHabitacion"/>
         <owl:disjointWith rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/HabitacionPrivada"/>
+        <rdfs:label xml:lang="es">Habitacion compartida</rdfs:label>
+        <rdfs:label xml:lang="en">Shared room</rdfs:label>
+        <rdfs:label xml:lang="fr">Chambre partagee</rdfs:label>
+        <owl:equivalentClass rdf:resource="http://dbpedia.org/ontology/Room"/>
     </owl:Class>
     
 
@@ -1155,52 +1203,100 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/HabitacionPrivada -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/HabitacionPrivada">
+
+
+
+
+
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/AlojamientoHabitacion"/>
+        <rdfs:label xml:lang="es">Habitacion privada</rdfs:label>
+        <rdfs:label xml:lang="en">Private room</rdfs:label>
+        <rdfs:label xml:lang="fr">Chambre privee</rdfs:label>
+        <owl:equivalentClass rdf:resource="http://dbpedia.org/ontology/Room"/>
     </owl:Class>
     
 
 
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PerfilHuesped -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PerfilHuesped"/>
+    <owl:Class rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PerfilHuesped">
+
+        <rdfs:label xml:lang="es">Perfil de huesped</rdfs:label>
+        <rdfs:label xml:lang="en">Guest profile</rdfs:label>
+        <rdfs:label xml:lang="fr">Profil de voyageur</rdfs:label>
+    </owl:Class>
     
 
 
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Politica -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Politica"/>
+    <owl:Class rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Politica">
+
+        <rdfs:label xml:lang="es">Politica</rdfs:label>
+        <rdfs:label xml:lang="en">Policy</rdfs:label>
+        <rdfs:label xml:lang="fr">Politique</rdfs:label>
+    </owl:Class>
     
 
 
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Propiedad -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Propiedad"/>
+    <owl:Class rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Propiedad">
+
+        <rdfs:label xml:lang="es">Propiedad</rdfs:label>
+        <rdfs:label xml:lang="en">Property</rdfs:label>
+        <rdfs:label xml:lang="fr">Logement</rdfs:label>
+    </owl:Class>
     
 
 
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PropositoViaje -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PropositoViaje"/>
+    <owl:Class rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PropositoViaje">
+
+        <rdfs:label xml:lang="es">Proposito de viaje</rdfs:label>
+        <rdfs:label xml:lang="en">Travel purpose</rdfs:label>
+        <rdfs:label xml:lang="fr">Motif de voyage</rdfs:label>
+    </owl:Class>
     
 
 
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PuntoInteres -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PuntoInteres"/>
+    <owl:Class rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PuntoInteres">
+
+        <rdfs:label xml:lang="es">Punto de interes</rdfs:label>
+        <rdfs:label xml:lang="en">Point of interest</rdfs:label>
+        <rdfs:label xml:lang="fr">Point d&apos;interet</rdfs:label>
+    </owl:Class>
     
 
 
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Villa -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Villa">
+
+
+
+
+
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/AlojamientoCompleto"/>
+        <rdfs:label xml:lang="es">Villa</rdfs:label>
+        <rdfs:label xml:lang="en">Villa</rdfs:label>
+        <rdfs:label xml:lang="fr">Villa</rdfs:label>
+        <owl:equivalentClass rdf:resource="http://dbpedia.org/ontology/Villa"/>
     </owl:Class>
     
 
 
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ZonaGeografica -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ZonaGeografica"/>
+    <owl:Class rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ZonaGeografica">
+
+        <rdfs:label xml:lang="es">Zona geografica</rdfs:label>
+        <rdfs:label xml:lang="en">Geographic area</rdfs:label>
+        <rdfs:label xml:lang="fr">Zone geographique</rdfs:label>
+    </owl:Class>
     
 
 
@@ -1218,11 +1314,20 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/AireAcondicionado -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/AireAcondicionado">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Amenidad"/>
         <categoriaAmenidad>Confort</categoriaAmenidad>
         <costoAdicional rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">5.0</costoAdicional>
         <disponibilidad>BajoPedido</disponibilidad>
         <nombreAmenidad>AireAcondicionado</nombreAmenidad>
+        <rdfs:label xml:lang="es">Aire acondicionado</rdfs:label>
+        <rdfs:label xml:lang="en">Air conditioning</rdfs:label>
+        <rdfs:label xml:lang="fr">Climatisation</rdfs:label>
+        <owl:sameAs rdf:resource="http://dbpedia.org/resource/Air_conditioning"/>
     </owl:NamedIndividual>
     
 
@@ -1230,6 +1335,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Amigos -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Amigos">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PerfilHuesped"/>
         <tienePropositoViaje rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ViajeVacacional"/>
         <numeroAdultos rdf:datatype="http://www.w3.org/2001/XMLSchema#int">5</numeroAdultos>
@@ -1237,6 +1347,9 @@
         <numeroNinos rdf:datatype="http://www.w3.org/2001/XMLSchema#int">0</numeroNinos>
         <presupuestoNoche rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">130.0</presupuestoNoche>
         <tipoViajero>GrupoAmigos</tipoViajero>
+        <rdfs:label xml:lang="es">Grupo de amigos</rdfs:label>
+        <rdfs:label xml:lang="en">Group of friends</rdfs:label>
+        <rdfs:label xml:lang="fr">Groupe d&apos;amis</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -1244,6 +1357,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/AmigosCongreso -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/AmigosCongreso">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PerfilHuesped"/>
         <tienePropositoViaje rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ViajeCongreso"/>
         <numeroAdultos rdf:datatype="http://www.w3.org/2001/XMLSchema#int">4</numeroAdultos>
@@ -1251,6 +1369,9 @@
         <numeroNinos rdf:datatype="http://www.w3.org/2001/XMLSchema#int">0</numeroNinos>
         <presupuestoNoche rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">80.0</presupuestoNoche>
         <tipoViajero>GrupoAmigos</tipoViajero>
+        <rdfs:label xml:lang="es">Amigos en congreso</rdfs:label>
+        <rdfs:label xml:lang="en">Friends attending a conference</rdfs:label>
+        <rdfs:label xml:lang="fr">Amis participant a un congres</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -1258,6 +1379,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apto_Achumani_1 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apto_Achumani_1">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apartamento"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Ejecutivo"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Cocina"/>
@@ -1280,6 +1406,12 @@
         <tipoAcceso>LlaveElectronica</tipoAcceso>
         <tipoEspacioExterior>Balcon</tipoEspacioExterior>
         <tipoEstacionamiento>GarajePrivado</tipoEstacionamiento>
+        <rdfs:label xml:lang="es">Departamento con vista en Achumani</rdfs:label>
+        <rdfs:label xml:lang="en">Apartment with view in Achumani</rdfs:label>
+        <rdfs:label xml:lang="fr">Appartement avec vue à Achumani</rdfs:label>
+        <rdfs:comment xml:lang="es">Departamento de dos ambientes en Achumani, util para trabajo remoto y estadias ejecutivas.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Two-room apartment in Achumani, suitable for remote work and executive stays.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Appartement de deux pièces à Achumani, idéal pour le travail à distance et les séjours d&apos;affaires.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -1287,6 +1419,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apto_CentroSucre_1 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apto_CentroSucre_1">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apartamento"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/GrupoEstudiantil"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Cocina"/>
@@ -1308,6 +1445,12 @@
         <tipoAcceso>LlaveElectronica</tipoAcceso>
         <tipoEspacioExterior>Balcon</tipoEspacioExterior>
         <tipoEstacionamiento>NoDisponible</tipoEstacionamiento>
+        <rdfs:label xml:lang="es">Apartamento estudiantil en centro de Sucre</rdfs:label>
+        <rdfs:label xml:lang="en">Student apartment in central Sucre</rdfs:label>
+        <rdfs:label xml:lang="fr">Appartement étudiant au centre de Sucre</rdfs:label>
+        <rdfs:comment xml:lang="es">Apartamento compacto en el centro historico de Sucre, adecuado para estudiantes o pasantes.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Compact apartment in the historic center of Sucre, suitable for students or interns.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Appartement compact dans le centre historique de Sucre, adapté aux étudiants ou stagiaires.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -1315,6 +1458,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apto_Centro_1 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apto_Centro_1">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apartamento"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Dual"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/AireAcondicionado"/>
@@ -1338,6 +1486,12 @@
         <tipoAcceso>LlaveElectronica</tipoAcceso>
         <tipoEspacioExterior>Balcon</tipoEspacioExterior>
         <tipoEstacionamiento>NoDisponible</tipoEstacionamiento>
+        <rdfs:label xml:lang="es">Departamento ejecutivo en Sopocachi</rdfs:label>
+        <rdfs:label xml:lang="en">Executive apartment in Sopocachi</rdfs:label>
+        <rdfs:label xml:lang="fr">Appartement exécutif à Sopocachi</rdfs:label>
+        <rdfs:comment xml:lang="es">Departamento ejecutivo de un dormitorio en Sopocachi, cerca de cafes, oficinas y estaciones del teleferico.</rdfs:comment>
+        <rdfs:comment xml:lang="en">One-bedroom executive apartment in Sopocachi, near cafes, offices, and cable car stations.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Appartement exécutif d&apos;une chambre à Sopocachi, près des cafés, bureaux et stations de téléphérique.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -1345,6 +1499,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apto_Centro_2 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apto_Centro_2">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apartamento"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Individual"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/AireAcondicionado"/>
@@ -1366,6 +1525,12 @@
         <tipoAcceso>LlaveElectronica</tipoAcceso>
         <tipoEspacioExterior>Balcon</tipoEspacioExterior>
         <tipoEstacionamiento>Calle</tipoEstacionamiento>
+        <rdfs:label xml:lang="es">Monoambiente en Cala Cala</rdfs:label>
+        <rdfs:label xml:lang="en">Studio in Cala Cala</rdfs:label>
+        <rdfs:label xml:lang="fr">Studio à Cala Cala</rdfs:label>
+        <rdfs:comment xml:lang="es">Monoambiente amoblado en Cala Cala, practico para estadias de estudio o trabajo con buen acceso al transporte urbano.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Furnished studio in Cala Cala, practical for study or work stays with good access to urban transport.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Studio meublé à Cala Cala, pratique pour les séjours d&apos;étude ou de travail avec un bon accès aux transports urbains.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -1373,6 +1538,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apto_Centro_3 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apto_Centro_3">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apartamento"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Dual"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Piscina"/>
@@ -1394,6 +1564,12 @@
         <tipoAcceso>LlaveElectronica</tipoAcceso>
         <tipoEspacioExterior>Balcon</tipoEspacioExterior>
         <tipoEstacionamiento>Calle</tipoEstacionamiento>
+        <rdfs:label xml:lang="es">Departamento con piscina en Equipetrol</rdfs:label>
+        <rdfs:label xml:lang="en">Apartment with pool in Equipetrol</rdfs:label>
+        <rdfs:label xml:lang="fr">Appartement avec piscine à Equipetrol</rdfs:label>
+        <rdfs:comment xml:lang="es">Departamento de dos dormitorios en Equipetrol, con piscina del edificio y perfil adecuado para viajes cortos de trabajo.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Two-bedroom apartment in Equipetrol, with building pool and suitable for short work trips.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Appartement de deux chambres à Equipetrol, avec piscine de l&apos;immeuble et adapté aux courts séjours professionnels.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -1401,6 +1577,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apto_Centro_4 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apto_Centro_4">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apartamento"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Pareja"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Cocina"/>
@@ -1422,6 +1603,12 @@
         <tipoAcceso>LlaveElectronica</tipoAcceso>
         <tipoEspacioExterior>Balcon</tipoEspacioExterior>
         <tipoEstacionamiento>Calle</tipoEstacionamiento>
+        <rdfs:label xml:lang="es">Departamento colonial en La Recoleta</rdfs:label>
+        <rdfs:label xml:lang="en">Colonial apartment in La Recoleta</rdfs:label>
+        <rdfs:label xml:lang="fr">Appartement colonial à La Recoleta</rdfs:label>
+        <rdfs:comment xml:lang="es">Departamento tranquilo en La Recoleta, con cocina y espacio para estacionar, a poca distancia del centro historico de Sucre.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Quiet apartment in La Recoleta, with kitchen and parking space, a short distance from the historic center of Sucre.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Appartement calme à La Recoleta, avec cuisine et place de parking, à courte distance du centre historique de Sucre.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -1429,6 +1616,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apto_Centro_5 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apto_Centro_5">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apartamento"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Amigos"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/AireAcondicionado"/>
@@ -1450,6 +1642,12 @@
         <tipoAcceso>LlaveElectronica</tipoAcceso>
         <tipoEspacioExterior>Balcon</tipoEspacioExterior>
         <tipoEstacionamiento>Calle</tipoEstacionamiento>
+        <rdfs:label xml:lang="es">Departamento familiar en San Bernardo</rdfs:label>
+        <rdfs:label xml:lang="en">Family apartment in San Bernardo</rdfs:label>
+        <rdfs:label xml:lang="fr">Appartement familial à San Bernardo</rdfs:label>
+        <rdfs:comment xml:lang="es">Departamento amplio en San Bernardo, con buena ventilacion y distribucion comoda para grupos pequenos que visitan Tarija.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Spacious apartment in San Bernardo, with good ventilation and comfortable layout for small groups visiting Tarija.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Appartement spacieux à San Bernardo, bien ventilé et agencé confortablement pour les petits groupes visitant Tarija.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -1457,6 +1655,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apto_SanRoque_1 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apto_SanRoque_1">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apartamento"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/AmigosCongreso"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/AireAcondicionado"/>
@@ -1478,6 +1681,12 @@
         <tipoAcceso>LlaveElectronica</tipoAcceso>
         <tipoEspacioExterior>Balcon</tipoEspacioExterior>
         <tipoEstacionamiento>Calle</tipoEstacionamiento>
+        <rdfs:label xml:lang="es">Departamento funcional en San Roque</rdfs:label>
+        <rdfs:label xml:lang="en">Functional apartment in San Roque</rdfs:label>
+        <rdfs:label xml:lang="fr">Appartement fonctionnel à San Roque</rdfs:label>
+        <rdfs:comment xml:lang="es">Departamento funcional en San Roque para grupos pequenos que asisten a ferias o congresos.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Functional apartment in San Roque for small groups attending fairs or conferences.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Appartement fonctionnel à San Roque pour les petits groupes assistant à des foires ou congrès.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -1485,6 +1694,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apto_Tiquipaya_1 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apto_Tiquipaya_1">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apartamento"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/FamiliaReubicacion"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Cocina"/>
@@ -1507,6 +1721,12 @@
         <tipoAcceso>LlaveElectronica</tipoAcceso>
         <tipoEspacioExterior>Terraza</tipoEspacioExterior>
         <tipoEstacionamiento>GarajePrivado</tipoEstacionamiento>
+        <rdfs:label xml:lang="es">Departamento familiar en Tiquipaya</rdfs:label>
+        <rdfs:label xml:lang="en">Family apartment in Tiquipaya</rdfs:label>
+        <rdfs:label xml:lang="fr">Appartement familial à Tiquipaya</rdfs:label>
+        <rdfs:comment xml:lang="es">Departamento familiar en Tiquipaya con cocina equipada y parqueo gratuito.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Family apartment in Tiquipaya with equipped kitchen and free parking.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Appartement familial à Tiquipaya avec cuisine équipée et parking gratuit.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -1514,6 +1734,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apto_Urubo_1 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apto_Urubo_1">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apartamento"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ParejaEscapada"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Desayuno"/>
@@ -1536,6 +1761,12 @@
         <tipoAcceso>LlaveElectronica</tipoAcceso>
         <tipoEspacioExterior>Terraza</tipoEspacioExterior>
         <tipoEstacionamiento>GarajePrivado</tipoEstacionamiento>
+        <rdfs:label xml:lang="es">Loft con piscina en Urubo</rdfs:label>
+        <rdfs:label xml:lang="en">Loft with pool in Urubo</rdfs:label>
+        <rdfs:label xml:lang="fr">Loft avec piscine à Urubo</rdfs:label>
+        <rdfs:comment xml:lang="es">Loft luminoso en Urubo con piscina del condominio, pensado para escapadas cortas.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Bright loft in Urubo with condominium pool, designed for short getaways.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Loft lumineux à Urubo avec piscine de la copropriété, conçu pour des escapades courtes.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -1543,10 +1774,18 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/BiocentroGuembe -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/BiocentroGuembe">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PuntoInteres"/>
         <distanciaMetros rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1700</distanciaMetros>
         <nombrePunto>Biocentro Guembe</nombrePunto>
         <tipoPunto>Ocio</tipoPunto>
+        <rdfs:label xml:lang="es">Biocentro Guembe</rdfs:label>
+        <rdfs:label xml:lang="en">Biocentro Guembe</rdfs:label>
+        <rdfs:label xml:lang="fr">Biocentro Guembe</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -1554,6 +1793,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Casa_Achumani_1 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Casa_Achumani_1">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Casa"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/FamiliaReubicacion"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Cocina"/>
@@ -1575,6 +1819,12 @@
         <tipoAcceso>LlaveTradicional</tipoAcceso>
         <tipoEspacioExterior>Jardin</tipoEspacioExterior>
         <tipoEstacionamiento>GarajePrivado</tipoEstacionamiento>
+        <rdfs:label xml:lang="es">Casa amplia con jardin en Achumani</rdfs:label>
+        <rdfs:label xml:lang="en">Spacious house with garden in Achumani</rdfs:label>
+        <rdfs:label xml:lang="fr">Grande maison avec jardin à Achumani</rdfs:label>
+        <rdfs:comment xml:lang="es">Casa amplia con jardin en Achumani, pensada para familias que necesitan una base comoda por varias semanas.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Spacious house with garden in Achumani, designed for families needing a comfortable base for several weeks.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Grande maison avec jardin à Achumani, conçue pour les familles ayant besoin d&apos;une base confortable pour plusieurs semaines.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -1582,6 +1832,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Casa_CentroSucre_1 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Casa_CentroSucre_1">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Casa"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/AmigosCongreso"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Cocina"/>
@@ -1603,6 +1858,12 @@
         <tipoAcceso>LlaveTradicional</tipoAcceso>
         <tipoEspacioExterior>Patio</tipoEspacioExterior>
         <tipoEstacionamiento>NoDisponible</tipoEstacionamiento>
+        <rdfs:label xml:lang="es">Casona patrimonial en centro de Sucre</rdfs:label>
+        <rdfs:label xml:lang="en">Heritage mansion in central Sucre</rdfs:label>
+        <rdfs:label xml:lang="fr">Maison patrimoniale au centre de Sucre</rdfs:label>
+        <rdfs:comment xml:lang="es">Casona patrimonial del centro de Sucre, util para grupos que quieren caminar por el casco historico.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Heritage mansion in central Sucre, useful for groups who want to walk through the historic center.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Maison patrimoniale au centre de Sucre, utile pour les groupes qui souhaitent se promener dans le centre historique.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -1610,6 +1871,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Casa_SanRoque_1 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Casa_SanRoque_1">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Casa"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ParejaEscapada"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/AireAcondicionado"/>
@@ -1631,6 +1897,12 @@
         <tipoAcceso>LlaveTradicional</tipoAcceso>
         <tipoEspacioExterior>Jardin</tipoEspacioExterior>
         <tipoEstacionamiento>GarajePrivado</tipoEstacionamiento>
+        <rdfs:label xml:lang="es">Casa tarijena con galeria en San Roque</rdfs:label>
+        <rdfs:label xml:lang="en">Tarija-style house with gallery in San Roque</rdfs:label>
+        <rdfs:label xml:lang="fr">Maison tarijena avec galerie à San Roque</rdfs:label>
+        <rdfs:comment xml:lang="es">Casa tarijena con galeria en San Roque, comoda para estadias cortas con ambiente residencial.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Tarija-style house with gallery in San Roque, comfortable for short stays with a residential atmosphere.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Maison tarijena avec galerie à San Roque, confortable pour de courts séjours avec une ambiance résidentielle.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -1638,6 +1910,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Casa_Tiquipaya_1 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Casa_Tiquipaya_1">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Casa"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Familiar"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Cocina"/>
@@ -1659,6 +1936,12 @@
         <tipoAcceso>LlaveTradicional</tipoAcceso>
         <tipoEspacioExterior>Jardin</tipoEspacioExterior>
         <tipoEstacionamiento>GarajePrivado</tipoEstacionamiento>
+        <rdfs:label xml:lang="es">Casa de descanso en Tiquipaya</rdfs:label>
+        <rdfs:label xml:lang="en">Vacation house in Tiquipaya</rdfs:label>
+        <rdfs:label xml:lang="fr">Maison de vacances à Tiquipaya</rdfs:label>
+        <rdfs:comment xml:lang="es">Casa de descanso en Tiquipaya con piscina y patio amplio, apropiada para vacaciones familiares.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Vacation house in Tiquipaya with pool and large patio, suitable for family holidays.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Maison de vacances à Tiquipaya avec piscine et grand patio, adaptée aux vacances familiales.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -1666,6 +1949,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Casa_Urbana_1 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Casa_Urbana_1">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Casa"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Familiar"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Cocina"/>
@@ -1689,6 +1977,12 @@
         <tipoAcceso>LlaveTradicional</tipoAcceso>
         <tipoEspacioExterior>Jardin</tipoEspacioExterior>
         <tipoEstacionamiento>GarajePrivado</tipoEstacionamiento>
+        <rdfs:label xml:lang="es">Casa familiar con patio en Cala Cala</rdfs:label>
+        <rdfs:label xml:lang="en">Family house with patio in Cala Cala</rdfs:label>
+        <rdfs:label xml:lang="fr">Maison familiale avec patio à Cala Cala</rdfs:label>
+        <rdfs:comment xml:lang="es">Casa con patio, cocina y lavanderia en una zona residencial de Cochabamba, pensada para estadias familiares.</rdfs:comment>
+        <rdfs:comment xml:lang="en">House with patio, kitchen, and laundry in a residential area of Cochabamba, designed for family stays.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Maison avec patio, cuisine et buanderie dans un quartier résidentiel de Cochabamba, conçue pour des séjours familiaux.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -1696,6 +1990,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Casa_Urbana_2 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Casa_Urbana_2">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Casa"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Dual"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/AireAcondicionado"/>
@@ -1716,6 +2015,12 @@
         <tipoAcceso>LlaveTradicional</tipoAcceso>
         <tipoEspacioExterior>Jardin</tipoEspacioExterior>
         <tipoEstacionamiento>GarajePrivado</tipoEstacionamiento>
+        <rdfs:label xml:lang="es">Casa ejecutiva en Sopocachi Alto</rdfs:label>
+        <rdfs:label xml:lang="en">Executive house in Sopocachi Alto</rdfs:label>
+        <rdfs:label xml:lang="fr">Maison exécutive à Sopocachi Alto</rdfs:label>
+        <rdfs:comment xml:lang="es">Casa amplia en Sopocachi Alto, funcional para viajes de trabajo y reuniones pequenas, con aire acondicionado y parqueo privado.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Spacious house in Sopocachi Alto, functional for business trips and small meetings, with air conditioning and private parking.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Grande maison à Sopocachi Alto, fonctionnelle pour les voyages d&apos;affaires et les petites réunions, avec climatisation et parking privé.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -1723,6 +2028,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Casa_Urbana_3 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Casa_Urbana_3">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Casa"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Familiar"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Piscina"/>
@@ -1743,6 +2053,12 @@
         <tipoAcceso>LlaveTradicional</tipoAcceso>
         <tipoEspacioExterior>Jardin</tipoEspacioExterior>
         <tipoEstacionamiento>GarajePrivado</tipoEstacionamiento>
+        <rdfs:label xml:lang="es">Casa con piscina en zona norte de Santa Cruz</rdfs:label>
+        <rdfs:label xml:lang="en">House with pool in northern Santa Cruz</rdfs:label>
+        <rdfs:label xml:lang="fr">Maison avec piscine dans le nord de Santa Cruz</rdfs:label>
+        <rdfs:comment xml:lang="es">Casa de alquiler completo en la zona norte de Santa Cruz, con piscina y buen espacio para viajes familiares.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Entire house rental in northern Santa Cruz, with pool and ample space for family trips.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Location de maison entiere dans le nord de Santa Cruz, avec piscine et grand espace pour les voyages en famille.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -1750,6 +2066,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Casa_Urbana_4 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Casa_Urbana_4">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Casa"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Amigos"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Cocina"/>
@@ -1770,6 +2091,12 @@
         <tipoAcceso>LlaveTradicional</tipoAcceso>
         <tipoEspacioExterior>Jardin</tipoEspacioExterior>
         <tipoEstacionamiento>GarajePrivado</tipoEstacionamiento>
+        <rdfs:label xml:lang="es">Casa patrimonial remodelada en Sucre</rdfs:label>
+        <rdfs:label xml:lang="en">Renovated heritage house in Sucre</rdfs:label>
+        <rdfs:label xml:lang="fr">Maison patrimoniale renovee a Sucre</rdfs:label>
+        <rdfs:comment xml:lang="es">Casona remodelada en Sucre con cocina y garaje, apropiada para grupos de amigos que buscan una base centrica.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Renovated large house in Sucre with kitchen and garage, suitable for groups of friends looking for a central base.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Grande maison renovee a Sucre avec cuisine et garage, adaptee aux groupes d&apos;amis cherchant une base centrale.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -1777,6 +2104,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Casa_Urbana_5 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Casa_Urbana_5">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Casa"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Pareja"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/AireAcondicionado"/>
@@ -1797,6 +2129,12 @@
         <tipoAcceso>LlaveTradicional</tipoAcceso>
         <tipoEspacioExterior>Jardin</tipoEspacioExterior>
         <tipoEstacionamiento>GarajePrivado</tipoEstacionamiento>
+        <rdfs:label xml:lang="es">Casa comoda en San Bernardo</rdfs:label>
+        <rdfs:label xml:lang="en">Comfortable house in San Bernardo</rdfs:label>
+        <rdfs:label xml:lang="fr">Maison confortable a San Bernardo</rdfs:label>
+        <rdfs:comment xml:lang="es">Casa comoda en Tarija con dos dormitorios, ideal para parejas o familias pequenas que valoran privacidad y ventilacion.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Comfortable house in Tarija with two bedrooms, ideal for couples or small families who value privacy and ventilation.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Maison confortable a Tarija avec deux chambres, ideale pour les couples ou les petites familles qui apprecient l&apos;intimite et la ventilation.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -1804,6 +2142,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Casa_Urubo_1 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Casa_Urubo_1">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Casa"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ParejaEscapada"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/AireAcondicionado"/>
@@ -1825,6 +2168,12 @@
         <tipoAcceso>LlaveElectronica</tipoAcceso>
         <tipoEspacioExterior>Jardin</tipoEspacioExterior>
         <tipoEstacionamiento>GarajePrivado</tipoEstacionamiento>
+        <rdfs:label xml:lang="es">Casa moderna en Urubo</rdfs:label>
+        <rdfs:label xml:lang="en">Modern house in Urubo</rdfs:label>
+        <rdfs:label xml:lang="fr">Maison moderne a Urubo</rdfs:label>
+        <rdfs:comment xml:lang="es">Casa moderna en Urubo con piscina y terraza, pensada para escapadas comodas con privacidad.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Modern house in Urubo with pool and terrace, designed for comfortable private getaways.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Maison moderne a Urubo avec piscine et terrasse, concue pour des escapades confortables avec intimite.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -1832,11 +2181,20 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Cocina -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Cocina">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Amenidad"/>
         <categoriaAmenidad>Cocina</categoriaAmenidad>
         <costoAdicional rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.0</costoAdicional>
         <disponibilidad>Permanente</disponibilidad>
         <nombreAmenidad>Cocina</nombreAmenidad>
+        <rdfs:label xml:lang="es">Cocina</rdfs:label>
+        <rdfs:label xml:lang="en">Kitchen</rdfs:label>
+        <rdfs:label xml:lang="fr">Cuisine</rdfs:label>
+        <owl:sameAs rdf:resource="http://dbpedia.org/resource/Kitchen"/>
     </owl:NamedIndividual>
     
 
@@ -1844,10 +2202,18 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/CristoRedentor -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/CristoRedentor">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PuntoInteres"/>
         <distanciaMetros rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1400</distanciaMetros>
         <nombrePunto>Cristo de la Concordia</nombrePunto>
         <tipoPunto>Turismo</tipoPunto>
+        <rdfs:label xml:lang="es">Cristo Redentor</rdfs:label>
+        <rdfs:label xml:lang="en">Cristo Redentor</rdfs:label>
+        <rdfs:label xml:lang="fr">Cristo Redentor</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -1855,11 +2221,20 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Desayuno -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Desayuno">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Amenidad"/>
         <categoriaAmenidad>Alimentacion</categoriaAmenidad>
         <costoAdicional rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">8.0</costoAdicional>
         <disponibilidad>Permanente</disponibilidad>
         <nombreAmenidad>Desayuno</nombreAmenidad>
+        <rdfs:label xml:lang="es">Desayuno</rdfs:label>
+        <rdfs:label xml:lang="en">Breakfast</rdfs:label>
+        <rdfs:label xml:lang="fr">Petit-dejeuner</rdfs:label>
+        <owl:sameAs rdf:resource="http://dbpedia.org/resource/Breakfast"/>
     </owl:NamedIndividual>
     
 
@@ -1867,6 +2242,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Dual -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Dual">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PerfilHuesped"/>
         <tienePropositoViaje rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ViajeTrabajo"/>
         <numeroAdultos rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</numeroAdultos>
@@ -1874,6 +2254,9 @@
         <numeroNinos rdf:datatype="http://www.w3.org/2001/XMLSchema#int">0</numeroNinos>
         <presupuestoNoche rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">75.0</presupuestoNoche>
         <tipoViajero>Negocios</tipoViajero>
+        <rdfs:label xml:lang="es">Dos huespedes</rdfs:label>
+        <rdfs:label xml:lang="en">Two guests</rdfs:label>
+        <rdfs:label xml:lang="fr">Deux voyageurs</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -1881,6 +2264,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Ejecutivo -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Ejecutivo">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PerfilHuesped"/>
         <tienePropositoViaje rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ViajeProyecto"/>
         <numeroAdultos rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</numeroAdultos>
@@ -1888,6 +2276,9 @@
         <numeroNinos rdf:datatype="http://www.w3.org/2001/XMLSchema#int">0</numeroNinos>
         <presupuestoNoche rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">85.0</presupuestoNoche>
         <tipoViajero>Negocios</tipoViajero>
+        <rdfs:label xml:lang="es">Ejecutivo</rdfs:label>
+        <rdfs:label xml:lang="en">Executive traveler</rdfs:label>
+        <rdfs:label xml:lang="fr">Voyageur d&apos;affaires</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -1895,11 +2286,19 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/EspacioTrabajo -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/EspacioTrabajo">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Amenidad"/>
         <categoriaAmenidad>TrabajoRemoto</categoriaAmenidad>
         <costoAdicional rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.0</costoAdicional>
         <disponibilidad>Permanente</disponibilidad>
         <nombreAmenidad>EspacioTrabajo</nombreAmenidad>
+        <rdfs:label xml:lang="es">Espacio de trabajo</rdfs:label>
+        <rdfs:label xml:lang="en">Workspace</rdfs:label>
+        <rdfs:label xml:lang="fr">Espace de travail</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -1907,10 +2306,18 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/EstacionIrpavi -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/EstacionIrpavi">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PuntoInteres"/>
         <distanciaMetros rdf:datatype="http://www.w3.org/2001/XMLSchema#int">900</distanciaMetros>
         <nombrePunto>Estacion Irpavi del Teleferico</nombrePunto>
         <tipoPunto>Transporte</tipoPunto>
+        <rdfs:label xml:lang="es">Estacion Irpavi</rdfs:label>
+        <rdfs:label xml:lang="en">Irpavi Station</rdfs:label>
+        <rdfs:label xml:lang="fr">Station Irpavi</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -1918,10 +2325,18 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ExpoCruz -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ExpoCruz">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PuntoInteres"/>
         <distanciaMetros rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1400</distanciaMetros>
         <nombrePunto>Fexpocruz</nombrePunto>
         <tipoPunto>Comercio</tipoPunto>
+        <rdfs:label xml:lang="es">Expocruz</rdfs:label>
+        <rdfs:label xml:lang="en">Expocruz</rdfs:label>
+        <rdfs:label xml:lang="fr">Expocruz</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -1929,6 +2344,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/FamiliaReubicacion -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/FamiliaReubicacion">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PerfilHuesped"/>
         <tienePropositoViaje rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ViajeReubicacion"/>
         <numeroAdultos rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</numeroAdultos>
@@ -1936,6 +2356,9 @@
         <numeroNinos rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</numeroNinos>
         <presupuestoNoche rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">95.0</presupuestoNoche>
         <tipoViajero>Familia</tipoViajero>
+        <rdfs:label xml:lang="es">Familia en reubicacion</rdfs:label>
+        <rdfs:label xml:lang="en">Relocating family</rdfs:label>
+        <rdfs:label xml:lang="fr">Famille en relocalisation</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -1943,6 +2366,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Familiar -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Familiar">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PerfilHuesped"/>
         <tienePropositoViaje rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ViajeFamiliar"/>
         <numeroAdultos rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</numeroAdultos>
@@ -1950,6 +2378,9 @@
         <numeroNinos rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</numeroNinos>
         <presupuestoNoche rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">110.0</presupuestoNoche>
         <tipoViajero>Familia</tipoViajero>
+        <rdfs:label xml:lang="es">Familiar</rdfs:label>
+        <rdfs:label xml:lang="en">Family</rdfs:label>
+        <rdfs:label xml:lang="fr">Famille</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -1957,6 +2388,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/GrupoEstudiantil -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/GrupoEstudiantil">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PerfilHuesped"/>
         <tienePropositoViaje rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ViajePasantia"/>
         <numeroAdultos rdf:datatype="http://www.w3.org/2001/XMLSchema#int">4</numeroAdultos>
@@ -1964,6 +2400,9 @@
         <numeroNinos rdf:datatype="http://www.w3.org/2001/XMLSchema#int">0</numeroNinos>
         <presupuestoNoche rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">22.0</presupuestoNoche>
         <tipoViajero>GrupoEstudiantil</tipoViajero>
+        <rdfs:label xml:lang="es">Grupo estudiantil</rdfs:label>
+        <rdfs:label xml:lang="en">Student group</rdfs:label>
+        <rdfs:label xml:lang="fr">Groupe etudiant</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -1971,6 +2410,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Hab_Compartida_1 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Hab_Compartida_1">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/HabitacionCompartida"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Individual"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Wifi"/>
@@ -1990,6 +2434,12 @@
         <precioNoche rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">70.0</precioNoche>
         <tipoAcceso>CodigoNumerico</tipoAcceso>
         <tipoBano>Compartido</tipoBano>
+        <rdfs:label xml:lang="es">Cama en hostel del centro de Tarija</rdfs:label>
+        <rdfs:label xml:lang="en">Bed in hostel in central Tarija</rdfs:label>
+        <rdfs:label xml:lang="fr">Lit dans une auberge du centre de Tarija</rdfs:label>
+        <rdfs:comment xml:lang="es">Cama en dormitorio compartido del centro de Tarija, adecuada para viajeros solos que priorizan precio y ubicacion.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Bed in shared dormitory in central Tarija, suitable for solo travelers who prioritize price and location.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Lit dans un dortoir partage du centre de Tarija, adapte aux voyageurs seuls qui privilegient le prix et l&apos;emplacement.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -1997,6 +2447,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Hab_Compartida_2 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Hab_Compartida_2">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/HabitacionCompartida"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Individual"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/AireAcondicionado"/>
@@ -2017,6 +2472,12 @@
         <precioNoche rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">60.0</precioNoche>
         <tipoAcceso>CodigoNumerico</tipoAcceso>
         <tipoBano>Compartido</tipoBano>
+        <rdfs:label xml:lang="es">Cama en residencia compartida de Cala Cala</rdfs:label>
+        <rdfs:label xml:lang="en">Bed in shared residence in Cala Cala</rdfs:label>
+        <rdfs:label xml:lang="fr">Lit dans une residence partagee a Cala Cala</rdfs:label>
+        <rdfs:comment xml:lang="es">Cama en residencia compartida de Cala Cala, util para estudiantes y personas que pasan temporadas cortas en Cochabamba.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Bed in shared residence in Cala Cala, useful for students and people spending short stays in Cochabamba.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Lit dans une residence partagee a Cala Cala, utile pour les etudiants et les personnes passant de courts sejours a Cochabamba.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -2024,6 +2485,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Hab_Compartida_3 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Hab_Compartida_3">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/HabitacionCompartida"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Amigos"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Cocina"/>
@@ -2044,6 +2510,12 @@
         <precioNoche rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">80.0</precioNoche>
         <tipoAcceso>CodigoNumerico</tipoAcceso>
         <tipoBano>Compartido</tipoBano>
+        <rdfs:label xml:lang="es">Cama en casa compartida de Sopocachi</rdfs:label>
+        <rdfs:label xml:lang="en">Bed in shared house in Sopocachi</rdfs:label>
+        <rdfs:label xml:lang="fr">Lit dans une maison partagee a Sopocachi</rdfs:label>
+        <rdfs:comment xml:lang="es">Cama en casa compartida de Sopocachi con cocina y wifi, pensada para estudiantes o viajeros jovenes.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Bed in shared house in Sopocachi with kitchen and Wi-Fi, designed for students or young travelers.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Lit dans une maison partagee a Sopocachi avec cuisine et Wi-Fi, concu pour les etudiants ou les jeunes voyageurs.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -2051,6 +2523,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Hab_Compartida_4 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Hab_Compartida_4">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/HabitacionCompartida"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Individual"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Parking"/>
@@ -2071,6 +2548,12 @@
         <precioNoche rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">40.0</precioNoche>
         <tipoAcceso>CodigoNumerico</tipoAcceso>
         <tipoBano>Compartido</tipoBano>
+        <rdfs:label xml:lang="es">Cama en condominio compartido de Equipetrol</rdfs:label>
+        <rdfs:label xml:lang="en">Bed in shared condominium in Equipetrol</rdfs:label>
+        <rdfs:label xml:lang="fr">Lit dans un condominium partage a Equipetrol</rdfs:label>
+        <rdfs:comment xml:lang="es">Cama en condominio compartido de Equipetrol, con acceso a piscina y parqueo en una zona activa de Santa Cruz.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Bed in shared condominium in Equipetrol, with access to a pool and parking in an active area of Santa Cruz.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Lit dans un condominium partage a Equipetrol, avec acces a la piscine et au parking dans une zone animee de Santa Cruz.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -2078,6 +2561,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Hab_Compartida_5 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Hab_Compartida_5">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/HabitacionCompartida"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Individual"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Cocina"/>
@@ -2098,6 +2586,12 @@
         <precioNoche rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">70.0</precioNoche>
         <tipoAcceso>CodigoNumerico</tipoAcceso>
         <tipoBano>Compartido</tipoBano>
+        <rdfs:label xml:lang="es">Cama en casona estudiantil de La Recoleta</rdfs:label>
+        <rdfs:label xml:lang="en">Bed in student house in La Recoleta</rdfs:label>
+        <rdfs:label xml:lang="fr">Lit dans une maison étudiante à La Recoleta</rdfs:label>
+        <rdfs:comment xml:lang="es">Cama en casona estudiantil de La Recoleta, orientada a viajeros con presupuesto ajustado que valoran cocina y wifi.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Bed in student house in La Recoleta, aimed at budget travelers who value kitchen and wifi.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Lit dans une maison étudiante à La Recoleta, destiné aux voyageurs à petit budget qui apprécient la cuisine et le wifi.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -2105,6 +2599,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Hab_Compartida_Achumani_1 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Hab_Compartida_Achumani_1">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/HabitacionCompartida"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/GrupoEstudiantil"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/EspacioTrabajo"/>
@@ -2125,6 +2624,12 @@
         <precioNoche rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">100.0</precioNoche>
         <tipoAcceso>CodigoNumerico</tipoAcceso>
         <tipoBano>Compartido</tipoBano>
+        <rdfs:label xml:lang="es">Cama en residencia de Achumani</rdfs:label>
+        <rdfs:label xml:lang="en">Bed in residence in Achumani</rdfs:label>
+        <rdfs:label xml:lang="fr">Lit dans une résidence à Achumani</rdfs:label>
+        <rdfs:comment xml:lang="es">Cama en residencia compartida de Achumani, orientada a estudiantes con espacios de estudio.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Bed in shared residence in Achumani, aimed at students with study spaces.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Lit dans une résidence partagée à Achumani, destiné aux étudiants avec espaces d&apos;étude.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -2132,6 +2637,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Hab_Compartida_CentroSucre_1 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Hab_Compartida_CentroSucre_1">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/HabitacionCompartida"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/GrupoEstudiantil"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Cocina"/>
@@ -2152,6 +2662,12 @@
         <precioNoche rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">80.0</precioNoche>
         <tipoAcceso>CodigoNumerico</tipoAcceso>
         <tipoBano>Compartido</tipoBano>
+        <rdfs:label xml:lang="es">Cama en hostal del centro de Sucre</rdfs:label>
+        <rdfs:label xml:lang="en">Bed in hostel in central Sucre</rdfs:label>
+        <rdfs:label xml:lang="fr">Lit dans une auberge du centre de Sucre</rdfs:label>
+        <rdfs:comment xml:lang="es">Cama en hostal del centro de Sucre, util para pasantes o viajeros jovenes.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Bed in hostel in central Sucre, useful for interns or young travelers.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Lit dans une auberge du centre de Sucre, utile pour les stagiaires ou les jeunes voyageurs.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -2159,6 +2675,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Hab_Compartida_SanRoque_1 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Hab_Compartida_SanRoque_1">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/HabitacionCompartida"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Individual"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Parking"/>
@@ -2179,6 +2700,12 @@
         <precioNoche rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">90.0</precioNoche>
         <tipoAcceso>CodigoNumerico</tipoAcceso>
         <tipoBano>Compartido</tipoBano>
+        <rdfs:label xml:lang="es">Cama en residencial de San Roque</rdfs:label>
+        <rdfs:label xml:lang="en">Bed in residential in San Roque</rdfs:label>
+        <rdfs:label xml:lang="fr">Lit dans une résidence à San Roque</rdfs:label>
+        <rdfs:comment xml:lang="es">Cama en residencial de San Roque, sencilla y funcional para viajeros individuales.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Bed in residential in San Roque, simple and functional for solo travelers.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Lit dans une résidence à San Roque, simple et fonctionnel pour les voyageurs individuels.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -2186,6 +2713,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Hab_Compartida_Tiquipaya_1 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Hab_Compartida_Tiquipaya_1">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/HabitacionCompartida"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/GrupoEstudiantil"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Cocina"/>
@@ -2206,6 +2738,12 @@
         <precioNoche rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">80.0</precioNoche>
         <tipoAcceso>CodigoNumerico</tipoAcceso>
         <tipoBano>Compartido</tipoBano>
+        <rdfs:label xml:lang="es">Cama en casa compartida de Tiquipaya</rdfs:label>
+        <rdfs:label xml:lang="en">Bed in shared house in Tiquipaya</rdfs:label>
+        <rdfs:label xml:lang="fr">Lit dans une maison partagée à Tiquipaya</rdfs:label>
+        <rdfs:comment xml:lang="es">Cama en casa compartida de Tiquipaya, adecuada para estudiantes con presupuesto moderado.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Bed in shared house in Tiquipaya, suitable for students with a moderate budget.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Lit dans une maison partagée à Tiquipaya, adapté aux étudiants avec un budget modéré.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -2213,6 +2751,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Hab_Compartida_Urubo_1 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Hab_Compartida_Urubo_1">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/HabitacionCompartida"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/AmigosCongreso"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/AireAcondicionado"/>
@@ -2233,6 +2776,12 @@
         <precioNoche rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">130.0</precioNoche>
         <tipoAcceso>CodigoNumerico</tipoAcceso>
         <tipoBano>Compartido</tipoBano>
+        <rdfs:label xml:lang="es">Cama en residencia de Urubo</rdfs:label>
+        <rdfs:label xml:lang="en">Bed in residence in Urubo</rdfs:label>
+        <rdfs:label xml:lang="fr">Lit dans une résidence à Urubo</rdfs:label>
+        <rdfs:comment xml:lang="es">Cama en residencia compartida de Urubo, pensada para asistentes a ferias o eventos breves.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Bed in shared residence in Urubo, designed for attendees of fairs or short events.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Lit dans une résidence partagée à Urubo, conçu pour les participants à des foires ou des événements courts.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -2240,6 +2789,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Hab_Privada_1 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Hab_Privada_1">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/HabitacionPrivada"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Pareja"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Wifi"/>
@@ -2258,6 +2812,12 @@
         <tipoAcceso>LlaveTradicional</tipoAcceso>
         <tipoBano>EnSuite</tipoBano>
         <tipoCama>Queen</tipoCama>
+        <rdfs:label xml:lang="es">Habitacion privada con patio en La Recoleta</rdfs:label>
+        <rdfs:label xml:lang="en">Private room with patio in La Recoleta</rdfs:label>
+        <rdfs:label xml:lang="fr">Chambre privée avec patio à La Recoleta</rdfs:label>
+        <rdfs:comment xml:lang="es">Habitacion privada con bano en suite en una casona de La Recoleta, pensada para parejas que quieren caminar por el centro de Sucre.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Private room with an en-suite bathroom in a heritage house in La Recoleta, ideal for couples who want to explore central Sucre on foot.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Chambre privee avec salle de bain attenante dans une maison patrimoniale de La Recoleta, ideale pour les couples qui souhaitent decouvrir le centre de Sucre a pied.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -2265,6 +2825,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Hab_Privada_2 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Hab_Privada_2">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/HabitacionPrivada"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Individual"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Cocina"/>
@@ -2285,6 +2850,12 @@
         <tipoAcceso>LlaveTradicional</tipoAcceso>
         <tipoBano>EnSuite</tipoBano>
         <tipoCama>Doble</tipoCama>
+        <rdfs:label xml:lang="es">Habitacion privada cerca de Cala Cala</rdfs:label>
+        <rdfs:label xml:lang="en">Private room near Cala Cala</rdfs:label>
+        <rdfs:label xml:lang="fr">Chambre privée près de Cala Cala</rdfs:label>
+        <rdfs:comment xml:lang="es">Habitacion privada en casa de familia cerca de Cala Cala, apropiada para una persona que busca tranquilidad y desayuno.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Private room in a family home near Cala Cala, suitable for a person seeking peace and breakfast.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Chambre privée dans une maison familiale près de Cala Cala, adaptée à une personne recherchant calme et petit-déjeuner.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -2292,6 +2863,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Hab_Privada_3 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Hab_Privada_3">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/HabitacionPrivada"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Pareja"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/AireAcondicionado"/>
@@ -2311,6 +2887,12 @@
         <tipoAcceso>LlaveTradicional</tipoAcceso>
         <tipoBano>EnSuite</tipoBano>
         <tipoCama>Doble</tipoCama>
+        <rdfs:label xml:lang="es">Suite privada en Sopocachi</rdfs:label>
+        <rdfs:label xml:lang="en">Private suite in Sopocachi</rdfs:label>
+        <rdfs:label xml:lang="fr">Suite privée à Sopocachi</rdfs:label>
+        <rdfs:comment xml:lang="es">Suite privada en Sopocachi con aire acondicionado y wifi, adecuada para estadias urbanas de pareja o trabajo remoto.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Private suite in Sopocachi with air conditioning and wifi, suitable for urban stays for couples or remote work.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Suite privée à Sopocachi avec climatisation et wifi, adaptée aux séjours urbains en couple ou au travail à distance.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -2318,6 +2900,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Hab_Privada_4 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Hab_Privada_4">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/HabitacionPrivada"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Individual"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Parking"/>
@@ -2337,6 +2924,12 @@
         <tipoAcceso>LlaveTradicional</tipoAcceso>
         <tipoBano>EnSuite</tipoBano>
         <tipoCama>Doble</tipoCama>
+        <rdfs:label xml:lang="es">Habitacion privada en condominio de Equipetrol</rdfs:label>
+        <rdfs:label xml:lang="en">Private room in Equipetrol condominium</rdfs:label>
+        <rdfs:label xml:lang="fr">Chambre privée dans un condominium d&apos;Equipetrol</rdfs:label>
+        <rdfs:comment xml:lang="es">Habitacion privada en condominio de Equipetrol con acceso a piscina y parqueo, util para visitas cortas a Santa Cruz.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Private room in Equipetrol condominium with pool access and parking, useful for short visits to Santa Cruz.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Chambre privée dans un condominium d&apos;Equipetrol avec accès à la piscine et parking, utile pour de courtes visites à Santa Cruz.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -2344,6 +2937,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Hab_Privada_5 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Hab_Privada_5">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/HabitacionPrivada"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Pareja"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Parking"/>
@@ -2363,6 +2961,12 @@
         <tipoAcceso>LlaveTradicional</tipoAcceso>
         <tipoBano>EnSuite</tipoBano>
         <tipoCama>Doble</tipoCama>
+        <rdfs:label xml:lang="es">Habitacion matrimonial en San Bernardo</rdfs:label>
+        <rdfs:label xml:lang="en">Double room in San Bernardo</rdfs:label>
+        <rdfs:label xml:lang="fr">Chambre matrimoniale à San Bernardo</rdfs:label>
+        <rdfs:comment xml:lang="es">Habitacion matrimonial en San Bernardo, comoda para parejas que prefieren una zona residencial de Tarija.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Double room in San Bernardo, comfortable for couples who prefer a residential area of Tarija.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Chambre matrimoniale à San Bernardo, confortable pour les couples qui préfèrent un quartier résidentiel de Tarija.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -2370,6 +2974,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Hab_Privada_Achumani_1 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Hab_Privada_Achumani_1">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/HabitacionPrivada"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Ejecutivo"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/EspacioTrabajo"/>
@@ -2389,6 +2998,12 @@
         <tipoAcceso>LlaveTradicional</tipoAcceso>
         <tipoBano>EnSuite</tipoBano>
         <tipoCama>Queen</tipoCama>
+        <rdfs:label xml:lang="es">Habitacion privada en Achumani</rdfs:label>
+        <rdfs:label xml:lang="en">Private room in Achumani</rdfs:label>
+        <rdfs:label xml:lang="fr">Chambre privée à Achumani</rdfs:label>
+        <rdfs:comment xml:lang="es">Habitacion privada en Achumani, comoda para trabajo remoto y descanso en una zona residencial.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Private room in Achumani, comfortable for remote work and rest in a residential area.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Chambre privée à Achumani, confortable pour le travail à distance et le repos dans un quartier résidentiel.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -2396,6 +3011,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Hab_Privada_CentroSucre_1 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Hab_Privada_CentroSucre_1">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/HabitacionPrivada"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/GrupoEstudiantil"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Cocina"/>
@@ -2415,6 +3035,12 @@
         <tipoAcceso>LlaveTradicional</tipoAcceso>
         <tipoBano>EnSuite</tipoBano>
         <tipoCama>Individual</tipoCama>
+        <rdfs:label xml:lang="es">Habitacion privada para estudiante en Sucre</rdfs:label>
+        <rdfs:label xml:lang="en">Private room for student in Sucre</rdfs:label>
+        <rdfs:label xml:lang="fr">Chambre privée pour étudiant à Sucre</rdfs:label>
+        <rdfs:comment xml:lang="es">Habitacion privada economica en centro de Sucre, pensada para estudiantes o pasantes.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Budget private room in central Sucre, designed for students or interns.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Chambre privée économique au centre de Sucre, conçue pour les étudiants ou stagiaires.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -2422,6 +3048,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Hab_Privada_SanRoque_1 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Hab_Privada_SanRoque_1">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/HabitacionPrivada"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ParejaEscapada"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Parking"/>
@@ -2441,6 +3072,12 @@
         <tipoAcceso>LlaveTradicional</tipoAcceso>
         <tipoBano>EnSuite</tipoBano>
         <tipoCama>Doble</tipoCama>
+        <rdfs:label xml:lang="es">Habitacion privada en San Roque</rdfs:label>
+        <rdfs:label xml:lang="en">Private room in San Roque</rdfs:label>
+        <rdfs:label xml:lang="fr">Chambre privée à San Roque</rdfs:label>
+        <rdfs:comment xml:lang="es">Habitacion privada en San Roque, comoda para parejas que buscan moverse facilmente por Tarija.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Private room in San Roque, comfortable for couples looking to move around Tarija easily.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Chambre privée à San Roque, confortable pour les couples souhaitant se déplacer facilement à Tarija.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -2448,6 +3085,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Hab_Privada_Tiquipaya_1 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Hab_Privada_Tiquipaya_1">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/HabitacionPrivada"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ParejaEscapada"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Desayuno"/>
@@ -2467,6 +3109,12 @@
         <tipoAcceso>LlaveTradicional</tipoAcceso>
         <tipoBano>EnSuite</tipoBano>
         <tipoCama>Doble</tipoCama>
+        <rdfs:label xml:lang="es">Habitacion privada con jardin en Tiquipaya</rdfs:label>
+        <rdfs:label xml:lang="en">Private room with garden in Tiquipaya</rdfs:label>
+        <rdfs:label xml:lang="fr">Chambre privée avec jardin à Tiquipaya</rdfs:label>
+        <rdfs:comment xml:lang="es">Habitacion privada con jardin en Tiquipaya, agradable para escapadas tranquilas en pareja.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Private room with garden in Tiquipaya, pleasant for quiet couple getaways.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Chambre privée avec jardin à Tiquipaya, agréable pour des escapades tranquilles en couple.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -2474,6 +3122,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Hab_Privada_Urubo_1 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Hab_Privada_Urubo_1">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/HabitacionPrivada"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ParejaEscapada"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/AireAcondicionado"/>
@@ -2494,6 +3147,12 @@
         <tipoAcceso>LlaveTradicional</tipoAcceso>
         <tipoBano>EnSuite</tipoBano>
         <tipoCama>Queen</tipoCama>
+        <rdfs:label xml:lang="es">Suite privada en Urubo</rdfs:label>
+        <rdfs:label xml:lang="en">Private suite in Urubo</rdfs:label>
+        <rdfs:label xml:lang="fr">Suite privée à Urubo</rdfs:label>
+        <rdfs:comment xml:lang="es">Suite privada en Urubo con acceso a piscina, enfocada en comodidad para escapadas cortas.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Private suite in Urubo with pool access, focused on comfort for short getaways.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Suite privée à Urubo avec accès à la piscine, axée sur le confort pour de courtes escapades.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -2501,10 +3160,18 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/HospitalCentral -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/HospitalCentral">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PuntoInteres"/>
         <distanciaMetros rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1200</distanciaMetros>
         <nombrePunto>Hospital Clinico Viedma</nombrePunto>
         <tipoPunto>Salud</tipoPunto>
+        <rdfs:label xml:lang="es">Hospital Central</rdfs:label>
+        <rdfs:label xml:lang="en">Central Hospital</rdfs:label>
+        <rdfs:label xml:lang="fr">Hopital central</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -2512,6 +3179,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Individual -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Individual">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PerfilHuesped"/>
         <tienePropositoViaje rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ViajeEstudios"/>
         <numeroAdultos rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</numeroAdultos>
@@ -2519,6 +3191,9 @@
         <numeroNinos rdf:datatype="http://www.w3.org/2001/XMLSchema#int">0</numeroNinos>
         <presupuestoNoche rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">30.0</presupuestoNoche>
         <tipoViajero>Individual</tipoViajero>
+        <rdfs:label xml:lang="es">Individual</rdfs:label>
+        <rdfs:label xml:lang="en">Solo traveler</rdfs:label>
+        <rdfs:label xml:lang="fr">Voyageur solo</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -2526,11 +3201,20 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Lavanderia -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Lavanderia">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Amenidad"/>
         <categoriaAmenidad>Servicio</categoriaAmenidad>
         <costoAdicional rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">4.0</costoAdicional>
         <disponibilidad>Permanente</disponibilidad>
         <nombreAmenidad>Lavanderia</nombreAmenidad>
+        <rdfs:label xml:lang="es">Lavanderia</rdfs:label>
+        <rdfs:label xml:lang="en">Laundry</rdfs:label>
+        <rdfs:label xml:lang="fr">Buanderie</rdfs:label>
+        <owl:sameAs rdf:resource="http://dbpedia.org/resource/Laundry"/>
     </owl:NamedIndividual>
     
 
@@ -2538,11 +3222,20 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Limpieza -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Limpieza">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Amenidad"/>
         <categoriaAmenidad>Servicio</categoriaAmenidad>
         <costoAdicional rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.0</costoAdicional>
         <disponibilidad>Permanente</disponibilidad>
         <nombreAmenidad>Limpieza</nombreAmenidad>
+        <rdfs:label xml:lang="es">Limpieza</rdfs:label>
+        <rdfs:label xml:lang="en">Cleaning</rdfs:label>
+        <rdfs:label xml:lang="fr">Menage</rdfs:label>
+        <owl:sameAs rdf:resource="http://dbpedia.org/resource/Cleaning"/>
     </owl:NamedIndividual>
     
 
@@ -2550,10 +3243,18 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/MercadoCampesinoTarija -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/MercadoCampesinoTarija">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PuntoInteres"/>
         <distanciaMetros rdf:datatype="http://www.w3.org/2001/XMLSchema#int">700</distanciaMetros>
         <nombrePunto>Mercado Campesino de Tarija</nombrePunto>
         <tipoPunto>Comercio</tipoPunto>
+        <rdfs:label xml:lang="es">Mercado Campesino</rdfs:label>
+        <rdfs:label xml:lang="en">Campesino Market</rdfs:label>
+        <rdfs:label xml:lang="fr">Marche Campesino</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -2561,6 +3262,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Pareja -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Pareja">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PerfilHuesped"/>
         <tienePropositoViaje rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ViajeVacacional"/>
         <numeroAdultos rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</numeroAdultos>
@@ -2568,6 +3274,9 @@
         <numeroNinos rdf:datatype="http://www.w3.org/2001/XMLSchema#int">0</numeroNinos>
         <presupuestoNoche rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">55.0</presupuestoNoche>
         <tipoViajero>Pareja</tipoViajero>
+        <rdfs:label xml:lang="es">Pareja</rdfs:label>
+        <rdfs:label xml:lang="en">Couple</rdfs:label>
+        <rdfs:label xml:lang="fr">Couple</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -2575,6 +3284,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ParejaEscapada -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ParejaEscapada">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PerfilHuesped"/>
         <tienePropositoViaje rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ViajeEscapada"/>
         <numeroAdultos rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</numeroAdultos>
@@ -2582,6 +3296,9 @@
         <numeroNinos rdf:datatype="http://www.w3.org/2001/XMLSchema#int">0</numeroNinos>
         <presupuestoNoche rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">70.0</presupuestoNoche>
         <tipoViajero>Pareja</tipoViajero>
+        <rdfs:label xml:lang="es">Pareja de escapada</rdfs:label>
+        <rdfs:label xml:lang="en">Couple getaway</rdfs:label>
+        <rdfs:label xml:lang="fr">Couple en escapade</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -2589,11 +3306,20 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Parking -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Parking">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Amenidad"/>
         <categoriaAmenidad>Transporte</categoriaAmenidad>
         <costoAdicional rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">10.0</costoAdicional>
         <disponibilidad>Permanente</disponibilidad>
         <nombreAmenidad>Garaje</nombreAmenidad>
+        <rdfs:label xml:lang="es">Estacionamiento</rdfs:label>
+        <rdfs:label xml:lang="en">Parking</rdfs:label>
+        <rdfs:label xml:lang="fr">Parking</rdfs:label>
+        <owl:sameAs rdf:resource="http://dbpedia.org/resource/Parking"/>
     </owl:NamedIndividual>
     
 
@@ -2601,11 +3327,20 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ParkingGratis -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ParkingGratis">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Amenidad"/>
         <categoriaAmenidad>Transporte</categoriaAmenidad>
         <costoAdicional rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.0</costoAdicional>
         <disponibilidad>Permanente</disponibilidad>
         <nombreAmenidad>EstacionamientoGratis</nombreAmenidad>
+        <rdfs:label xml:lang="es">Estacionamiento gratuito</rdfs:label>
+        <rdfs:label xml:lang="en">Free parking</rdfs:label>
+        <rdfs:label xml:lang="fr">Parking gratuit</rdfs:label>
+        <owl:sameAs rdf:resource="http://dbpedia.org/resource/Parking"/>
     </owl:NamedIndividual>
     
 
@@ -2613,11 +3348,20 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Piscina -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Piscina">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Amenidad"/>
         <categoriaAmenidad>Recreativa</categoriaAmenidad>
         <costoAdicional rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">10.0</costoAdicional>
         <disponibilidad>Estacional</disponibilidad>
         <nombreAmenidad>Piscina</nombreAmenidad>
+        <rdfs:label xml:lang="es">Piscina</rdfs:label>
+        <rdfs:label xml:lang="en">Swimming pool</rdfs:label>
+        <rdfs:label xml:lang="fr">Piscine</rdfs:label>
+        <owl:sameAs rdf:resource="http://dbpedia.org/resource/Swimming_pool"/>
     </owl:NamedIndividual>
     
 
@@ -2625,10 +3369,18 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Plaza25Mayo -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Plaza25Mayo">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PuntoInteres"/>
         <distanciaMetros rdf:datatype="http://www.w3.org/2001/XMLSchema#int">450</distanciaMetros>
         <nombrePunto>Plaza 25 de Mayo</nombrePunto>
         <tipoPunto>Turismo</tipoPunto>
+        <rdfs:label xml:lang="es">Plaza 25 de Mayo</rdfs:label>
+        <rdfs:label xml:lang="en">25 de Mayo Square</rdfs:label>
+        <rdfs:label xml:lang="fr">Place du 25 Mai</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -2636,6 +3388,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PoliticaAdultos -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PoliticaAdultos">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Politica"/>
         <disponibleInmediatamente rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</disponibleInmediatamente>
         <edadMinimaHuesped rdf:datatype="http://www.w3.org/2001/XMLSchema#int">18</edadMinimaHuesped>
@@ -2644,6 +3401,9 @@
         <reglaCigarrillos>SoloExterior</reglaCigarrillos>
         <reglaMascotas>Prohibido</reglaMascotas>
         <tipoCancelacion>Moderada</tipoCancelacion>
+        <rdfs:label xml:lang="es">Politica para adultos</rdfs:label>
+        <rdfs:label xml:lang="en">Adults-only policy</rdfs:label>
+        <rdfs:label xml:lang="fr">Politique reservee aux adultes</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -2651,6 +3411,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PoliticaCorporativa -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PoliticaCorporativa">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Politica"/>
         <disponibleInmediatamente rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</disponibleInmediatamente>
         <edadMinimaHuesped rdf:datatype="http://www.w3.org/2001/XMLSchema#int">21</edadMinimaHuesped>
@@ -2659,6 +3424,9 @@
         <reglaCigarrillos>Prohibido</reglaCigarrillos>
         <reglaMascotas>Prohibido</reglaMascotas>
         <tipoCancelacion>Moderada</tipoCancelacion>
+        <rdfs:label xml:lang="es">Politica corporativa</rdfs:label>
+        <rdfs:label xml:lang="en">Corporate policy</rdfs:label>
+        <rdfs:label xml:lang="fr">Politique d&apos;entreprise</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -2666,6 +3434,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PoliticaEscapada -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PoliticaEscapada">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Politica"/>
         <disponibleInmediatamente rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</disponibleInmediatamente>
         <edadMinimaHuesped rdf:datatype="http://www.w3.org/2001/XMLSchema#int">18</edadMinimaHuesped>
@@ -2674,6 +3447,9 @@
         <reglaCigarrillos>SoloExterior</reglaCigarrillos>
         <reglaMascotas>Permitido</reglaMascotas>
         <tipoCancelacion>Flexible</tipoCancelacion>
+        <rdfs:label xml:lang="es">Politica de escapada</rdfs:label>
+        <rdfs:label xml:lang="en">Getaway policy</rdfs:label>
+        <rdfs:label xml:lang="fr">Politique d&apos;escapade</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -2681,6 +3457,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PoliticaEstricta -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PoliticaEstricta">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Politica"/>
         <disponibleInmediatamente rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</disponibleInmediatamente>
         <edadMinimaHuesped rdf:datatype="http://www.w3.org/2001/XMLSchema#int">21</edadMinimaHuesped>
@@ -2689,6 +3470,9 @@
         <reglaCigarrillos>Prohibido</reglaCigarrillos>
         <reglaMascotas>Prohibido</reglaMascotas>
         <tipoCancelacion>Estricta</tipoCancelacion>
+        <rdfs:label xml:lang="es">Politica estricta</rdfs:label>
+        <rdfs:label xml:lang="en">Strict policy</rdfs:label>
+        <rdfs:label xml:lang="fr">Politique stricte</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -2696,6 +3480,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PoliticaEstudiantil -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PoliticaEstudiantil">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Politica"/>
         <disponibleInmediatamente rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</disponibleInmediatamente>
         <edadMinimaHuesped rdf:datatype="http://www.w3.org/2001/XMLSchema#int">18</edadMinimaHuesped>
@@ -2704,6 +3493,9 @@
         <reglaCigarrillos>Prohibido</reglaCigarrillos>
         <reglaMascotas>Prohibido</reglaMascotas>
         <tipoCancelacion>Moderada</tipoCancelacion>
+        <rdfs:label xml:lang="es">Politica estudiantil</rdfs:label>
+        <rdfs:label xml:lang="en">Student policy</rdfs:label>
+        <rdfs:label xml:lang="fr">Politique etudiante</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -2711,6 +3503,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PoliticaEventos -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PoliticaEventos">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Politica"/>
         <disponibleInmediatamente rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</disponibleInmediatamente>
         <edadMinimaHuesped rdf:datatype="http://www.w3.org/2001/XMLSchema#int">25</edadMinimaHuesped>
@@ -2719,6 +3516,9 @@
         <reglaCigarrillos>Prohibido</reglaCigarrillos>
         <reglaMascotas>Prohibido</reglaMascotas>
         <tipoCancelacion>Estricta</tipoCancelacion>
+        <rdfs:label xml:lang="es">Politica para eventos</rdfs:label>
+        <rdfs:label xml:lang="en">Events policy</rdfs:label>
+        <rdfs:label xml:lang="fr">Politique pour evenements</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -2726,6 +3526,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PoliticaFlexible -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PoliticaFlexible">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Politica"/>
         <disponibleInmediatamente rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</disponibleInmediatamente>
         <edadMinimaHuesped rdf:datatype="http://www.w3.org/2001/XMLSchema#int">18</edadMinimaHuesped>
@@ -2734,6 +3539,9 @@
         <reglaCigarrillos>Permitido</reglaCigarrillos>
         <reglaMascotas>Permitido</reglaMascotas>
         <tipoCancelacion>Flexible</tipoCancelacion>
+        <rdfs:label xml:lang="es">Politica flexible</rdfs:label>
+        <rdfs:label xml:lang="en">Flexible policy</rdfs:label>
+        <rdfs:label xml:lang="fr">Politique flexible</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -2741,6 +3549,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PoliticaModerada -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PoliticaModerada">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Politica"/>
         <disponibleInmediatamente rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</disponibleInmediatamente>
         <edadMinimaHuesped rdf:datatype="http://www.w3.org/2001/XMLSchema#int">18</edadMinimaHuesped>
@@ -2749,6 +3562,9 @@
         <reglaCigarrillos>SoloExterior</reglaCigarrillos>
         <reglaMascotas>Permitido</reglaMascotas>
         <tipoCancelacion>Moderada</tipoCancelacion>
+        <rdfs:label xml:lang="es">Politica moderada</rdfs:label>
+        <rdfs:label xml:lang="en">Moderate policy</rdfs:label>
+        <rdfs:label xml:lang="fr">Politique moderee</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -2756,6 +3572,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PoliticaPetFriendly -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PoliticaPetFriendly">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Politica"/>
         <disponibleInmediatamente rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</disponibleInmediatamente>
         <edadMinimaHuesped rdf:datatype="http://www.w3.org/2001/XMLSchema#int">18</edadMinimaHuesped>
@@ -2764,6 +3585,9 @@
         <reglaCigarrillos>SoloExterior</reglaCigarrillos>
         <reglaMascotas>Permitido</reglaMascotas>
         <tipoCancelacion>Flexible</tipoCancelacion>
+        <rdfs:label xml:lang="es">Politica pet friendly</rdfs:label>
+        <rdfs:label xml:lang="en">Pet-friendly policy</rdfs:label>
+        <rdfs:label xml:lang="fr">Politique acceptant les animaux</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -2771,6 +3595,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PoliticaResidencial -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PoliticaResidencial">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Politica"/>
         <disponibleInmediatamente rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</disponibleInmediatamente>
         <edadMinimaHuesped rdf:datatype="http://www.w3.org/2001/XMLSchema#int">18</edadMinimaHuesped>
@@ -2779,6 +3608,9 @@
         <reglaCigarrillos>SoloExterior</reglaCigarrillos>
         <reglaMascotas>Permitido</reglaMascotas>
         <tipoCancelacion>Flexible</tipoCancelacion>
+        <rdfs:label xml:lang="es">Politica residencial</rdfs:label>
+        <rdfs:label xml:lang="en">Residential policy</rdfs:label>
+        <rdfs:label xml:lang="fr">Politique residentielle</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -2786,10 +3618,18 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/TerminalCentral -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/TerminalCentral">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PuntoInteres"/>
         <distanciaMetros rdf:datatype="http://www.w3.org/2001/XMLSchema#int">900</distanciaMetros>
         <nombrePunto>Terminal de Buses de Tarija</nombrePunto>
         <tipoPunto>Transporte</tipoPunto>
+        <rdfs:label xml:lang="es">Terminal Central</rdfs:label>
+        <rdfs:label xml:lang="en">Central Bus Terminal</rdfs:label>
+        <rdfs:label xml:lang="fr">Gare routiere centrale</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -2797,10 +3637,18 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/UnivalleTiquipaya -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/UnivalleTiquipaya">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PuntoInteres"/>
         <distanciaMetros rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1200</distanciaMetros>
         <nombrePunto>Campus Univalle Tiquipaya</nombrePunto>
         <tipoPunto>Educacion</tipoPunto>
+        <rdfs:label xml:lang="es">Univalle Tiquipaya</rdfs:label>
+        <rdfs:label xml:lang="en">Univalle Tiquipaya</rdfs:label>
+        <rdfs:label xml:lang="fr">Univalle Tiquipaya</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -2808,10 +3656,18 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/UniversidadCentro -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/UniversidadCentro">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PuntoInteres"/>
         <distanciaMetros rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1100</distanciaMetros>
         <nombrePunto>Universidad Mayor de San Andres</nombrePunto>
         <tipoPunto>Educacion</tipoPunto>
+        <rdfs:label xml:lang="es">Universidad del centro</rdfs:label>
+        <rdfs:label xml:lang="en">Downtown University</rdfs:label>
+        <rdfs:label xml:lang="fr">Universite du centre</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -2819,10 +3675,18 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ViajeCongreso -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ViajeCongreso">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PropositoViaje"/>
         <duracionEstadia rdf:datatype="http://www.w3.org/2001/XMLSchema#int">4</duracionEstadia>
         <modalidadTrabajo>Presencial</modalidadTrabajo>
         <tipoPropositoViaje>EventoEspecial</tipoPropositoViaje>
+        <rdfs:label xml:lang="es">Viaje por congreso</rdfs:label>
+        <rdfs:label xml:lang="en">Conference trip</rdfs:label>
+        <rdfs:label xml:lang="fr">Voyage pour congres</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -2830,10 +3694,18 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ViajeEscapada -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ViajeEscapada">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PropositoViaje"/>
         <duracionEstadia rdf:datatype="http://www.w3.org/2001/XMLSchema#int">5</duracionEstadia>
         <modalidadTrabajo>NoAplica</modalidadTrabajo>
         <tipoPropositoViaje>Vacacional</tipoPropositoViaje>
+        <rdfs:label xml:lang="es">Viaje de escapada</rdfs:label>
+        <rdfs:label xml:lang="en">Getaway trip</rdfs:label>
+        <rdfs:label xml:lang="fr">Voyage d&apos;escapade</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -2841,10 +3713,18 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ViajeEstudios -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ViajeEstudios">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PropositoViaje"/>
         <duracionEstadia rdf:datatype="http://www.w3.org/2001/XMLSchema#int">45</duracionEstadia>
         <modalidadTrabajo>Presencial</modalidadTrabajo>
         <tipoPropositoViaje>Estudios</tipoPropositoViaje>
+        <rdfs:label xml:lang="es">Viaje por estudios</rdfs:label>
+        <rdfs:label xml:lang="en">Study trip</rdfs:label>
+        <rdfs:label xml:lang="fr">Voyage d&apos;etudes</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -2852,10 +3732,18 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ViajeFamiliar -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ViajeFamiliar">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PropositoViaje"/>
         <duracionEstadia rdf:datatype="http://www.w3.org/2001/XMLSchema#int">6</duracionEstadia>
         <modalidadTrabajo>NoAplica</modalidadTrabajo>
         <tipoPropositoViaje>Vacacional</tipoPropositoViaje>
+        <rdfs:label xml:lang="es">Viaje familiar</rdfs:label>
+        <rdfs:label xml:lang="en">Family trip</rdfs:label>
+        <rdfs:label xml:lang="fr">Voyage en famille</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -2863,10 +3751,18 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ViajePasantia -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ViajePasantia">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PropositoViaje"/>
         <duracionEstadia rdf:datatype="http://www.w3.org/2001/XMLSchema#int">60</duracionEstadia>
         <modalidadTrabajo>Presencial</modalidadTrabajo>
         <tipoPropositoViaje>Estudios</tipoPropositoViaje>
+        <rdfs:label xml:lang="es">Viaje por pasantia</rdfs:label>
+        <rdfs:label xml:lang="en">Internship trip</rdfs:label>
+        <rdfs:label xml:lang="fr">Voyage pour stage</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -2874,10 +3770,18 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ViajeProyecto -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ViajeProyecto">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PropositoViaje"/>
         <duracionEstadia rdf:datatype="http://www.w3.org/2001/XMLSchema#int">14</duracionEstadia>
         <modalidadTrabajo>Hibrido</modalidadTrabajo>
         <tipoPropositoViaje>Profesional</tipoPropositoViaje>
+        <rdfs:label xml:lang="es">Viaje por proyecto</rdfs:label>
+        <rdfs:label xml:lang="en">Project trip</rdfs:label>
+        <rdfs:label xml:lang="fr">Voyage pour projet</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -2885,10 +3789,18 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ViajeReubicacion -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ViajeReubicacion">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PropositoViaje"/>
         <duracionEstadia rdf:datatype="http://www.w3.org/2001/XMLSchema#int">30</duracionEstadia>
         <modalidadTrabajo>Hibrido</modalidadTrabajo>
         <tipoPropositoViaje>Reubicacion</tipoPropositoViaje>
+        <rdfs:label xml:lang="es">Viaje por reubicacion</rdfs:label>
+        <rdfs:label xml:lang="en">Relocation trip</rdfs:label>
+        <rdfs:label xml:lang="fr">Voyage pour relocalisation</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -2896,10 +3808,18 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ViajeSalud -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ViajeSalud">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PropositoViaje"/>
         <duracionEstadia rdf:datatype="http://www.w3.org/2001/XMLSchema#int">10</duracionEstadia>
         <modalidadTrabajo>NoAplica</modalidadTrabajo>
         <tipoPropositoViaje>Salud</tipoPropositoViaje>
+        <rdfs:label xml:lang="es">Viaje por salud</rdfs:label>
+        <rdfs:label xml:lang="en">Medical trip</rdfs:label>
+        <rdfs:label xml:lang="fr">Voyage pour raisons medicales</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -2907,10 +3827,18 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ViajeTrabajo -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ViajeTrabajo">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PropositoViaje"/>
         <duracionEstadia rdf:datatype="http://www.w3.org/2001/XMLSchema#int">4</duracionEstadia>
         <modalidadTrabajo>Remoto</modalidadTrabajo>
         <tipoPropositoViaje>Profesional</tipoPropositoViaje>
+        <rdfs:label xml:lang="es">Viaje de trabajo</rdfs:label>
+        <rdfs:label xml:lang="en">Business trip</rdfs:label>
+        <rdfs:label xml:lang="fr">Voyage d&apos;affaires</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -2918,10 +3846,18 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ViajeVacacional -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ViajeVacacional">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PropositoViaje"/>
         <duracionEstadia rdf:datatype="http://www.w3.org/2001/XMLSchema#int">7</duracionEstadia>
         <modalidadTrabajo>NoAplica</modalidadTrabajo>
         <tipoPropositoViaje>Vacacional</tipoPropositoViaje>
+        <rdfs:label xml:lang="es">Viaje vacacional</rdfs:label>
+        <rdfs:label xml:lang="en">Vacation trip</rdfs:label>
+        <rdfs:label xml:lang="fr">Voyage de vacances</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -2929,6 +3865,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Villa_Achumani_1 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Villa_Achumani_1">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Villa"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Ejecutivo"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Cocina"/>
@@ -2949,6 +3890,12 @@
         <tipoAcceso>CodigoNumerico</tipoAcceso>
         <tipoEspacioExterior>Terraza</tipoEspacioExterior>
         <tipoEstacionamiento>GarajeMultiple</tipoEstacionamiento>
+        <rdfs:label xml:lang="es">Residencia con vistas en Achumani</rdfs:label>
+        <rdfs:label xml:lang="en">Residence with views in Achumani</rdfs:label>
+        <rdfs:label xml:lang="fr">Résidence avec vues à Achumani</rdfs:label>
+        <rdfs:comment xml:lang="es">Residencia amplia con vistas en Achumani, apta para retiros corporativos pequenos y reuniones privadas.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Spacious residence with views in Achumani, suitable for small corporate retreats and private meetings.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Résidence spacieuse avec vues à Achumani, adaptée pour les retraites d&apos;entreprise et les réunions privées.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -2956,6 +3903,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Villa_CentroSucre_1 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Villa_CentroSucre_1">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Villa"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/AmigosCongreso"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Cocina"/>
@@ -2976,6 +3928,12 @@
         <tipoAcceso>CodigoNumerico</tipoAcceso>
         <tipoEspacioExterior>Patio</tipoEspacioExterior>
         <tipoEstacionamiento>GarajePrivado</tipoEstacionamiento>
+        <rdfs:label xml:lang="es">Casona privada para eventos en Sucre</rdfs:label>
+        <rdfs:label xml:lang="en">Private mansion for events in Sucre</rdfs:label>
+        <rdfs:label xml:lang="fr">Maison privée pour événements à Sucre</rdfs:label>
+        <rdfs:comment xml:lang="es">Casona privada para eventos pequenos en Sucre, con patio interior y varios dormitorios.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Private mansion for small events in Sucre, with inner courtyard and several bedrooms.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Maison privée pour petits événements à Sucre, avec cour intérieure et plusieurs chambres.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -2983,6 +3941,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Villa_Lujo_1 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Villa_Lujo_1">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Villa"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Amigos"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Parking"/>
@@ -3002,6 +3965,12 @@
         <tipoAcceso>CodigoNumerico</tipoAcceso>
         <tipoEspacioExterior>Patio</tipoEspacioExterior>
         <tipoEstacionamiento>GarajeMultiple</tipoEstacionamiento>
+        <rdfs:label xml:lang="es">Casaquinta para eventos en Santa Cruz</rdfs:label>
+        <rdfs:label xml:lang="en">Country house for events in Santa Cruz</rdfs:label>
+        <rdfs:label xml:lang="fr">Maison de campagne pour événements à Santa Cruz</rdfs:label>
+        <rdfs:comment xml:lang="es">Casaquinta amplia con piscina y parqueo multiple, pensada para reuniones privadas en la zona norte de Santa Cruz.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Spacious country house with pool and multiple parking, designed for private gatherings in the northern area of Santa Cruz.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Grande maison de campagne avec piscine et parking multiple, conçue pour des réunions privées dans le nord de Santa Cruz.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -3009,6 +3978,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Villa_Lujo_2 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Villa_Lujo_2">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Villa"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Familiar"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Desayuno"/>
@@ -3033,6 +4007,12 @@
         <tipoAcceso>CodigoNumerico</tipoAcceso>
         <tipoEspacioExterior>Patio</tipoEspacioExterior>
         <tipoEstacionamiento>GarajeMultiple</tipoEstacionamiento>
+        <rdfs:label xml:lang="es">Quinta familiar en Cochabamba</rdfs:label>
+        <rdfs:label xml:lang="en">Family estate in Cochabamba</rdfs:label>
+        <rdfs:label xml:lang="fr">Propriété familiale à Cochabamba</rdfs:label>
+        <rdfs:comment xml:lang="es">Propiedad amplia con areas verdes, desayuno y lavanderia, orientada a reuniones familiares en Cochabamba.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Spacious property with green areas, breakfast and laundry, aimed at family gatherings in Cochabamba.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Grande propriété avec espaces verts, petit-déjeuner et blanchisserie, destinée aux réunions familiales à Cochabamba.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -3040,6 +4020,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Villa_Lujo_3 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Villa_Lujo_3">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Villa"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Amigos"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/AireAcondicionado"/>
@@ -3059,6 +4044,12 @@
         <tipoAcceso>CodigoNumerico</tipoAcceso>
         <tipoEspacioExterior>Patio</tipoEspacioExterior>
         <tipoEstacionamiento>GarajeMultiple</tipoEstacionamiento>
+        <rdfs:label xml:lang="es">Residencia premium en La Paz</rdfs:label>
+        <rdfs:label xml:lang="en">Premium residence in La Paz</rdfs:label>
+        <rdfs:label xml:lang="fr">Résidence premium à La Paz</rdfs:label>
+        <rdfs:comment xml:lang="es">Residencia premium de gran capacidad en La Paz, adecuada para grupos corporativos o estadias privadas con cocina equipada.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Premium large-capacity residence in La Paz, suitable for corporate groups or private stays with equipped kitchen.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Résidence premium de grande capacité à La Paz, adaptée aux groupes d&apos;entreprise ou aux séjours privés avec cuisine équipée.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -3066,6 +4057,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Villa_Lujo_4 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Villa_Lujo_4">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Villa"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Amigos"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Piscina"/>
@@ -3085,6 +4081,12 @@
         <tipoAcceso>CodigoNumerico</tipoAcceso>
         <tipoEspacioExterior>Patio</tipoEspacioExterior>
         <tipoEstacionamiento>GarajeMultiple</tipoEstacionamiento>
+        <rdfs:label xml:lang="es">Villa moderna con piscina en Santa Cruz</rdfs:label>
+        <rdfs:label xml:lang="en">Modern villa with pool in Santa Cruz</rdfs:label>
+        <rdfs:label xml:lang="fr">Villa moderne avec piscine à Santa Cruz</rdfs:label>
+        <rdfs:comment xml:lang="es">Villa moderna de alquiler completo para grupos de amigos que buscan privacidad y piscina en Santa Cruz.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Modern villa for full rental for groups of friends seeking privacy and a pool in Santa Cruz.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Villa moderne en location complète pour des groupes d&apos;amis recherchant intimité et piscine à Santa Cruz.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -3092,6 +4094,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Villa_Lujo_5 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Villa_Lujo_5">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Villa"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Familiar"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Parking"/>
@@ -3111,6 +4118,12 @@
         <tipoAcceso>CodigoNumerico</tipoAcceso>
         <tipoEspacioExterior>Patio</tipoEspacioExterior>
         <tipoEstacionamiento>GarajeMultiple</tipoEstacionamiento>
+        <rdfs:label xml:lang="es">Casaquinta de alta capacidad en Tarija</rdfs:label>
+        <rdfs:label xml:lang="en">High-capacity country house in Tarija</rdfs:label>
+        <rdfs:label xml:lang="fr">Maison de campagne à grande capacité à Tarija</rdfs:label>
+        <rdfs:comment xml:lang="es">Casaquinta de alta capacidad en Tarija, adecuada para eventos privados y grupos familiares numerosos.</rdfs:comment>
+        <rdfs:comment xml:lang="en">High-capacity country house in Tarija, suitable for private events and large family groups.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Maison de campagne à grande capacité à Tarija, adaptée aux événements privés et aux grands groupes familiaux.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -3118,6 +4131,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Villa_SanRoque_1 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Villa_SanRoque_1">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Villa"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/FamiliaReubicacion"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ParkingGratis"/>
@@ -3138,6 +4156,12 @@
         <tipoAcceso>CodigoNumerico</tipoAcceso>
         <tipoEspacioExterior>Jardin</tipoEspacioExterior>
         <tipoEstacionamiento>GarajeMultiple</tipoEstacionamiento>
+        <rdfs:label xml:lang="es">Casaquinta en San Roque</rdfs:label>
+        <rdfs:label xml:lang="en">Country house in San Roque</rdfs:label>
+        <rdfs:label xml:lang="fr">Maison de campagne à San Roque</rdfs:label>
+        <rdfs:comment xml:lang="es">Casaquinta en San Roque con piscina y parqueo multiple, adecuada para familias grandes o eventos privados.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Country house in San Roque with pool and multiple parking, suitable for large families or private events.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Maison de campagne à San Roque avec piscine et parking multiple, adaptée aux grandes familles ou aux événements privés.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -3145,6 +4169,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Villa_Tiquipaya_1 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Villa_Tiquipaya_1">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Villa"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Familiar"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Cocina"/>
@@ -3166,6 +4195,12 @@
         <tipoAcceso>CodigoNumerico</tipoAcceso>
         <tipoEspacioExterior>Jardin</tipoEspacioExterior>
         <tipoEstacionamiento>GarajeMultiple</tipoEstacionamiento>
+        <rdfs:label xml:lang="es">Quinta con jardin en Tiquipaya</rdfs:label>
+        <rdfs:label xml:lang="en">Country house with garden in Tiquipaya</rdfs:label>
+        <rdfs:label xml:lang="fr">Maison de campagne avec jardin à Tiquipaya</rdfs:label>
+        <rdfs:comment xml:lang="es">Quinta amplia en Tiquipaya con jardin y piscina, adecuada para reuniones familiares grandes.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Spacious country house in Tiquipaya with garden and pool, suitable for large family gatherings.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Vaste maison de campagne à Tiquipaya avec jardin et piscine, adaptée aux grandes réunions familiales.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -3173,6 +4208,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Villa_Urubo_1 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Villa_Urubo_1">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Villa"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/AmigosCongreso"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/AireAcondicionado"/>
@@ -3193,6 +4233,12 @@
         <tipoAcceso>CodigoNumerico</tipoAcceso>
         <tipoEspacioExterior>Patio</tipoEspacioExterior>
         <tipoEstacionamiento>GarajeMultiple</tipoEstacionamiento>
+        <rdfs:label xml:lang="es">Villa premium en Urubo</rdfs:label>
+        <rdfs:label xml:lang="en">Premium villa in Urubo</rdfs:label>
+        <rdfs:label xml:lang="fr">Villa premium à Urubo</rdfs:label>
+        <rdfs:comment xml:lang="es">Villa premium en Urubo, ideal para grupos que buscan privacidad y una piscina amplia.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Premium villa in Urubo, ideal for groups seeking privacy and a large pool.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Villa premium à Urubo, idéale pour les groupes recherchant l&apos;intimité et une grande piscine.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -3200,11 +4246,20 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Wifi -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Wifi">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Amenidad"/>
         <categoriaAmenidad>Conectividad</categoriaAmenidad>
         <costoAdicional rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.0</costoAdicional>
         <disponibilidad>Permanente</disponibilidad>
         <nombreAmenidad>WiFi</nombreAmenidad>
+        <rdfs:label xml:lang="es">Wifi</rdfs:label>
+        <rdfs:label xml:lang="en">Wi-Fi</rdfs:label>
+        <rdfs:label xml:lang="fr">Wi-Fi</rdfs:label>
+        <owl:sameAs rdf:resource="http://dbpedia.org/resource/Wi-Fi"/>
     </owl:NamedIndividual>
     
 
@@ -3212,6 +4267,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Zona_CBBA -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Zona_CBBA">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ZonaGeografica"/>
         <tienePuntoInteres rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/CristoRedentor"/>
         <tienePuntoInteres rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/HospitalCentral"/>
@@ -3220,6 +4280,10 @@
         <nombreZona>Cala Cala</nombreZona>
         <pais>Bolivia</pais>
         <tipoZona>Urbana</tipoZona>
+        <rdfs:label xml:lang="es">Cochabamba</rdfs:label>
+        <rdfs:label xml:lang="en">Cochabamba</rdfs:label>
+        <rdfs:label xml:lang="fr">Cochabamba</rdfs:label>
+        <owl:sameAs rdf:resource="http://dbpedia.org/resource/Cochabamba"/>
     </owl:NamedIndividual>
     
 
@@ -3227,6 +4291,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Zona_CBBA_TIQUIPAYA -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Zona_CBBA_TIQUIPAYA">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ZonaGeografica"/>
         <tienePuntoInteres rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/UnivalleTiquipaya"/>
         <ciudad>Cochabamba</ciudad>
@@ -3234,6 +4303,9 @@
         <nombreZona>Tiquipaya</nombreZona>
         <pais>Bolivia</pais>
         <tipoZona>Rural</tipoZona>
+        <rdfs:label xml:lang="es">Tiquipaya</rdfs:label>
+        <rdfs:label xml:lang="en">Tiquipaya</rdfs:label>
+        <rdfs:label xml:lang="fr">Tiquipaya</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -3241,6 +4313,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Zona_LP -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Zona_LP">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ZonaGeografica"/>
         <tienePuntoInteres rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/UniversidadCentro"/>
         <ciudad>La Paz</ciudad>
@@ -3248,6 +4325,10 @@
         <nombreZona>Sopocachi</nombreZona>
         <pais>Bolivia</pais>
         <tipoZona>Urbana</tipoZona>
+        <rdfs:label xml:lang="es">La Paz</rdfs:label>
+        <rdfs:label xml:lang="en">La Paz</rdfs:label>
+        <rdfs:label xml:lang="fr">La Paz</rdfs:label>
+        <owl:sameAs rdf:resource="http://dbpedia.org/resource/La_Paz"/>
     </owl:NamedIndividual>
     
 
@@ -3255,6 +4336,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Zona_LP_ACHUMANI -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Zona_LP_ACHUMANI">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ZonaGeografica"/>
         <tienePuntoInteres rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/EstacionIrpavi"/>
         <ciudad>La Paz</ciudad>
@@ -3262,6 +4348,9 @@
         <nombreZona>Achumani</nombreZona>
         <pais>Bolivia</pais>
         <tipoZona>Urbana</tipoZona>
+        <rdfs:label xml:lang="es">Achumani</rdfs:label>
+        <rdfs:label xml:lang="en">Achumani</rdfs:label>
+        <rdfs:label xml:lang="fr">Achumani</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -3269,6 +4358,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Zona_SCZ -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Zona_SCZ">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ZonaGeografica"/>
         <tienePuntoInteres rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ExpoCruz"/>
         <ciudad>Santa Cruz de la Sierra</ciudad>
@@ -3276,6 +4370,10 @@
         <nombreZona>Equipetrol</nombreZona>
         <pais>Bolivia</pais>
         <tipoZona>Urbana</tipoZona>
+        <rdfs:label xml:lang="es">Santa Cruz de la Sierra</rdfs:label>
+        <rdfs:label xml:lang="en">Santa Cruz de la Sierra</rdfs:label>
+        <rdfs:label xml:lang="fr">Santa Cruz de la Sierra</rdfs:label>
+        <owl:sameAs rdf:resource="http://dbpedia.org/resource/Santa_Cruz_de_la_Sierra"/>
     </owl:NamedIndividual>
     
 
@@ -3283,6 +4381,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Zona_SCZ_URUBO -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Zona_SCZ_URUBO">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ZonaGeografica"/>
         <tienePuntoInteres rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/BiocentroGuembe"/>
         <ciudad>Santa Cruz de la Sierra</ciudad>
@@ -3290,6 +4393,9 @@
         <nombreZona>Urubo</nombreZona>
         <pais>Bolivia</pais>
         <tipoZona>Urbana</tipoZona>
+        <rdfs:label xml:lang="es">Urubo</rdfs:label>
+        <rdfs:label xml:lang="en">Urubo</rdfs:label>
+        <rdfs:label xml:lang="fr">Urubo</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -3297,12 +4403,21 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Zona_SUCRE -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Zona_SUCRE">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ZonaGeografica"/>
         <ciudad>Sucre</ciudad>
         <densidadUrbana>Media</densidadUrbana>
         <nombreZona>La Recoleta</nombreZona>
         <pais>Bolivia</pais>
         <tipoZona>Urbana</tipoZona>
+        <rdfs:label xml:lang="es">Sucre</rdfs:label>
+        <rdfs:label xml:lang="en">Sucre</rdfs:label>
+        <rdfs:label xml:lang="fr">Sucre</rdfs:label>
+        <owl:sameAs rdf:resource="http://dbpedia.org/resource/Sucre"/>
     </owl:NamedIndividual>
     
 
@@ -3310,6 +4425,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Zona_SUCRE_CENTRO -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Zona_SUCRE_CENTRO">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ZonaGeografica"/>
         <tienePuntoInteres rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Plaza25Mayo"/>
         <ciudad>Sucre</ciudad>
@@ -3317,6 +4437,9 @@
         <nombreZona>Centro Historico</nombreZona>
         <pais>Bolivia</pais>
         <tipoZona>Urbana</tipoZona>
+        <rdfs:label xml:lang="es">Centro Historico</rdfs:label>
+        <rdfs:label xml:lang="en">Historic Center</rdfs:label>
+        <rdfs:label xml:lang="fr">Centre historique</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -3324,6 +4447,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Zona_TARIJA -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Zona_TARIJA">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ZonaGeografica"/>
         <tienePuntoInteres rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/TerminalCentral"/>
         <ciudad>Tarija</ciudad>
@@ -3331,6 +4459,10 @@
         <nombreZona>San Bernardo</nombreZona>
         <pais>Bolivia</pais>
         <tipoZona>Urbana</tipoZona>
+        <rdfs:label xml:lang="es">Tarija</rdfs:label>
+        <rdfs:label xml:lang="en">Tarija</rdfs:label>
+        <rdfs:label xml:lang="fr">Tarija</rdfs:label>
+        <owl:sameAs rdf:resource="http://dbpedia.org/resource/Tarija,_Bolivia"/>
     </owl:NamedIndividual>
     
 
@@ -3338,6 +4470,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Zona_TARIJA_SANROQUE -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Zona_TARIJA_SANROQUE">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ZonaGeografica"/>
         <tienePuntoInteres rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/MercadoCampesinoTarija"/>
         <ciudad>Tarija</ciudad>
@@ -3345,6 +4482,9 @@
         <nombreZona>San Roque</nombreZona>
         <pais>Bolivia</pais>
         <tipoZona>Urbana</tipoZona>
+        <rdfs:label xml:lang="es">San Roque</rdfs:label>
+        <rdfs:label xml:lang="en">San Roque</rdfs:label>
+        <rdfs:label xml:lang="fr">San Roque</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -3352,11 +4492,19 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Gimnasio -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Gimnasio">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Amenidad"/>
         <categoriaAmenidad>Recreativa</categoriaAmenidad>
         <costoAdicional rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.0</costoAdicional>
         <disponibilidad>Permanente</disponibilidad>
         <nombreAmenidad>Gimnasio</nombreAmenidad>
+        <rdfs:label xml:lang="es">Gimnasio</rdfs:label>
+        <rdfs:label xml:lang="en">Gym</rdfs:label>
+        <rdfs:label xml:lang="fr">Salle de sport</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -3364,11 +4512,19 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Jacuzzi -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Jacuzzi">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Amenidad"/>
         <categoriaAmenidad>Recreativa</categoriaAmenidad>
         <costoAdicional rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.0</costoAdicional>
         <disponibilidad>Permanente</disponibilidad>
         <nombreAmenidad>Jacuzzi</nombreAmenidad>
+        <rdfs:label xml:lang="es">Jacuzzi</rdfs:label>
+        <rdfs:label xml:lang="en">Jacuzzi</rdfs:label>
+        <rdfs:label xml:lang="fr">Jacuzzi</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -3376,11 +4532,19 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Seguridad24h -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Seguridad24h">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Amenidad"/>
         <categoriaAmenidad>Seguridad</categoriaAmenidad>
         <costoAdicional rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.0</costoAdicional>
         <disponibilidad>Permanente</disponibilidad>
         <nombreAmenidad>Seguridad 24h</nombreAmenidad>
+        <rdfs:label xml:lang="es">Seguridad 24h</rdfs:label>
+        <rdfs:label xml:lang="en">24-hour security</rdfs:label>
+        <rdfs:label xml:lang="fr">Securite 24h/24</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -3388,11 +4552,19 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Terraza -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Terraza">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Amenidad"/>
         <categoriaAmenidad>Confort</categoriaAmenidad>
         <costoAdicional rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.0</costoAdicional>
         <disponibilidad>Permanente</disponibilidad>
         <nombreAmenidad>Terraza</nombreAmenidad>
+        <rdfs:label xml:lang="es">Terraza</rdfs:label>
+        <rdfs:label xml:lang="en">Terrace</rdfs:label>
+        <rdfs:label xml:lang="fr">Terrasse</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -3400,10 +4572,18 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ElPradoCochabamba -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ElPradoCochabamba">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PuntoInteres"/>
         <distanciaMetros rdf:datatype="http://www.w3.org/2001/XMLSchema#double">450.0</distanciaMetros>
         <nombrePunto>El Prado Cochabamba</nombrePunto>
         <tipoPunto>AvenidaComercial</tipoPunto>
+        <rdfs:label xml:lang="es">El Prado</rdfs:label>
+        <rdfs:label xml:lang="en">El Prado</rdfs:label>
+        <rdfs:label xml:lang="fr">El Prado</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -3411,10 +4591,18 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/HupermallCochabamba -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/HupermallCochabamba">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PuntoInteres"/>
         <distanciaMetros rdf:datatype="http://www.w3.org/2001/XMLSchema#double">650.0</distanciaMetros>
         <nombrePunto>Hupermall Cochabamba</nombrePunto>
         <tipoPunto>CentroComercial</tipoPunto>
+        <rdfs:label xml:lang="es">Hupermall</rdfs:label>
+        <rdfs:label xml:lang="en">Hupermall</rdfs:label>
+        <rdfs:label xml:lang="fr">Hupermall</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -3422,10 +4610,18 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ICNorteCochabamba -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ICNorteCochabamba">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PuntoInteres"/>
         <distanciaMetros rdf:datatype="http://www.w3.org/2001/XMLSchema#double">500.0</distanciaMetros>
         <nombrePunto>IC Norte Cochabamba</nombrePunto>
         <tipoPunto>Supermercado</tipoPunto>
+        <rdfs:label xml:lang="es">IC Norte</rdfs:label>
+        <rdfs:label xml:lang="en">IC Norte</rdfs:label>
+        <rdfs:label xml:lang="fr">IC Norte</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -3433,10 +4629,18 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PlazaColonCochabamba -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PlazaColonCochabamba">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PuntoInteres"/>
         <distanciaMetros rdf:datatype="http://www.w3.org/2001/XMLSchema#double">300.0</distanciaMetros>
         <nombrePunto>Plaza Colon Cochabamba</nombrePunto>
         <tipoPunto>Plaza</tipoPunto>
+        <rdfs:label xml:lang="es">Plaza Colon</rdfs:label>
+        <rdfs:label xml:lang="en">Colon Square</rdfs:label>
+        <rdfs:label xml:lang="fr">Place Colon</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -3444,10 +4648,18 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/UniversidadMayorSanSimon -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/UniversidadMayorSanSimon">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PuntoInteres"/>
         <distanciaMetros rdf:datatype="http://www.w3.org/2001/XMLSchema#double">900.0</distanciaMetros>
         <nombrePunto>Universidad Mayor de San Simon</nombrePunto>
         <tipoPunto>Universidad</tipoPunto>
+        <rdfs:label xml:lang="es">Universidad Mayor de San Simon</rdfs:label>
+        <rdfs:label xml:lang="en">Universidad Mayor de San Simon</rdfs:label>
+        <rdfs:label xml:lang="fr">Universidad Mayor de San Simon</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -3455,10 +4667,18 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Plaza24Septiembre -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Plaza24Septiembre">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PuntoInteres"/>
         <distanciaMetros rdf:datatype="http://www.w3.org/2001/XMLSchema#double">350.0</distanciaMetros>
         <nombrePunto>Plaza 24 de Septiembre</nombrePunto>
         <tipoPunto>Plaza</tipoPunto>
+        <rdfs:label xml:lang="es">Plaza 24 de Septiembre</rdfs:label>
+        <rdfs:label xml:lang="en">24 de Septiembre Square</rdfs:label>
+        <rdfs:label xml:lang="fr">Place du 24 Septembre</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -3466,10 +4686,18 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PlazaCamachoLaPaz -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PlazaCamachoLaPaz">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PuntoInteres"/>
         <distanciaMetros rdf:datatype="http://www.w3.org/2001/XMLSchema#double">420.0</distanciaMetros>
         <nombrePunto>Plaza Camacho</nombrePunto>
         <tipoPunto>CentroFinanciero</tipoPunto>
+        <rdfs:label xml:lang="es">Plaza Camacho</rdfs:label>
+        <rdfs:label xml:lang="en">Plaza Camacho</rdfs:label>
+        <rdfs:label xml:lang="fr">Plaza Camacho</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -3477,6 +4705,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Zona_CBBA_CENTRO -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Zona_CBBA_CENTRO">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ZonaGeografica"/>
         <tienePuntoInteres rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ElPradoCochabamba"/>
         <tienePuntoInteres rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PlazaColonCochabamba"/>
@@ -3486,6 +4719,9 @@
         <nombreZona>Centro</nombreZona>
         <pais>Bolivia</pais>
         <tipoZona>Urbana</tipoZona>
+        <rdfs:label xml:lang="es">Centro</rdfs:label>
+        <rdfs:label xml:lang="en">Downtown</rdfs:label>
+        <rdfs:label xml:lang="fr">Centre-ville</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -3493,6 +4729,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Zona_CBBA_RECOLETA -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Zona_CBBA_RECOLETA">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ZonaGeografica"/>
         <tienePuntoInteres rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/HupermallCochabamba"/>
         <tienePuntoInteres rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ICNorteCochabamba"/>
@@ -3501,6 +4742,9 @@
         <nombreZona>La Recoleta</nombreZona>
         <pais>Bolivia</pais>
         <tipoZona>Urbana</tipoZona>
+        <rdfs:label xml:lang="es">La Recoleta</rdfs:label>
+        <rdfs:label xml:lang="en">La Recoleta</rdfs:label>
+        <rdfs:label xml:lang="fr">La Recoleta</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -3508,6 +4752,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Zona_CBBA_QUERUQUERU -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Zona_CBBA_QUERUQUERU">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ZonaGeografica"/>
         <tienePuntoInteres rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ICNorteCochabamba"/>
         <ciudad>Cochabamba</ciudad>
@@ -3515,6 +4764,9 @@
         <nombreZona>Queru Queru</nombreZona>
         <pais>Bolivia</pais>
         <tipoZona>Residencial</tipoZona>
+        <rdfs:label xml:lang="es">Queru Queru</rdfs:label>
+        <rdfs:label xml:lang="en">Queru Queru</rdfs:label>
+        <rdfs:label xml:lang="fr">Queru Queru</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -3522,6 +4774,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Zona_CBBA_SARCO -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Zona_CBBA_SARCO">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ZonaGeografica"/>
         <tienePuntoInteres rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ICNorteCochabamba"/>
         <ciudad>Cochabamba</ciudad>
@@ -3529,6 +4786,9 @@
         <nombreZona>Sarco</nombreZona>
         <pais>Bolivia</pais>
         <tipoZona>Residencial</tipoZona>
+        <rdfs:label xml:lang="es">Sarco</rdfs:label>
+        <rdfs:label xml:lang="en">Sarco</rdfs:label>
+        <rdfs:label xml:lang="fr">Sarco</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -3536,6 +4796,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Zona_LP_CENTRO -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Zona_LP_CENTRO">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ZonaGeografica"/>
         <tienePuntoInteres rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/PlazaCamachoLaPaz"/>
         <ciudad>La Paz</ciudad>
@@ -3543,6 +4808,9 @@
         <nombreZona>Centro</nombreZona>
         <pais>Bolivia</pais>
         <tipoZona>Urbana</tipoZona>
+        <rdfs:label xml:lang="es">Centro</rdfs:label>
+        <rdfs:label xml:lang="en">Downtown</rdfs:label>
+        <rdfs:label xml:lang="fr">Centre-ville</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -3550,6 +4818,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Zona_SCZ_CENTRO -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Zona_SCZ_CENTRO">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ZonaGeografica"/>
         <tienePuntoInteres rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Plaza24Septiembre"/>
         <ciudad>Santa Cruz de la Sierra</ciudad>
@@ -3557,6 +4830,9 @@
         <nombreZona>Centro</nombreZona>
         <pais>Bolivia</pais>
         <tipoZona>Urbana</tipoZona>
+        <rdfs:label xml:lang="es">Centro</rdfs:label>
+        <rdfs:label xml:lang="en">Downtown</rdfs:label>
+        <rdfs:label xml:lang="fr">Centre-ville</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -3564,6 +4840,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Zona_TARIJA_CENTRO -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Zona_TARIJA_CENTRO">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ZonaGeografica"/>
         <tienePuntoInteres rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/TerminalCentral"/>
         <ciudad>Tarija</ciudad>
@@ -3571,6 +4852,9 @@
         <nombreZona>Centro</nombreZona>
         <pais>Bolivia</pais>
         <tipoZona>Urbana</tipoZona>
+        <rdfs:label xml:lang="es">Centro</rdfs:label>
+        <rdfs:label xml:lang="en">Downtown</rdfs:label>
+        <rdfs:label xml:lang="fr">Centre-ville</rdfs:label>
     </owl:NamedIndividual>
     
 
@@ -3578,6 +4862,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apto_CentroCbba_Lujo_1 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apto_CentroCbba_Lujo_1">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apartamento"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Ejecutivo"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ParejaEscapada"/>
@@ -3605,6 +4894,12 @@
         <tipoAcceso>CodigoNumerico</tipoAcceso>
         <tipoEspacioExterior>Terraza</tipoEspacioExterior>
         <tipoEstacionamiento>GarajePrivado</tipoEstacionamiento>
+        <rdfs:label xml:lang="es">Departamento de lujo en centro de Cochabamba</rdfs:label>
+        <rdfs:label xml:lang="en">Luxury apartment in downtown Cochabamba</rdfs:label>
+        <rdfs:label xml:lang="fr">Appartement de luxe au centre de Cochabamba</rdfs:label>
+        <rdfs:comment xml:lang="es">Departamento de lujo en el centro de Cochabamba, cerca de El Prado y Plaza Colon, con gimnasio, terraza, seguridad 24h y espacio de trabajo.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Luxury apartment in downtown Cochabamba, near El Prado and Plaza Colon, with gym, terrace, 24-hour security, and workspace.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Appartement de luxe au centre de Cochabamba, près de El Prado et Plaza Colon, avec salle de sport, terrasse, sécurité 24h/24 et espace de travail.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -3612,6 +4907,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apto_CentroCbba_Lujo_2 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apto_CentroCbba_Lujo_2">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apartamento"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Ejecutivo"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Pareja"/>
@@ -3637,6 +4937,12 @@
         <tipoAcceso>CodigoNumerico</tipoAcceso>
         <tipoEspacioExterior>Balcon</tipoEspacioExterior>
         <tipoEstacionamiento>GarajePrivado</tipoEstacionamiento>
+        <rdfs:label xml:lang="es">Suite premium en centro de Cochabamba</rdfs:label>
+        <rdfs:label xml:lang="en">Premium suite in downtown Cochabamba</rdfs:label>
+        <rdfs:label xml:lang="fr">Suite premium au centre-ville de Cochabamba</rdfs:label>
+        <rdfs:comment xml:lang="es">Suite apartamento premium en centro de Cochabamba, pensada para parejas o viaje ejecutivo con jacuzzi y seguridad.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Premium suite in downtown Cochabamba, designed for couples or executive stays, with a jacuzzi and strong security.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Suite premium au centre-ville de Cochabamba, concue pour les couples ou les sejours d&apos;affaires, avec jacuzzi et securite renforcee.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -3644,6 +4950,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apto_CentroCbba_Ejecutivo_1 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apto_CentroCbba_Ejecutivo_1">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apartamento"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Ejecutivo"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Cocina"/>
@@ -3667,6 +4978,12 @@
         <tipoAcceso>Recepcion</tipoAcceso>
         <tipoEspacioExterior>Balcon</tipoEspacioExterior>
         <tipoEstacionamiento>GarajePrivado</tipoEstacionamiento>
+        <rdfs:label xml:lang="es">Departamento ejecutivo en centro de Cochabamba</rdfs:label>
+        <rdfs:label xml:lang="en">Executive apartment in downtown Cochabamba</rdfs:label>
+        <rdfs:label xml:lang="fr">Appartement exécutif au centre de Cochabamba</rdfs:label>
+        <rdfs:comment xml:lang="es">Departamento ejecutivo en el centro de Cochabamba, con escritorio, WiFi y parqueo para estadias de trabajo.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Executive apartment in downtown Cochabamba, with desk, WiFi, and parking for work stays.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Appartement exécutif au centre de Cochabamba, avec bureau, WiFi et parking pour séjours de travail.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -3674,6 +4991,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apto_RecoletaCbba_Premium_1 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apto_RecoletaCbba_Premium_1">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apartamento"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/ParejaEscapada"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Ejecutivo"/>
@@ -3699,6 +5021,12 @@
         <tipoAcceso>CodigoNumerico</tipoAcceso>
         <tipoEspacioExterior>Balcon</tipoEspacioExterior>
         <tipoEstacionamiento>GarajePrivado</tipoEstacionamiento>
+        <rdfs:label xml:lang="es">Apartamento premium en La Recoleta</rdfs:label>
+        <rdfs:label xml:lang="en">Premium apartment in La Recoleta</rdfs:label>
+        <rdfs:label xml:lang="fr">Appartement premium à La Recoleta</rdfs:label>
+        <rdfs:comment xml:lang="es">Apartamento premium en La Recoleta de Cochabamba, cerca de Hupermall, con piscina, gimnasio y seguridad.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Premium apartment in La Recoleta, Cochabamba, near Hupermall, with pool, gym, and security.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Appartement premium à La Recoleta de Cochabamba, près de Hupermall, avec piscine, salle de sport et sécurité.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -3706,6 +5034,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apto_QueruQueru_Familiar_1 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apto_QueruQueru_Familiar_1">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apartamento"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Familiar"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/FamiliaReubicacion"/>
@@ -3729,6 +5062,12 @@
         <tipoAcceso>Porteria</tipoAcceso>
         <tipoEspacioExterior>Balcon</tipoEspacioExterior>
         <tipoEstacionamiento>GarajePrivado</tipoEstacionamiento>
+        <rdfs:label xml:lang="es">Departamento familiar en Queru Queru</rdfs:label>
+        <rdfs:label xml:lang="en">Family apartment in Queru Queru</rdfs:label>
+        <rdfs:label xml:lang="fr">Appartement familial à Queru Queru</rdfs:label>
+        <rdfs:comment xml:lang="es">Departamento familiar en Queru Queru, zona residencial del norte de Cochabamba, con cocina, lavanderia y parqueo gratis.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Family apartment in Queru Queru, a residential area in northern Cochabamba, with kitchen, laundry, and free parking.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Appartement familial à Queru Queru, zone résidentielle du nord de Cochabamba, avec cuisine, buanderie et parking gratuit.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -3736,6 +5075,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apto_Sarco_Remoto_1 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apto_Sarco_Remoto_1">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apartamento"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Dual"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Ejecutivo"/>
@@ -3759,6 +5103,12 @@
         <tipoAcceso>Llave</tipoAcceso>
         <tipoEspacioExterior>Balcon</tipoEspacioExterior>
         <tipoEstacionamiento>GarajePrivado</tipoEstacionamiento>
+        <rdfs:label xml:lang="es">Departamento para trabajo remoto en Sarco</rdfs:label>
+        <rdfs:label xml:lang="en">Apartment for remote work in Sarco</rdfs:label>
+        <rdfs:label xml:lang="fr">Appartement pour travail à distance à Sarco</rdfs:label>
+        <rdfs:comment xml:lang="es">Departamento funcional en Sarco, ideal para trabajo remoto, con WiFi estable y escritorio.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Functional apartment in Sarco, ideal for remote work, with stable WiFi and desk.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Appartement fonctionnel à Sarco, idéal pour le travail à distance, avec WiFi stable et bureau.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -3766,6 +5116,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Casa_CentroCbba_1 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Casa_CentroCbba_1">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Casa"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Familiar"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Cocina"/>
@@ -3787,6 +5142,12 @@
         <tipoAcceso>Llave</tipoAcceso>
         <tipoEspacioExterior>Terraza</tipoEspacioExterior>
         <tipoEstacionamiento>GarajePrivado</tipoEstacionamiento>
+        <rdfs:label xml:lang="es">Casa remodelada en centro de Cochabamba</rdfs:label>
+        <rdfs:label xml:lang="en">Remodeled house in central Cochabamba</rdfs:label>
+        <rdfs:label xml:lang="fr">Maison rénovée au centre de Cochabamba</rdfs:label>
+        <rdfs:comment xml:lang="es">Casa remodelada en el centro de Cochabamba con terraza, cocina equipada y acceso rapido a El Prado.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Remodeled house in central Cochabamba with terrace, equipped kitchen, and quick access to El Prado.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Maison rénovée au centre de Cochabamba avec terrasse, cuisine équipée et accès rapide à El Prado.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -3794,6 +5155,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Hab_Privada_CentroCbba_1 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Hab_Privada_CentroCbba_1">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/HabitacionPrivada"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Individual"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/GrupoEstudiantil"/>
@@ -3811,6 +5177,12 @@
         <numeroBanos rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</numeroBanos>
         <precioNoche rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">210.0</precioNoche>
         <tipoAcceso>Llave</tipoAcceso>
+        <rdfs:label xml:lang="es">Habitacion privada en centro de Cochabamba</rdfs:label>
+        <rdfs:label xml:lang="en">Private room in central Cochabamba</rdfs:label>
+        <rdfs:label xml:lang="fr">Chambre privée au centre de Cochabamba</rdfs:label>
+        <rdfs:comment xml:lang="es">Habitacion privada economica en centro de Cochabamba, cerca de la UMSS y Plaza Colon.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Budget private room in central Cochabamba, near UMSS and Plaza Colon.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Chambre privée économique au centre de Cochabamba, près de l&apos;UMSS et de la Plaza Colon.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -3818,6 +5190,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Villa_RecoletaCbba_1 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Villa_RecoletaCbba_1">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Villa"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/AmigosCongreso"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Familiar"/>
@@ -3841,6 +5218,12 @@
         <tipoAcceso>CodigoNumerico</tipoAcceso>
         <tipoEspacioExterior>Jardin</tipoEspacioExterior>
         <tipoEstacionamiento>GarajeMultiple</tipoEstacionamiento>
+        <rdfs:label xml:lang="es">Villa urbana con piscina en La Recoleta</rdfs:label>
+        <rdfs:label xml:lang="en">Urban villa with pool in La Recoleta</rdfs:label>
+        <rdfs:label xml:lang="fr">Villa urbaine avec piscine à La Recoleta</rdfs:label>
+        <rdfs:comment xml:lang="es">Villa urbana en La Recoleta de Cochabamba con piscina, jacuzzi y seguridad para reuniones privadas.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Urban villa in La Recoleta, Cochabamba, with pool, jacuzzi, and security for private gatherings.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Villa urbaine à La Recoleta de Cochabamba avec piscine, jacuzzi et sécurité pour réunions privées.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -3848,6 +5231,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apto_CentroLaPaz_1 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apto_CentroLaPaz_1">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apartamento"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Ejecutivo"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Cocina"/>
@@ -3870,6 +5258,12 @@
         <tipoAcceso>Recepcion</tipoAcceso>
         <tipoEspacioExterior>Balcon</tipoEspacioExterior>
         <tipoEstacionamiento>GarajePrivado</tipoEstacionamiento>
+        <rdfs:label xml:lang="es">Departamento ejecutivo en centro de La Paz</rdfs:label>
+        <rdfs:label xml:lang="en">Executive apartment in central La Paz</rdfs:label>
+        <rdfs:label xml:lang="fr">Appartement exécutif au centre de La Paz</rdfs:label>
+        <rdfs:comment xml:lang="es">Departamento ejecutivo en centro financiero de La Paz, cerca de Plaza Camacho.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Executive apartment in the financial center of La Paz, near Plaza Camacho.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Appartement exécutif dans le centre financier de La Paz, près de la Plaza Camacho.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -3877,6 +5271,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apto_CentroSCZ_1 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apto_CentroSCZ_1">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apartamento"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Pareja"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/AireAcondicionado"/>
@@ -3899,6 +5298,12 @@
         <tipoAcceso>CodigoNumerico</tipoAcceso>
         <tipoEspacioExterior>Balcon</tipoEspacioExterior>
         <tipoEstacionamiento>GarajePrivado</tipoEstacionamiento>
+        <rdfs:label xml:lang="es">Departamento moderno en centro de Santa Cruz</rdfs:label>
+        <rdfs:label xml:lang="en">Modern apartment in central Santa Cruz</rdfs:label>
+        <rdfs:label xml:lang="fr">Appartement moderne au centre de Santa Cruz</rdfs:label>
+        <rdfs:comment xml:lang="es">Departamento moderno en centro de Santa Cruz de la Sierra, cerca de la Plaza 24 de Septiembre.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Modern apartment in central Santa Cruz de la Sierra, near Plaza 24 de Septiembre.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Appartement moderne au centre de Santa Cruz de la Sierra, près de la Plaza 24 de Septiembre.</rdfs:comment>
     </owl:NamedIndividual>
     
 
@@ -3906,6 +5311,11 @@
     <!-- http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apto_CentroTarija_1 -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apto_CentroTarija_1">
+
+
+
+
+
         <rdf:type rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Apartamento"/>
         <compatibleCon rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Familiar"/>
         <tieneAmenidad rdf:resource="http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/Cocina"/>
@@ -3927,6 +5337,12 @@
         <tipoAcceso>Llave</tipoAcceso>
         <tipoEspacioExterior>Balcon</tipoEspacioExterior>
         <tipoEstacionamiento>Calle</tipoEstacionamiento>
+        <rdfs:label xml:lang="es">Departamento familiar en centro de Tarija</rdfs:label>
+        <rdfs:label xml:lang="en">Family apartment in central Tarija</rdfs:label>
+        <rdfs:label xml:lang="fr">Appartement familial au centre de Tarija</rdfs:label>
+        <rdfs:comment xml:lang="es">Departamento comodo en centro de Tarija con cocina y lavanderia, ideal para familia pequena.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Cozy apartment in central Tarija with kitchen and laundry, ideal for a small family.</rdfs:comment>
+        <rdfs:comment xml:lang="fr">Appartement confortable au centre de Tarija avec cuisine et buanderie, idéal pour une petite famille.</rdfs:comment>
     </owl:NamedIndividual>
     
 

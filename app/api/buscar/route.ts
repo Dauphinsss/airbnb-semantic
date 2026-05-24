@@ -1,4 +1,5 @@
 import { type NextRequest } from "next/server";
+import { normalizeLocale } from "@/lib/i18n";
 
 import { interpretQuery } from "./ai";
 import {
@@ -14,10 +15,11 @@ export const dynamic = "force-dynamic";
 export async function GET(request: NextRequest) {
   const q = (request.nextUrl.searchParams.get("q") ?? "").trim();
   const useAi = request.nextUrl.searchParams.get("ai") !== "0";
+  const locale = normalizeLocale(request.nextUrl.searchParams.get("lang"));
 
   try {
     if (!q) {
-      const propiedades = await searchOntology("");
+      const propiedades = await searchOntology("", locale);
       return Response.json({
         propiedades,
         total: propiedades.length,
@@ -26,7 +28,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (!useAi) {
-      const propiedades = await searchOntology(q);
+      const propiedades = await searchOntology(q, locale);
       return Response.json({
         propiedades,
         total: propiedades.length,
@@ -34,14 +36,14 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    const catalogo = await getCatalog();
-    const ai = await interpretQuery(q, catalogo);
-    const filters = await sanitizeStructuredFilters(ai.filters);
+    const catalogo = await getCatalog(locale);
+    const ai = await interpretQuery(q, catalogo, locale);
+    const filters = await sanitizeStructuredFilters(ai.filters, locale);
 
     const propiedades =
       ai.source === "deepseek"
-        ? await applyStructuredSearch(filters)
-        : await searchOntology(q);
+        ? await applyStructuredSearch(filters, locale)
+        : await searchOntology(q, locale);
 
     return Response.json({
       propiedades,

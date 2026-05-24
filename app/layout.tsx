@@ -22,8 +22,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Buscador semántico · Airbnb",
-  description: "Buscador semántico de propiedades sobre ontología RDF",
+  title: "Airbnb Semantic",
+  description: "Semantic property search powered by an RDF and OWL ontology.",
 };
 
 export default function RootLayout({
@@ -32,10 +32,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="es"
-      className={`${jakarta.variable} ${fraunces.variable} ${geistMono.variable} h-full antialiased`}
-    >
+    <html className={`${jakarta.variable} ${fraunces.variable} ${geistMono.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );
