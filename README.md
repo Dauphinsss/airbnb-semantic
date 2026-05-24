@@ -1,105 +1,159 @@
 # Airbnb Semantic
 
-Buscador semántico de propiedades con **Next.js 16**, **Apache Jena Fuseki** (triplestore SPARQL) y **DeepSeek** (LLM que interpreta el lenguaje natural).
+Buscador semantico de alojamientos construido con **Next.js 16**, **Apache Jena Fuseki** y una ontologia **OWL/RDF** enriquecida con enlaces a **DBpedia**.
 
-La búsqueda navega una ontología RDF/OWL (jerarquía de clases, amenidades, perfiles de viajero, zonas geográficas), no solo strings.
+La app ya soporta tres idiomas:
 
----
+- `es`
+- `en`
+- `fr`
+
+Las rutas publicas son `/<lang>`:
+
+- `http://localhost:3000/es`
+- `http://localhost:3000/en`
+- `http://localhost:3000/fr`
+
+## Que incluye
+
+- Ontologia principal en `ontology/Airbnb.owl`
+- Labels y descripciones multilingues con `rdfs:label` y `rdfs:comment`
+- Enlaces a DBpedia con `owl:sameAs` y `owl:equivalentClass`
+- Consultas SPARQL sobre Fuseki con fallback por idioma
+- Procesamiento lingüístico de consultas en lenguaje natural
+- Imagenes remotas desde Unsplash ya embebidas en la ontologia
 
 ## Requisitos
 
 - [Bun](https://bun.sh) o Node 20+
-- **Java 17+** (para correr Fuseki)
-- **Apache Jena Fuseki** corriendo en `localhost:3030` con un dataset llamado `airbnb` cargado desde [`ontology/Airbnb.owl`](ontology/Airbnb.owl)
-- API key de [DeepSeek](https://platform.deepseek.com/) (opcional — sin ella el buscador hace fallback a texto plano)
+- Java 17+
+- Apache Jena Fuseki 6+
+- Configuración del módulo de procesamiento lingüístico en `.env` o `.env.local`
 
----
-
-## Setup
-
-### 1. Levantar Fuseki
-
-Descargar `apache-jena-fuseki` desde [jena.apache.org](https://jena.apache.org/download/), extraer y correr:
-
-```bash
-fuseki-server
-```
-
-En `http://localhost:3030` crear un dataset llamado `airbnb` y cargar `ontology/Airbnb.owl`.
-
-### 2. Variables de entorno
-
-Crear `.env.local`:
+## Variables de entorno
 
 ```env
-DEEPSEEK_API_KEY=tu_api_key_aqui
+MODULE_ACCESS_KEY=tu_clave_de_acceso
 FUSEKI_ENDPOINT=http://localhost:3030/airbnb/sparql
 ```
 
-### 3. Correr la app
+Sin la configuración del módulo de procesamiento lingüístico, la app sigue funcionando, pero cae a búsqueda simple por texto.
+
+## Estructura clave
+
+- `ontology/Airbnb.owl`: ontologia fuente
+- `scripts/enrich-ontology.mjs`: regenera labels y comments `es/en/fr`
+- `app/api/buscar/ontology.ts`: consultas SPARQL y carga del catalogo
+- `app/api/buscar/`: procesamiento lingüístico de consulta por idioma
+- `app/[lang]/home-client.tsx`: UI localizada
+- `lib/i18n.ts`: diccionarios y locales soportados
+
+## Levantar Fuseki
+
+Si usas la instalacion local del repo hermano o tu carpeta externa de Fuseki:
+
+```powershell
+.\fuseki-server.bat
+```
+
+El dataset esperado es `airbnb`.
+
+El endpoint SPARQL debe quedar en:
+
+```text
+http://localhost:3030/airbnb/sparql
+```
+
+## Cargar la ontologia en Fuseki
+
+Cada vez que cambies `ontology/Airbnb.owl`, vuelve a subirla al dataset:
+
+```powershell
+Invoke-WebRequest -UseBasicParsing -Uri "http://localhost:3030/airbnb/data?default" -Method Put -ContentType "application/rdf+xml" -InFile "ontology/Airbnb.owl"
+```
+
+## Regenerar enriquecimiento multilingue
+
+Si modificas datos visibles de la ontologia y quieres reconstruir las etiquetas traducidas:
+
+```bash
+node scripts/enrich-ontology.mjs
+```
+
+Despues de eso, vuelve a cargar `ontology/Airbnb.owl` en Fuseki.
+
+## Correr la app
 
 ```bash
 bun install
 bun run dev
 ```
 
-Abre `http://localhost:3000`.
+Abre una de estas rutas:
 
----
+- `http://localhost:3000/es`
+- `http://localhost:3000/en`
+- `http://localhost:3000/fr`
 
-## Cómo funciona
+## Como funciona
 
 ```text
-Usuario escribe "casa de lujo en santa cruz"
+Usuario escribe una consulta en es/en/fr
     ↓
-DeepSeek extrae filtros estructurados (precio, ciudad, tipo, amenidades)
+El módulo de procesamiento lingüístico la convierte en filtros estructurados
     ↓
-ontology.ts construye una query SPARQL dinámica con FILTER
+La API consulta Fuseki con SPARQL
     ↓
-Fuseki devuelve URIs filtradas
+Fuseki devuelve resultados localizados segun el idioma activo
     ↓
-JS rankea por score (tipo +4, amenidad +3, perfil +2…)
-    ↓
-Resultados ordenados al frontend
+La app aplica ranking y renderiza cards traducidas
 ```
 
-La API `GET /api/buscar?q=...`:
+## Integracion con DBpedia
 
-1. Llama a **DeepSeek** para parsear la consulta en filtros estructurados (ver [`app/api/buscar/ai.ts`](app/api/buscar/ai.ts)).
-2. Ejecuta **SPARQL** contra Fuseki para filtrar precio/capacidad/ciudad (ver [`app/api/buscar/ontology.ts`](app/api/buscar/ontology.ts)).
-3. Carga el catálogo completo con 3 queries SPARQL fijas (propiedades + amenidades + perfiles).
-4. Cruza las URIs filtradas con el catálogo y aplica scoring en JS.
+La integracion no se hace consultando DBpedia en vivo en cada busqueda.
 
----
+En cambio, la ontologia se enriquece localmente con:
 
-## Ejemplos de búsqueda
+- `owl:equivalentClass` para clases como `Apartamento`, `Casa` y `Villa`
+- `owl:sameAs` para entidades como `Wifi`, `Piscina`, `La Paz`, `Cochabamba` o `Sucre`
+- `rdfs:label` y `rdfs:comment` multilingues reutilizables por Fuseki
 
-| Búsqueda                                      | Qué hace                                                  |
-| --------------------------------------------- | --------------------------------------------------------- |
-| `casa de lujo en santa cruz`                  | precio≥800, ciudad SCZ                                    |
-| `departamento barato para 2 personas`         | precio≤350, capacidad≥2, tipo Apartamento                 |
-| `hostel para mochilero`                       | precio≤150, tipo HabitacionCompartida                     |
-| `villa con piscina en Cochabamba`             | ciudad CBBA + tipo Villa + amenidad Piscina               |
-| `estudiante en sucre`                         | ciudad Sucre + perfil GrupoEstudiantil                    |
-| `wifi piscina`                                | scoring por amenidades (sin filtros duros)                |
-| *(vacío)*                                     | catálogo completo (62 propiedades)                        |
+Esto hace la demo mas estable, mas rapida y mas defendible academicamente.
 
----
+## Ejemplos de busqueda
+
+### Espanol
+
+- `departamento con piscina en santa cruz`
+- `villa para familia en sucre`
+- `wifi y cocina en cochabamba`
+
+### Ingles
+
+- `apartment with pool in santa cruz`
+- `private room for students in sucre`
+- `family house in cochabamba`
+
+### Frances
+
+- `appartement avec piscine a santa cruz`
+- `chambre privee pour etudiants a sucre`
+- `maison familiale a cochabamba`
 
 ## Troubleshooting
 
-- **`{"error":"SPARQL failed..."}`** → Fuseki no está corriendo o el dataset `airbnb` no está cargado. Verifica con `curl http://localhost:3030/$/ping`.
-- **DeepSeek no responde** → la app cae en búsqueda de texto plano (`searchOntology`). Revisa `DEEPSEEK_API_KEY` en `.env.local`.
-- **Modificaste la ontología y no ves cambios** → recarga el dataset en Fuseki. La app NO tiene caché, así que los cambios aparecen al instante después.
-- **Hot-reload no toma cambios en la API** → reinicia `bun run dev`.
+- `SPARQL failed...`: Fuseki no esta levantado o el dataset `airbnb` no tiene cargado `ontology/Airbnb.owl`
+- la UI abre pero no hay resultados: revisa que el dataset se haya recargado despues del ultimo cambio en la ontologia
+- cambios en labels o comments no aparecen: vuelve a ejecutar `node scripts/enrich-ontology.mjs` y sube otra vez el `OWL`
+- el módulo de procesamiento lingüístico no responde: la búsqueda cae a modo fallback
 
----
+## Estado actual del stack
 
-## Stack
-
-- **Frontend**: Next.js 16 (App Router) + React 19 + Tailwind v4
-- **Backend**: Route handlers de Next.js, sin DB propia
-- **Triplestore**: Apache Jena Fuseki (SPARQL 1.1)
-- **LLM**: DeepSeek Chat (interpretación de query → filtros JSON)
-- **Imágenes**: Unsplash (vía `next/image`, ver `next.config.ts`)
-- **Ontología**: OWL/RDF en `ontology/Airbnb.owl`
+- Frontend: Next.js 16 + React 19 + Tailwind v4
+- Backend: Route handlers de Next.js
+- Triplestore: Apache Jena Fuseki
+- Ontologia: OWL/RDF
+- Enriquecimiento: DBpedia + labels `es/en/fr`
+- Procesamiento de consultas: módulo lingüístico orientado a filtros estructurados
+- Imagenes: Unsplash
