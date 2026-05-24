@@ -1,0 +1,232 @@
+\section{MARCO REFERENCIAL}
+
+\subsection{Dominio de conocimiento seleccionado}
+
+El dominio elegido para la práctica es el de los sistemas de alojamiento temporal de
+intermediación tipo Airbnb. Este dominio involucra propiedades heterogéneas,
+restricciones de uso, amenidades, perfiles de viajeros, finalidades de estadía y un
+contexto geográfico que condiciona fuertemente la decisión de reserva. En consecuencia,
+se trata de un escenario adecuado para aplicar modelado ontológico y recuperación de
+información basada en semántica.
+
+Una propiedad no puede analizarse únicamente por su precio o por su tipo. La decisión de
+un usuario depende también de factores como la capacidad máxima, la cercanía a zonas
+urbanas o puntos de interés, la disponibilidad de Wi-Fi, cocina o piscina, y la
+compatibilidad con perfiles de viaje como pareja, familia, estudiante o ejecutivo. Esta
+interdependencia entre atributos hace que el dominio sea más cercano a un problema de
+representación de conocimiento que a un simple catálogo tabular.
+
+\subsection{Justificación del dominio}
+
+El dominio seleccionado es pertinente por cuatro razones principales:
+
+\begin{itemize}
+  \item \textbf{Complejidad conceptual}. El dominio incluye entidades distintas pero
+  interrelacionadas: propiedades, amenidades, perfiles de huésped, propósitos de viaje,
+  políticas y zonas geográficas.
+
+  \item \textbf{Necesidad de consultas compuestas}. Las búsquedas reales combinan más de
+  un criterio y requieren relacionar conceptos que no siempre se expresan como filtros
+  exactos.
+
+  \item \textbf{Disponibilidad de datos enlazados}. DBpedia provee recursos geográficos
+  y etiquetas multilingües aprovechables para enriquecer el modelo local.
+
+  \item \textbf{Valor demostrativo del multilingüismo}. El dominio es adecuado para
+  mostrar internacionalización semántica, ya que las mismas entidades pueden presentarse
+  correctamente en varios idiomas sin duplicar la ontología.
+\end{itemize}
+
+\subsection{Problema de los buscadores convencionales}
+
+Los buscadores convencionales en plataformas de alojamiento suelen apoyarse en filtros
+discretos y coincidencias literales. Este enfoque funciona para atributos explícitos,
+pero falla cuando el usuario expresa necesidades semánticas. Por ejemplo, ``alojamiento
+adecuado para trabajo remoto'' puede implicar Wi-Fi, espacio de trabajo, zona tranquila
+o perfil ejecutivo; ``propiedad conveniente para estudiantes'' puede implicar precio
+moderado, cercanía a universidades y estadías funcionales.
+
+Cuando el modelo de datos no representa esas relaciones de forma explícita, el sistema
+solo puede responder por coincidencias exactas o por reglas externas difíciles de
+mantener. Una ontología permite, en cambio, representar el dominio como una red de
+conceptos vinculados y consultables declarativamente mediante SPARQL.
+
+\subsection{Conceptualización del dominio}
+
+El análisis del dominio permitió identificar los conceptos centrales que estructuran el
+modelo ontológico:
+
+\begin{itemize}
+  \item \textbf{Propiedad}. Representa la unidad ofertada, con atributos como nombre,
+  descripción, precio por noche, capacidad máxima, calificación e imagen.
+
+  \item \textbf{Tipo de propiedad}. Especializa el inventario en apartamento, casa,
+  habitación privada, habitación compartida y villa.
+
+  \item \textbf{Amenidad}. Modela servicios o equipamientos relevantes para la decisión
+  de reserva, por ejemplo Wi-Fi, piscina, desayuno o espacio de trabajo.
+
+  \item \textbf{Zona geográfica}. Describe la localización del alojamiento en una ciudad
+  y una zona concreta, incorporando el contexto urbano del dominio.
+
+  \item \textbf{Punto de interés}. Representa lugares próximos relevantes para la
+  búsqueda, como plazas, universidades, terminales, hospitales o centros comerciales.
+
+  \item \textbf{Perfil de huésped}. Describe el tipo de usuario o de grupo al que puede
+  resultar más afín una propiedad.
+
+  \item \textbf{Propósito de viaje}. Permite distinguir entre turismo, trabajo,
+  estudios, congresos o reubicación.
+
+  \item \textbf{Política}. Modela reglas de reserva o uso, necesarias para reflejar
+  restricciones del dominio.
+\end{itemize}
+
+\subsection{Preguntas de competencia}
+
+Las preguntas de competencia fueron definidas para asegurar que la ontología responda a
+consultas representativas del problema. Entre las más relevantes se encuentran:
+
+\begin{itemize}
+  \item ¿Qué propiedades existen en una ciudad determinada y dentro de un rango de
+  precio?
+  \item ¿Qué alojamientos poseen amenidades específicas como Wi-Fi, piscina, cocina o
+  espacio de trabajo?
+  \item ¿Qué propiedades son compatibles con perfiles como familia, pareja, estudiantes
+  o ejecutivos?
+  \item ¿Qué alojamientos satisfacen simultáneamente restricciones de ubicación,
+  capacidad, amenidades y contexto del viaje?
+  \item ¿Cómo presentar la misma propiedad en distintos idiomas a partir de un único
+  grafo RDF?
+\end{itemize}
+
+Estas preguntas guiaron tanto la estructura de la ontología como la implementación de
+las consultas SPARQL y del prototipo web.
+
+\subsection{Terminología base del dominio}
+
+La terminología utilizada en el modelo fue refinada a partir del análisis del dominio,
+de vocabularios de alojamiento y de las necesidades de recuperación expresadas por las
+preguntas de competencia.
+
+\begin{longtable}{|p{3.3cm}|p{5.2cm}|p{5.2cm}|}
+\hline
+\textbf{Área} & \textbf{Término en español} & \textbf{Equivalente operativo en inglés} \\
+\hline
+\endfirsthead
+\hline
+\textbf{Área} & \textbf{Término en español} & \textbf{Equivalente operativo en inglés} \\
+\hline
+\endhead
+\hline
+\multicolumn{3}{|r|}{\textit{Continúa en la siguiente página}} \\
+\hline
+\endfoot
+\hline
+\endlastfoot
+Tipos de propiedad & Apartamento & Apartment \\
+\hline
+Tipos de propiedad & Casa & House \\
+\hline
+Tipos de propiedad & Habitación privada & Private room \\
+\hline
+Tipos de propiedad & Habitación compartida & Shared room \\
+\hline
+Tipos de propiedad & Villa & Villa \\
+\hline
+Amenidades & Wi-Fi & Wi-Fi \\
+\hline
+Amenidades & Cocina & Kitchen \\
+\hline
+Amenidades & Piscina & Swimming pool \\
+\hline
+Amenidades & Lavandería & Laundry \\
+\hline
+Amenidades & Desayuno & Breakfast \\
+\hline
+Amenidades & Espacio de trabajo & Workspace \\
+\hline
+Ubicación & Ciudad & City \\
+\hline
+Ubicación & Zona geográfica & Geographic area \\
+\hline
+Ubicación & Punto de interés & Point of interest \\
+\hline
+Perfil & Pareja & Couple \\
+\hline
+Perfil & Familia & Family \\
+\hline
+Perfil & Grupo estudiantil & Student group \\
+\hline
+Perfil & Ejecutivo & Executive traveler \\
+\hline
+Contexto & Viaje de trabajo & Business trip \\
+\hline
+Contexto & Viaje de estudios & Study trip \\
+\hline
+Contexto & Viaje vacacional & Vacation trip \\
+\hline
+Política & Política flexible & Flexible policy \\
+\hline
+Política & Política corporativa & Corporate policy \\
+\hline
+Política & Política para eventos & Events policy \\
+\hline
+Búsqueda & Consulta semántica & Semantic query \\
+\hline
+Búsqueda & Ranking de relevancia & Relevance ranking \\
+\hline
+Búsqueda & Filtros estructurados & Structured filters \\
+\hline
+\end{longtable}
+
+\subsection{Relación con vocabularios y recursos existentes}
+
+La ontología propia no fue construida aislada del ecosistema de Web Semántica. Se tomó
+como referencia la existencia de vocabularios generales y específicos del dominio, así
+como recursos disponibles en DBpedia. No obstante, dado que el objetivo de la práctica
+era construir un modelo propio orientado a un buscador semántico concreto, se optó por
+una ontología de dominio ajustada al caso de uso, y no por una simple reutilización
+directa de un vocabulario externo completo.
+
+Esta decisión permitió adaptar el modelo a necesidades reales del prototipo, como el
+ranking semántico, los perfiles de huésped y la localización de zonas bolivianas, al
+mismo tiempo que se preservó interoperabilidad mediante enlaces a recursos de DBpedia y
+anotaciones multilingües estándar.
+
+\subsection{Integración conceptual con DBpedia}
+
+La integración con DBpedia se centró en los recursos más útiles y defendibles para el
+dominio: tipos de alojamiento, amenidades y ciudades bolivianas. El criterio aplicado
+fue seleccionar entidades de uso directo dentro del proyecto, evitando incorporar un
+volumen excesivo de referencias irrelevantes para la demostración.
+
+En términos prácticos, la integración se realizó mediante dos mecanismos:
+
+\begin{itemize}
+  \item \textbf{Alineación semántica}. Se añadieron enlaces
+  \texttt{owl:equivalentClass} para clases como \texttt{Apartamento}, \texttt{Casa},
+  \texttt{Villa} y \texttt{HabitacionPrivada}/\texttt{HabitacionCompartida} con sus
+  equivalentes en DBpedia.
+
+  \item \textbf{Enlace de individuos}. Se añadieron enlaces \texttt{owl:sameAs} para
+  amenidades y ciudades bolivianas relevantes, aprovechando los recursos de DBpedia como
+  referencia externa normalizada.
+\end{itemize}
+
+Este enfoque satisface el requisito de conexión con DBpedia y, al mismo tiempo, mejora
+la robustez de la solución al mantener la operación principal sobre un dataset local en
+Fuseki.
+
+\subsection{Multilingüidad del dominio}
+
+El enunciado exigía incorporar multilingüidad. En lugar de duplicar propiedades como
+\texttt{nombreEn} o \texttt{descripcionEn}, se adoptó la estrategia recomendada en RDF:
+etiquetar cada recurso con \texttt{rdfs:label} y \texttt{rdfs:comment} en varios
+idiomas. Esto permite que el mismo individuo conserve identidad semántica única y sea
+presentado en español, inglés o francés según la interfaz de usuario o la consulta
+SPARQL ejecutada.
+
+La elección del francés como tercer idioma, además de español e inglés, fortalece la
+demostración de que la solución no fue diseñada solo para un caso bilingüe puntual, sino
+para un esquema escalable de internacionalización semántica.

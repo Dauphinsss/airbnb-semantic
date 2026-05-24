@@ -1,0 +1,115 @@
+\documentclass[12pt,letterpaper]{article}
+
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{csquotes}
+\usepackage{caption}
+\usepackage[style=apa, backend=biber, language=spanish]{biblatex}
+\addbibresource{referencias.bib}
+\usepackage{graphicx}
+\usepackage[hidelinks]{hyperref}
+\usepackage{pdflscape}
+
+\usepackage{geometry}
+\geometry{
+  left=3cm,
+  right=2cm,
+  top=2cm,
+  bottom=2cm
+}
+
+\usepackage{setspace}
+\usepackage{parskip}
+\usepackage{ragged2e}
+\usepackage{float}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{forest}
+\usepackage{multicol}
+\usepackage{verbatim}
+
+\usepackage{tocloft}
+\setlength{\parindent}{0pt}
+
+\addto\captionsspanish{
+  \renewcommand{\contentsname}{ÍNDICE GENERAL}
+}
+
+\setlength{\cftbeforetoctitleskip}{0pt}
+\setlength{\cftbeforeloftitleskip}{0pt}
+\setlength{\cftbeforelottitleskip}{0pt}
+\setlength{\cftaftertoctitleskip}{12pt}
+\setlength{\cftafterloftitleskip}{12pt}
+\setlength{\cftafterlottitleskip}{12pt}
+
+\renewcommand{\cfttoctitlefont}{\fontsize{12}{14}\selectfont\bfseries}
+\renewcommand{\cftloftitlefont}{\fontsize{12}{14}\selectfont\bfseries}
+\renewcommand{\cftlottitlefont}{\fontsize{12}{14}\selectfont\bfseries}
+
+\usepackage{titlesec}
+
+\titleformat{\section}[block]
+  {\fontsize{12}{14}\selectfont\bfseries}
+  {\thesection}
+  {0.5em}
+  {}
+\titlespacing*{\section}{0pt}{6pt}{6pt}
+
+\titleformat{\subsection}[block]
+  {\fontsize{11}{13}\selectfont\bfseries}
+  {\thesubsection}
+  {0.5em}
+  {}
+\titlespacing*{\subsection}{0pt}{6pt}{6pt}
+
+\titleformat{\subsubsection}[block]
+  {\fontsize{11}{13}\selectfont\normalfont}
+  {\thesubsubsection}
+  {0.5em}
+  {}
+\titlespacing*{\subsubsection}{0pt}{6pt}{6pt}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\setlength{\footskip}{24pt}
+
+\AtBeginDocument{%
+  \singlespacing
+  \setlength{\parskip}{6pt}
+  \justifying
+}
+
+\begin{document}
+
+\input{caratula}
+
+\clearpage
+\setcounter{page}{1}
+
+\input{steps/introduccion}
+
+\clearpage
+\input{steps/objetivos}
+
+\clearpage
+\input{steps/marco_teorico}
+
+\clearpage
+\input{steps/marco_referencial}
+
+\clearpage
+\input{steps/ingenieria}
+
+\clearpage
+\input{steps/conclusiones}
+
+\clearpage
+\printbibliography[title={BIBLIOGRAFÍA}]
+
+\end{document}

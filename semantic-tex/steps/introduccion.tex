@@ -1,0 +1,50 @@
+\section{INTRODUCCIÓN}
+
+La Web Semántica propone un cambio de enfoque en la publicación y recuperación de
+información en la Web: los datos dejan de ser únicamente documentos legibles por
+personas y pasan a representarse también como conocimiento formal interpretable por
+máquinas \parencite{berners-lee2001}. Este enfoque se sustenta en estándares del W3C
+como RDF para la representación de grafos de conocimiento, RDFS y OWL para la
+definición de vocabularios y ontologías, y SPARQL para la consulta declarativa sobre
+esos grafos.
+
+En plataformas de alojamiento temporal tipo Airbnb, la necesidad de representar
+conocimiento semántico es especialmente evidente. La decisión de reserva no depende de
+un solo atributo, sino de combinaciones entre tipo de propiedad, rango de precio,
+ubicación, amenidades, perfil del viajero y propósito del viaje. Una consulta como
+``quiero un departamento tranquilo, con Wi-Fi, adecuado para trabajo remoto y cercano a
+una universidad'' contiene relaciones implícitas entre conceptos que un buscador basado
+solo en filtros discretos no modela ni explota adecuadamente.
+
+En este contexto, el presente trabajo desarrolla un buscador semántico para el dominio
+de alojamiento temporal. La solución se apoya en una ontología OWL/RDF propia cargada
+en Apache Jena Fuseki, sobre la cual se ejecutan consultas SPARQL para recuperar y
+ordenar resultados. El sistema no se limita a buscar coincidencias textuales, sino que
+combina restricciones duras sobre precio, capacidad o ciudad con criterios semánticos
+relacionados con amenidades, perfiles de huésped y propósito del viaje.
+
+Un requisito central del enunciado fue la integración con DBpedia. En la solución
+implementada, esta integración se materializa mediante el enriquecimiento de la
+ontología local con enlaces \texttt{owl:sameAs} y \texttt{owl:equivalentClass} hacia
+recursos de DBpedia vinculados con tipos de alojamiento, amenidades y ciudades de
+Bolivia. Este enfoque permite incorporar conocimiento geográfico real y, al mismo
+tiempo, mantener una demostración estable en entorno local sobre Fuseki sin depender de
+la disponibilidad del \textit{endpoint} público en cada consulta.
+
+Otro requisito explícito fue la multilingüidad. Por ello, la ontología fue enriquecida
+con anotaciones \texttt{rdfs:label} y \texttt{rdfs:comment} en tres idiomas:
+español, inglés y francés. Esta representación permite reutilizar un único grafo RDF
+para distintas interfaces de usuario y demuestra un uso correcto de las capacidades de
+internacionalización propias de RDF/OWL.
+
+La aplicación resultante fue implementada con Next.js como capa de presentación y de
+servicios, Fuseki como \textit{triple store}, Bun como entorno de ejecución y un módulo
+de procesamiento lingüístico para interpretar consultas en lenguaje natural. El sistema final ofrece una
+interfaz web con navegación multilingüe, resultados visuales por tarjetas y búsqueda
+semántica sobre una ontología consistente y validada.
+
+El informe se organiza en cinco bloques principales: introducción y objetivos del
+trabajo, marco teórico de las tecnologías de Web Semántica utilizadas, marco
+referencial del dominio seleccionado, sección de ingeniería con la descripción de la
+ontología, la arquitectura y las pruebas del prototipo, y finalmente las conclusiones
+obtenidas a partir del desarrollo realizado.

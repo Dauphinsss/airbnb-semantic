@@ -1,0 +1,41 @@
+\section{CONCLUSIONES}
+
+El desarrollo del buscador semántico permitió comprobar que las tecnologías de la Web
+Semántica resultan adecuadas para modelar dominios de alojamiento temporal donde la
+información relevante no puede reducirse a filtros aislados. La ontología construida en
+OWL/RDF representó de forma coherente propiedades, amenidades, perfiles de huésped,
+propósitos de viaje, políticas y contexto geográfico, habilitando consultas más
+expresivas que las disponibles en un catálogo convencional.
+
+La integración con DBpedia cumplió un doble propósito. Por un lado, aportó una base
+externa confiable para enlazar tipos de alojamiento, amenidades y ciudades bolivianas
+mediante \texttt{owl:sameAs} y \texttt{owl:equivalentClass}. Por otro lado, permitió
+justificar la interoperabilidad del proyecto con el ecosistema de \textit{Linked Data}
+sin comprometer la estabilidad del prototipo, dado que la operación principal se ejecuta
+sobre un dataset local en Fuseki.
+
+La implementación de multilingüidad mediante \texttt{rdfs:label} y
+\texttt{rdfs:comment} demostró ser una decisión técnicamente sólida. A partir de un
+único grafo RDF fue posible publicar y recuperar resultados en español, inglés y
+francés, evitando duplicación de entidades y manteniendo una representación semántica
+consistente entre idiomas. Esta estrategia confirma la ventaja de RDF/OWL para soportar
+internacionalización de forma nativa.
+
+Desde la perspectiva de ingeniería, el uso de Fuseki como \textit{triple store}, SPARQL
+como lenguaje de consulta y Next.js como capa de presentación permitió construir un
+prototipo funcional y cercano a un escenario real de uso. El sistema no quedó limitado
+a la teoría ontológica: ofrece interfaz web, resultados visuales, navegación por idioma
+y un flujo de búsqueda operable por el usuario final.
+
+La validación con HermiT y las pruebas funcionales realizadas muestran que la solución es
+coherente tanto en el plano lógico como en el operativo. En consecuencia, se concluye
+que el objetivo de la práctica fue alcanzado: se desarrolló un buscador semántico basado
+en OWL/RDF, enriquecido con DBpedia, con soporte multilingüe y materializado en una
+aplicación de software defendible académicamente.
+
+Como trabajo futuro, el proyecto puede ampliarse con nuevas ciudades, más puntos de
+interés, consultas geográficas basadas en coordenadas, reglas de razonamiento más ricas
+y un módulo de administración de datos que permita poblar la ontología de forma más
+automatizada. Sin embargo, aun en su estado actual, el prototipo constituye una prueba
+completa de aplicación de técnicas de Web Semántica en un problema concreto del dominio
+de alojamiento temporal.

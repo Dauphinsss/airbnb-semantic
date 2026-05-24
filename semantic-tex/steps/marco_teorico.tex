@@ -1,0 +1,152 @@
+\section{MARCO TEÓRICO}
+
+\subsection{Web Semántica}
+
+La Web Semántica es una extensión de la Web tradicional orientada a que los datos no
+solo sean publicados para consumo humano, sino también descritos de manera formal para
+ser interpretados por agentes de software \parencite{berners-lee2001}. Su objetivo no
+es reemplazar la Web documental, sino complementarla con una capa semántica que permita
+representar entidades, relaciones, restricciones y reglas de inferencia sobre los
+recursos disponibles.
+
+Desde el punto de vista arquitectónico, la Web Semántica se apoya en una pila de
+estándares del W3C. En la base se encuentran los URI como identificadores globales de
+recursos; sobre ellos, RDF como modelo de representación; posteriormente, RDFS y OWL
+como lenguajes de descripción y formalización de vocabularios; y finalmente SPARQL
+como lenguaje de consulta sobre grafos RDF. Gracias a esta pila tecnológica es posible
+publicar conocimiento de manera interoperable y vincularlo con otras fuentes dentro del
+ecosistema de \textit{Linked Data}.
+
+\subsection{RDF como modelo de representación}
+
+El \textit{Resource Description Framework} (RDF) es el modelo de datos básico de la Web
+Semántica \parencite{w3c-rdf2014}. RDF expresa la información mediante triples de la
+forma sujeto--predicado--objeto. El sujeto representa el recurso descrito, el
+predicado expresa una propiedad o relación, y el objeto representa el valor de esa
+propiedad, ya sea otro recurso o un literal.
+
+Un conjunto de triples conforma un grafo RDF. Esta estructura es flexible, extensible y
+adecuada para dominios complejos, ya que permite agregar nuevos hechos sin rediseñar el
+modelo completo. En aplicaciones como la desarrollada en este trabajo, RDF es
+particularmente útil porque permite integrar en un mismo grafo información sobre
+propiedades, amenidades, perfiles de huésped, zonas geográficas y recursos enlazados a
+fuentes externas como DBpedia.
+
+\subsection{RDFS y anotaciones semánticas}
+
+RDF Schema extiende RDF con construcciones básicas para describir tipos y jerarquías
+\parencite{w3c-rdfs2014}. Entre sus elementos más importantes se encuentran
+\texttt{rdfs:Class}, \texttt{rdfs:subClassOf}, \texttt{rdfs:domain} y
+\texttt{rdfs:range}. Estas construcciones permiten definir clases, organizar
+subsunciones entre ellas y restringir el uso de las propiedades.
+
+Además, RDFS introduce anotaciones como \texttt{rdfs:label} y \texttt{rdfs:comment},
+que permiten asociar nombres legibles y descripciones textuales a recursos. Estas
+anotaciones son especialmente relevantes para el presente proyecto, ya que constituyen
+la base del soporte multilingüe implementado en la ontología mediante etiquetas en
+español, inglés y francés.
+
+\subsection{Ontologías OWL}
+
+Una ontología es una especificación formal de un dominio de conocimiento, donde se
+declaran conceptos, relaciones, individuos y restricciones lógicas. OWL es el estándar
+del W3C para la definición de ontologías sobre RDF \parencite{w3c-owl2012}. Frente a la
+expresividad limitada de RDFS, OWL incorpora constructores más ricos para representar
+disjunciones, equivalencias, restricciones existenciales, cardinalidades y axiomas
+lógicos con semántica formal basada en lógica descriptiva.
+
+En OWL, una ontología puede incluir:
+
+\begin{itemize}
+  \item \textbf{Clases}, que agrupan individuos con características comunes.
+  \item \textbf{Propiedades de objeto}, que vinculan individuos con otros individuos.
+  \item \textbf{Propiedades de dato}, que vinculan individuos con literales.
+  \item \textbf{Individuos}, que representan instancias concretas del dominio.
+  \item \textbf{Axiomas}, que describen restricciones, equivalencias, disjunciones o
+  condiciones de pertenencia.
+\end{itemize}
+
+La ontología desarrollada en esta práctica fue modelada en OWL 2 DL, ya que este
+perfil ofrece un equilibrio adecuado entre expresividad y decidibilidad. Gracias a ello,
+el modelo puede ser verificado por un razonador automático y al mismo tiempo mantener
+capacidad suficiente para representar el dominio de alojamientos temporales.
+
+\subsection{SPARQL como lenguaje de consulta}
+
+SPARQL es el lenguaje estándar para consultar grafos RDF \parencite{w3c-sparql2013}.
+Una consulta SPARQL declara patrones de triples que deben satisfacerse en el grafo de
+conocimiento y puede complementarse con filtros, uniones, agregaciones, ordenamiento y
+agrupamiento de resultados.
+
+En el contexto del presente trabajo, SPARQL se utiliza en dos niveles. Primero, como
+mecanismo principal de recuperación sobre el dataset local cargado en Fuseki. Segundo,
+como medio para demostrar interoperabilidad con DBpedia mediante consultas federadas con
+la cláusula \texttt{SERVICE}. Aunque la aplicación final se apoya sobre un dataset local
+enriquecido para mejorar estabilidad y rendimiento, el uso de \texttt{SERVICE} sigue
+siendo relevante como evidencia de integración con una base de conocimiento enlazada.
+
+\subsection{Lógica de Descripción y razonamiento}
+
+La base formal de OWL 2 DL se encuentra en la Lógica de Descripción. Este marco permite
+definir conceptos de manera precisa y habilita inferencias automáticas sobre la
+ontología \parencite{baader2003}. A partir de un conjunto de axiomas, un razonador
+puede verificar consistencia, clasificar jerarquías de clases y determinar la
+pertenencia de individuos a conceptos derivados.
+
+El razonamiento automático es importante en ontologías aplicadas porque permite detectar
+errores conceptuales tempranos. Por ejemplo, si dos clases son declaradas disjuntas, un
+individuo no debería pertenecer simultáneamente a ambas; si esto ocurre, el razonador lo
+identifica como inconsistencia. En este proyecto se utilizó HermiT para verificar que la
+ontología modelada no incurre en contradicciones lógicas \parencite{glimm2014}.
+
+\subsection{Ingeniería de ontologías y preguntas de competencia}
+
+La ingeniería de ontologías es el proceso metodológico mediante el cual se construyen y
+mantienen modelos formales de conocimiento. Una práctica central en este proceso es la
+definición de \textit{preguntas de competencia}: consultas representativas del dominio
+que la ontología debe ser capaz de responder. Estas preguntas permiten validar la
+cobertura conceptual del modelo y orientar su diseño desde necesidades reales de uso.
+
+En el dominio de alojamiento temporal, las preguntas de competencia suelen combinar
+ciudad, rango de precio, tipo de propiedad, amenidades, perfil del viajero y propósito
+de la estadía. Por ello, la ontología no debe limitarse a almacenar atributos, sino que
+debe representar relaciones semánticas que permitan responder consultas compuestas de
+forma coherente.
+
+\subsection{Protégé y HermiT como entorno de modelado}
+
+Protégé es el entorno de edición ontológica más utilizado en proyectos de Web
+Semántica \parencite{musen2015}. Permite modelar clases, propiedades, restricciones e
+individuos, y además ofrece integración con razonadores como HermiT. En este trabajo,
+Protégé fue utilizado para el diseño inicial de la ontología y HermiT para la
+verificación de consistencia y revisión de la jerarquía lógica.
+
+\subsection{DBpedia como base de conocimiento enlazada}
+
+DBpedia es una de las bases de conocimiento enlazadas más representativas del ecosistema
+de \textit{Linked Data}. Extrae información estructurada de Wikipedia y la publica en
+RDF, con millones de entidades y etiquetas multilingües \parencite{lehmann2015}. Su
+utilidad en este proyecto radica en que provee referencias geográficas reales para el
+territorio boliviano y recursos equivalentes para conceptos del dominio como tipos de
+alojamiento o amenidades.
+
+La integración con DBpedia puede realizarse de varias maneras: mediante consultas
+federadas en tiempo de ejecución, mediante descarga previa de subconjuntos RDF o a
+través de enlaces semánticos entre recursos locales y remotos. En la solución final se
+priorizó este último enfoque, incorporando \texttt{owl:sameAs} y
+\texttt{owl:equivalentClass} en la ontología local, lo que hace más estable la
+demostración sobre Fuseki y, al mismo tiempo, conserva la trazabilidad hacia los
+recursos de DBpedia utilizados.
+
+\subsection{Representación multilingüe en ontologías}
+
+Una de las ventajas más importantes de RDF/OWL es que la multilingüidad puede
+representarse directamente mediante literales etiquetados por idioma. La forma más
+simple y estándar consiste en utilizar \texttt{rdfs:label} y \texttt{rdfs:comment}
+con etiquetas como \texttt{@es}, \texttt{@en} o \texttt{@fr} \parencite{w3c-rdf2014}.
+
+Este enfoque tiene varias ventajas técnicas: evita duplicar la ontología, mantiene una
+única identidad semántica para cada recurso y permite seleccionar el idioma requerido en
+las consultas SPARQL mediante la función \texttt{LANG()} o estrategias de fallback.
+Precisamente esta capacidad fue aprovechada en el proyecto para servir resultados en
+español, inglés y francés desde un único dataset OWL cargado en Fuseki.
