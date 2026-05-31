@@ -190,8 +190,8 @@ function chipsDeFiltros(filters: AIFilters, lang: Locale) {
   ].filter(Boolean);
 }
 
-async function obtenerResultados(lang: Locale, termino = ""): Promise<SearchResponse> {
-  const params = new URLSearchParams({ lang });
+async function obtenerResultados(lang: Locale, termino = "", mode = "offline"): Promise<SearchResponse> {
+  const params = new URLSearchParams({ lang, mode });
   if (termino.trim()) params.set("q", termino.trim());
 
   const res = await fetch(`/api/buscar?${params.toString()}`);
@@ -206,17 +206,50 @@ function SearchBox({
   q,
   setQ,
   onSubmit,
+  mode,
+  onModeChange,
 }: {
   lang: Locale;
   cargando: boolean;
   q: string;
   setQ: (value: string) => void;
   onSubmit: (event: FormEvent) => void;
+  mode: "offline" | "online";
+  onModeChange: (newMode: "offline" | "online") => void;
 }) {
   const dict = uiDictionary[lang];
   return (
-    <section className="mx-auto flex max-w-3xl flex-col items-center gap-6 pt-6 pb-2 text-center">
-      <div className="flex w-full justify-end text-xs font-semibold uppercase tracking-wide text-[var(--color-muted)]">
+    <section className="mx-auto flex w-full max-w-3xl flex-col items-center gap-6 pt-6 pb-2 text-center">
+      <div className="flex w-full flex-col sm:flex-row items-center justify-between gap-4 text-xs font-semibold uppercase tracking-wide text-[var(--color-muted)] border-b border-[var(--color-line)] pb-4">
+        {/* Toggle de Modo: Offline vs Online */}
+        <div className="flex items-center gap-2 rounded-full border border-[var(--color-line)] bg-[var(--color-paper)] p-1 shadow-sm transition-all duration-300">
+          <button
+            type="button"
+            onClick={() => onModeChange("offline")}
+            className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold uppercase tracking-wide transition-all duration-300 ${
+              mode === "offline"
+                ? "bg-[var(--color-cactus)] text-white shadow-sm scale-[1.03]"
+                : "text-[var(--color-muted)] hover:text-[var(--color-cactus)]"
+            }`}
+          >
+            <Building2 className="h-3.5 w-3.5" />
+            <span>{(dict as any).modeOffline}</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => onModeChange("online")}
+            className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold uppercase tracking-wide transition-all duration-300 ${
+              mode === "online"
+                ? "bg-[var(--color-terracotta)] text-white shadow-sm scale-[1.03]"
+                : "text-[var(--color-muted)] hover:text-[var(--color-terracotta)]"
+            }`}
+          >
+            <Waves className="h-3.5 w-3.5 animate-pulse" />
+            <span>{(dict as any).modeOnline}</span>
+          </button>
+        </div>
+
+        {/* Idiomas */}
         <div className="flex flex-wrap gap-2">
           {locales.map((locale) => (
             <Link
@@ -377,10 +410,14 @@ function ListingCard({
   lang,
   propiedad,
   index,
+  mode,
+  onSelectCard,
 }: {
   lang: Locale;
   propiedad: Propiedad;
   index: number;
+  mode: "offline" | "online";
+  onSelectCard: (propiedad: Propiedad) => void;
 }) {
   const dict = uiDictionary[lang];
   const TipoIcon = iconoTipoPropiedad(propiedad.tipo);
@@ -389,7 +426,14 @@ function ListingCard({
   return (
     <article
       style={{ animationDelay: `${Math.min(index * 50, 400)}ms` }}
-      className="animate-fade-up group flex flex-col gap-3 rounded-lg border border-[var(--color-line)] bg-[var(--color-paper)] p-3 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-[var(--color-cactus)] hover:shadow-lg"
+      onClick={() => {
+        if (mode === "online") {
+          onSelectCard(propiedad);
+        }
+      }}
+      className={`animate-fade-up group flex flex-col gap-3 rounded-lg border border-[var(--color-line)] bg-[var(--color-paper)] p-3 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-[var(--color-cactus)] hover:shadow-lg ${
+        mode === "online" ? "cursor-pointer" : ""
+      }`}
     >
       <div className="overflow-hidden rounded-md">
         <div className="relative">
@@ -401,6 +445,7 @@ function ListingCard({
               height={800}
               loading={index < 3 ? "eager" : "lazy"}
               sizes="(min-width: 1280px) 31vw, (min-width: 640px) 48vw, 100vw"
+              unoptimized={propiedad.uri.startsWith("http://www.wikidata.org")}
               className="h-40 w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
             />
           ) : (
@@ -529,16 +574,30 @@ export default function HomeClient({ lang }: { lang: Locale }) {
   const dict = uiDictionary[lang];
   const [q, setQ] = useState("");
   const [resultados, setResultados] = useState<Propiedad[]>([]);
-  const [cargando, setCargando] = useState(true);
+  const [cargando, setResultadosLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [ai, setAi] = useState<AIInfo | null>(null);
 
+  const [mode, setMode] = useState<"offline" | "online">("offline");
+  const [initialized, setInitialized] = useState(false);
+  const [modalPropiedad, setModalPropiedad] = useState<Propiedad | null>(null);
+
   useEffect(() => {
+    const saved = localStorage.getItem("search-mode");
+    if (saved === "online" || saved === "offline") {
+      setMode(saved);
+    }
+    setInitialized(true);
+  }, []);
+
+  useEffect(() => {
+    if (!initialized) return;
     let cancelado = false;
 
     async function cargarCatalogo() {
+      setResultadosLoading(true);
       try {
-        const data = await obtenerResultados(lang);
+        const data = await obtenerResultados(lang, "", mode);
         if (cancelado) return;
         setResultados(data.propiedades ?? []);
         setAi(data.ai ?? null);
@@ -547,7 +606,7 @@ export default function HomeClient({ lang }: { lang: Locale }) {
         setError(err instanceof Error ? err.message : dict.fallbackError);
         setResultados([]);
       } finally {
-        if (!cancelado) setCargando(false);
+        if (!cancelado) setResultadosLoading(false);
       }
     }
 
@@ -556,23 +615,48 @@ export default function HomeClient({ lang }: { lang: Locale }) {
     return () => {
       cancelado = true;
     };
-  }, [dict.fallbackError, lang]);
+  }, [dict.fallbackError, lang, mode, initialized]);
 
-  async function buscar(termino: string) {
-    setCargando(true);
+  async function buscarConModo(termino: string, targetMode: "offline" | "online") {
+    setResultadosLoading(true);
     setError(null);
     setAi(null);
 
     try {
-      const data = await obtenerResultados(lang, termino);
+      const data = await obtenerResultados(lang, termino, targetMode);
       setResultados(data.propiedades ?? []);
       setAi(data.ai ?? null);
     } catch (err) {
       setError(err instanceof Error ? err.message : dict.fallbackError);
       setResultados([]);
     } finally {
-      setCargando(false);
+      setResultadosLoading(false);
     }
+  }
+
+  async function buscar(termino: string) {
+    await buscarConModo(termino, mode);
+  }
+
+  function handleModeChange(newMode: "offline" | "online") {
+    localStorage.setItem("search-mode", newMode);
+    setMode(newMode);
+    buscarConModo(q, newMode);
+  }
+
+  function handleSelectCard(propiedad: Propiedad) {
+    setModalPropiedad(propiedad);
+  }
+
+  function handleConfirmNavigate() {
+    if (modalPropiedad) {
+      window.open(modalPropiedad.uri, "_blank", "noopener,noreferrer");
+      setModalPropiedad(null);
+    }
+  }
+
+  function handleCloseModal() {
+    setModalPropiedad(null);
   }
 
   function onSubmit(event: FormEvent) {
@@ -588,7 +672,15 @@ export default function HomeClient({ lang }: { lang: Locale }) {
   return (
     <main className="min-h-screen px-4 py-6 text-[var(--color-ink)] sm:px-6">
       <div className="mx-auto max-w-7xl">
-        <SearchBox lang={lang} cargando={cargando} q={q} setQ={setQ} onSubmit={onSubmit} />
+        <SearchBox
+          lang={lang}
+          cargando={cargando}
+          q={q}
+          setQ={setQ}
+          onSubmit={onSubmit}
+          mode={mode}
+          onModeChange={handleModeChange}
+        />
 
         <SuggestionBar lang={lang} cargando={cargando} total={resultados.length} onSelect={onSugerencia} />
 
@@ -604,7 +696,14 @@ export default function HomeClient({ lang }: { lang: Locale }) {
         {!cargando && (
           <section className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {resultados.map((propiedad, index) => (
-              <ListingCard key={propiedad.uri} lang={lang} propiedad={propiedad} index={index} />
+              <ListingCard
+                key={propiedad.uri}
+                lang={lang}
+                propiedad={propiedad}
+                index={index}
+                mode={mode}
+                onSelectCard={handleSelectCard}
+              />
             ))}
           </section>
         )}
@@ -616,6 +715,54 @@ export default function HomeClient({ lang }: { lang: Locale }) {
           </div>
         )}
       </div>
+
+      {modalPropiedad && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-fade-in">
+          <div className="relative w-full max-w-lg scale-[1] rounded-2xl border border-[var(--color-line)] bg-[var(--color-paper)] p-6 shadow-2xl transition-all duration-300 animate-scale-up text-left">
+            <header className="flex items-center gap-3 border-b border-[var(--color-line)] pb-3">
+              <Sparkles className="h-6 w-6 text-[var(--color-terracotta)] animate-pulse" />
+              <h2 className="text-xl font-bold text-[var(--color-ink)]">
+                {modalPropiedad.nombre}
+              </h2>
+            </header>
+            
+            <div className="mt-4 space-y-3">
+              <p className="text-sm font-medium text-[var(--color-cactus)] uppercase tracking-wider flex items-center gap-1.5">
+                <MapPin className="h-4 w-4" />
+                <span>{modalPropiedad.tipo} · {modalPropiedad.ciudad || "Bolivia"}</span>
+              </p>
+              <p className="text-sm leading-relaxed text-[var(--color-muted)]">
+                {(dict as any).modalBody}
+              </p>
+              <div className="rounded-lg bg-[var(--color-cactus-soft)] p-3 text-xs border border-[var(--color-line)]">
+                <p className="font-semibold text-[var(--color-ink)] mb-1">
+                  {(dict as any).modalQuestion}
+                </p>
+                <code className="block select-all bg-white/50 p-1.5 rounded border border-[var(--color-line)] break-all mt-2 dark:bg-black/20 text-[var(--color-cactus)]">
+                  {modalPropiedad.uri}
+                </code>
+              </div>
+            </div>
+            
+            <footer className="mt-6 flex items-center justify-end gap-3 border-t border-[var(--color-line)] pt-4">
+              <button
+                type="button"
+                onClick={handleCloseModal}
+                className="rounded-md border border-[var(--color-line)] bg-white px-4 py-2 text-sm font-semibold text-[var(--color-ink)] shadow-sm hover:bg-[var(--color-line-soft)] active:scale-[0.98] transition-all"
+              >
+                {(dict as any).modalBtnCancel}
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmNavigate}
+                className="rounded-md bg-[var(--color-terracotta)] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[var(--color-terracotta-dark)] active:scale-[0.98] transition-all"
+              >
+                {(dict as any).modalBtnConfirm}
+              </button>
+            </footer>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

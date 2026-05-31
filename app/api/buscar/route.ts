@@ -8,6 +8,7 @@ import {
   sanitizeStructuredFilters,
   searchOntology,
 } from "./ontology";
+import { searchWikidata } from "./wikidata";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -16,8 +17,18 @@ export async function GET(request: NextRequest) {
   const q = (request.nextUrl.searchParams.get("q") ?? "").trim();
   const useAi = request.nextUrl.searchParams.get("ai") !== "0";
   const locale = normalizeLocale(request.nextUrl.searchParams.get("lang"));
+  const mode = request.nextUrl.searchParams.get("mode") ?? "offline";
 
   try {
+    if (mode === "online") {
+      const propiedades = await searchWikidata(q, locale);
+      return Response.json({
+        propiedades,
+        total: propiedades.length,
+        ai: { source: "fallback", filters: null, explanation: null },
+      });
+    }
+
     if (!q) {
       const propiedades = await searchOntology("", locale);
       return Response.json({
