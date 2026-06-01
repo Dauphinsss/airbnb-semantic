@@ -39,9 +39,20 @@ internacionalización propias de RDF/OWL.
 
 La aplicación resultante fue implementada con Next.js como capa de presentación y de
 servicios, Fuseki como \textit{triple store}, Bun como entorno de ejecución y un módulo
-de procesamiento lingüístico para interpretar consultas en lenguaje natural. El sistema final ofrece una
-interfaz web con navegación multilingüe, resultados visuales por tarjetas y búsqueda
-semántica sobre una ontología consistente y validada.
+de procesamiento lingüístico para interpretar consultas en lenguaje natural. El sistema
+final ofrece una interfaz web con navegación multilingüe, resultados visuales por
+tarjetas y dos modos de recuperación complementarios: un modo \textit{offline}
+respaldado por la ontología local cargada en Fuseki y un modo \textit{online} que
+consulta fuentes abiertas mediante SPARQL público sobre DBpedia, Wikidata y
+LinkedGeoData \parencite{wikidata,linkedgeodata}.
+
+La coexistencia de ambos modos permitió comparar dos estrategias semánticas distintas.
+El modo \textit{offline} privilegia estabilidad, completitud controlada e integración con
+el modelo OWL/RDF del proyecto. El modo \textit{online}, en cambio, privilegia evidencia
+externa en tiempo real, aceptando que los resultados puedan llegar con datos incompletos,
+sin imágenes o sin ciertas amenidades. Esta decisión fue deliberada para no simular
+atributos inexistentes y respetar únicamente la información realmente publicada por las
+fuentes externas.
 
 El informe se organiza en cinco bloques principales: introducción y objetivos del
 trabajo, marco teórico de las tecnologías de Web Semántica utilizadas, marco

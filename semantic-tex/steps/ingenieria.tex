@@ -4,35 +4,42 @@
 
 La solución implementada corresponde a un buscador semántico de alojamientos temporales
 construido sobre una ontología OWL/RDF cargada en Apache Jena Fuseki. La interfaz web
-permite realizar búsquedas en lenguaje natural, interpretar criterios estructurados y
-presentar resultados en tres idiomas. La arquitectura fue pensada para que la ontología
-sea el núcleo del sistema y no un artefacto secundario: tanto la recuperación de
-resultados como la internacionalización dependen directamente del grafo semántico.
+permite realizar búsquedas en lenguaje natural, interpretar criterios estructurados,
+presentar resultados en tres idiomas y alternar entre dos modos operativos: un catálogo
+\textit{offline} consultado desde Fuseki y un catálogo \textit{online} alimentado por
+fuentes abiertas consultadas con SPARQL.
 
-Desde el punto de vista de ejecución, el sistema combina tres componentes principales:
-una base de conocimiento ontológica, un \textit{triple store} con endpoint SPARQL y una
-aplicación web que consume ese endpoint. El enriquecimiento con DBpedia se integra en la
-propia ontología mediante alineaciones y enlaces semánticos, lo que permite mantener la
-operación principal en local sobre Fuseki y, a la vez, demostrar interoperabilidad con
-Linked Data.
+La arquitectura fue pensada para que la ontología sea el núcleo del sistema y no un
+artefacto secundario. En el modo \textit{offline}, la recuperación depende directamente
+del grafo local; en el modo \textit{online}, la aplicación contrasta ese catálogo con
+datos externos reales obtenidos desde DBpedia, Wikidata y LinkedGeoData
+\parencite{lehmann2015,wikidata,linkedgeodata}. Este segundo modo acepta información
+incompleta y evita simular atributos inexistentes para preservar fidelidad con la Web
+Semántica pública.
 
 \subsection{Arquitectura implementada}
 
-La arquitectura real del proyecto se organiza en tres capas:
+La arquitectura real del proyecto se organiza en cuatro capas:
 
 \begin{itemize}
   \item \textbf{Capa de conocimiento}. Contiene la ontología
   \texttt{ontology/Airbnb.owl}, donde se definen clases, propiedades, axiomas,
   individuos, etiquetas multilingües y enlaces a DBpedia.
 
-  \item \textbf{Capa de persistencia y consulta}. Está implementada con Apache Jena
-  Fuseki, que expone el endpoint SPARQL del dataset local \texttt{airbnb}. Esta capa es
-  responsable de almacenar el grafo RDF y responder las consultas ejecutadas por la
-  aplicación.
+  \item \textbf{Capa de persistencia y consulta local}. Está implementada con Apache
+  Jena Fuseki, que expone el endpoint SPARQL del dataset local \texttt{airbnb}. Esta
+  capa almacena el grafo RDF y responde las consultas del modo \textit{offline}
+  \parencite{jena-fuseki}.
+
+  \item \textbf{Capa de federación externa}. Reúne consultas SPARQL hacia DBpedia,
+  Wikidata y LinkedGeoData. Esta capa construye un catálogo temporal para el modo
+  \textit{online} usando solamente los atributos realmente disponibles en las fuentes
+  externas.
 
   \item \textbf{Capa de aplicación}. Se implementó con Next.js 16 y React 19. Esta
-  capa interpreta la consulta del usuario, llama a Fuseki, aplica ranking semántico y
-  renderiza los resultados en la interfaz web.
+  capa interpreta la consulta del usuario, decide qué modo se encuentra activo, llama a
+  Fuseki o al agregador externo, aplica ranking y renderiza los resultados en la
+  interfaz web.
 \end{itemize}
 
 \begin{table}[H]
@@ -48,7 +55,9 @@ Representación semántica & OWL 2 DL + RDF/XML & Formalización del dominio y s
 \hline
 Consulta semántica & SPARQL 1.1 & Recuperación de propiedades, amenidades, perfiles y filtrado por idioma. \\
 \hline
-Triple store & Apache Jena Fuseki & Carga del dataset local y exposición del endpoint SPARQL. \\
+Triple store local & Apache Jena Fuseki & Carga del dataset local y exposición del endpoint SPARQL del modo \textit{offline}. \\
+\hline
+Federación externa & DBpedia + Wikidata + LinkedGeoData & Recuperación \textit{online} mediante SPARQL público y contraste con datos reales externos. \\
 \hline
 Aplicación web & Next.js 16 + React 19 & Interfaz del buscador, rutas por idioma y consumo del backend semántico. \\
 \hline
@@ -56,19 +65,17 @@ Runtime & Bun & Ejecución del proyecto web y gestión de dependencias. \\
 \hline
 Procesamiento lingüístico & Módulo de procesamiento de consultas & Interpretación de consultas en lenguaje natural y transformación hacia filtros estructurados. \\
 \hline
-Base enlazada externa & DBpedia & Referencia para tipos de alojamiento, amenidades y ciudades bolivianas. \\
-\hline
-Imágenes & Unsplash & Fotografías referenciales incluidas en la ontología mediante URL. \\
+Imágenes & Unsplash + Wikimedia Commons & Fotografías referenciales únicas para el modo \textit{offline} y fotografías originales verificadas para el modo \textit{online}. \\
 \hline
 \end{tabular}
 \end{table}
 
 \subsection{Estructura ontológica resultante}
 
-La ontología desarrollada no modela un concepto genérico de ``alojamiento'' abstracto
-desconectado del proyecto, sino un dominio operativo orientado a la recuperación
-semántica de propiedades. El eje principal del modelo es la clase \texttt{Propiedad},
-de la cual derivan los tipos concretos que el usuario visualiza y consulta.
+La ontología desarrollada no modela un concepto genérico de ``alojamiento'' abstracto,
+sino un dominio operativo orientado a la recuperación semántica de propiedades. El eje
+principal del modelo es la clase \texttt{Propiedad}, de la cual derivan los tipos
+concretos que el usuario visualiza y consulta.
 
 Las clases más importantes del modelo son:
 
@@ -133,11 +140,10 @@ apartamentos, casas, habitaciones privadas, habitaciones compartidas y villas. A
 se añadieron 14 amenidades, 10 perfiles de huésped, 10 políticas, 10 propósitos de
 viaje, 17 puntos de interés y 17 zonas geográficas.
 
-La población de la ontología no se limita a datos nominales. Cada propiedad incorpora
-atributos operativos relevantes para la búsqueda, como precio por noche, capacidad,
-calificación, descripción e imagen. Esto permitió que el prototipo web no fuera solo una
-demostración de consultas semánticas, sino una aplicación navegable con resultados
-visuales completos.
+Cada propiedad incorpora atributos operativos relevantes para la búsqueda, como precio
+por noche, capacidad, calificación, descripción e imagen. En la versión actual del modo
+\textit{offline} se cuidó además que cada alojamiento posea una imagen referencial no
+repetida, de manera que el catálogo local no colapse en tarjetas visualmente idénticas.
 
 \subsection{Restricciones y consistencia lógica}
 
@@ -157,8 +163,9 @@ la interpretación del dominio.
 
 El requisito del enunciado relativo a DBpedia se resolvió enriqueciendo el grafo local
 con enlaces semánticos hacia recursos de DBpedia utilizados directamente por el sistema.
-Esta solución evita depender del endpoint público en cada búsqueda, pero preserva la
-referencia formal a una base de conocimiento enlazada externa.
+Esta solución evita depender del endpoint público en cada búsqueda del modo
+\textit{offline}, pero preserva la referencia formal a una base de conocimiento enlazada
+externa.
 
 \subsubsection{Alineación de clases}
 
@@ -181,9 +188,7 @@ Las amenidades más relevantes del dominio fueron enlazadas mediante
 \parencite{dbpedia_wifi}, Kitchen \parencite{dbpedia_kitchen}, Air conditioning
 \parencite{dbpedia_air_conditioning}, Parking \parencite{dbpedia_parking}, Swimming
 pool \parencite{dbpedia_swimming_pool}, Laundry \parencite{dbpedia_laundry}, Breakfast
-\parencite{dbpedia_breakfast} y Cleaning \parencite{dbpedia_cleaning}. Esta decisión
-fortalece la semántica del grafo y documenta explícitamente qué conceptos del dominio se
-alinean con conocimiento enlazado externo.
+\parencite{dbpedia_breakfast} y Cleaning \parencite{dbpedia_cleaning}.
 
 \subsubsection{Alineación geográfica}
 
@@ -191,16 +196,13 @@ Las principales ciudades bolivianas utilizadas por el catálogo se enlazaron con
 mediante \texttt{owl:sameAs}: Cochabamba \parencite{dbpedia_cochabamba}, La Paz
 \parencite{dbpedia_lapaz}, Santa Cruz de la Sierra
 \parencite{dbpedia_santacruz}, Sucre \parencite{dbpedia_sucre} y Tarija
-\parencite{dbpedia_tarija}. Estas alineaciones permiten justificar el origen externo del
-componente geográfico y aprovechar recursos con etiquetas multilingües ya consolidadas.
+\parencite{dbpedia_tarija}.
 
 \subsubsection{Consulta de interoperabilidad}
 
-Aunque el flujo principal de la aplicación trabaja sobre un dataset local en Fuseki, se
-definió también una consulta federada de validación con \texttt{SERVICE} para demostrar
-la conexión con el endpoint público de DBpedia. Esta consulta no es el mecanismo central
-del buscador en producción local, pero sí constituye evidencia de interoperabilidad con
-Linked Data.
+Aunque el flujo principal del \textit{offline} trabaja sobre un dataset local en Fuseki,
+se definió también una consulta federada de validación con \texttt{SERVICE} para
+demostrar la conexión con el endpoint público de DBpedia.
 
 \begin{verbatim}
 SELECT ?zona ?etiquetaDBpedia
@@ -221,43 +223,52 @@ separados. La estrategia adoptada fue enriquecer la ontología con \texttt{rdfs:
 perfiles y propiedades publicadas. De esta manera, un mismo recurso RDF conserva una
 identidad única y solo cambia su representación textual según el idioma solicitado.
 
-En la capa SPARQL se implementó selección por idioma con fallback. La aplicación intenta
-obtener primero el label o comment del idioma activo; si no existe, busca en otro idioma
-disponible y finalmente cae a los campos textuales heredados del modelo original. Este
-patrón mejora robustez y evita dejar resultados vacíos en caso de que alguna traducción
-no exista todavía.
-
-La interfaz web consume el mismo dataset para rutas \texttt{/es}, \texttt{/en} y
-\texttt{/fr}. Esta decisión demuestra que la multilingüidad está implementada en la
-capa semántica y no solo en textos estáticos de la interfaz.
+En la capa SPARQL se implementó selección por idioma con \textit{fallback}. La
+aplicación intenta obtener primero el \textit{label} o \textit{comment} del idioma
+activo; si no existe, busca en otro idioma disponible y finalmente cae a los campos
+textuales heredados del modelo original.
 
 \subsection{Motor de búsqueda y procesamiento de consultas}
 
 El flujo de búsqueda se implementa en dos etapas. Primero, la consulta en lenguaje
-natural es interpretada por un módulo de procesamiento lingüístico, que la transforma en filtros
-estructurados sobre ciudad, zona, tipo de propiedad, amenidades, capacidad o rango de
-precio. Segundo, esos filtros se aplican sobre Fuseki mediante consultas SPARQL y un
-proceso de ranking adicional en la capa de aplicación.
+natural es interpretada por un módulo de procesamiento lingüístico, que la transforma en
+filtros estructurados sobre ciudad, zona, tipo de propiedad, amenidades, capacidad o
+rango de precio. Segundo, esos filtros se aplican sobre Fuseki mediante consultas SPARQL
+y un proceso de ranking adicional en la capa de aplicación.
 
-Los filtros duros, como ciudad, precio o capacidad, se resuelven directamente en SPARQL.
-Posteriormente, los resultados son reordenados considerando coincidencias semánticas con
-amenidades, perfiles y palabras clave. Esta estrategia híbrida combina precisión en la
-restricción del conjunto de candidatos con flexibilidad en la presentación de resultados
-más relevantes.
+En la implementación final, este flujo se especializa según el modo operativo. En
+\textit{offline}, la búsqueda aprovecha directamente el catálogo local: propiedades,
+amenidades, perfiles, zonas, precios y etiquetas multilingües almacenadas en Fuseki. En
+\textit{online}, la aplicación construye un conjunto temporal a partir de tres fuentes
+SPARQL externas. En ese segundo caso no se inventan atributos faltantes: los campos
+ausentes permanecen vacíos y las tarjetas muestran únicamente la información publicada
+por las fuentes reales.
 
-El flujo operacional de una búsqueda puede resumirse en las siguientes etapas:
+La política de imágenes del modo \textit{online} también fue endurecida. Cada
+publicación externa conserva solo su imagen original, si esta existe y puede resolverse
+desde DBpedia, Wikidata o Wikimedia Commons. Si la fuente no publica fotografía o si el
+recurso remoto ya no es accesible, la interfaz presenta un \textit{fallback} textual
+explícito en lugar de reemplazar la imagen por una fotografía de stock.
 
-\begin{enumerate}
-  \item El usuario redacta una consulta en español, inglés o francés desde la interfaz.
-  \item La capa de aplicación envía la consulta al intérprete semántico, que extrae
-  filtros estructurados como ciudad, tipo de propiedad, amenidades y rango de precio.
-  \item Con esos filtros se ejecuta una consulta SPARQL sobre Fuseki para recuperar el
-  subconjunto inicial de propiedades compatibles.
-  \item El catálogo recuperado se cruza con información de amenidades, perfiles y zonas,
-  generando un índice textual y semántico para el ranking final.
-  \item El backend devuelve a la interfaz un conjunto de resultados ya ordenado y
-  localizado en el idioma activo.
-\end{enumerate}
+\subsection{Implementación del modo \textit{online} con SPARQL público}
+
+El modo \textit{online} se implementó como un agregador semántico que consulta tres
+fuentes distintas y luego unifica sus resultados en una sola respuesta para la interfaz:
+
+\begin{itemize}
+  \item \textbf{DBpedia}. Aporta recursos de hoteles con etiquetas, descripciones,
+  ciudades y, en varios casos, miniaturas o enlaces relacionados con Wikimedia Commons.
+  \item \textbf{Wikidata}. Aporta recursos hoteleros con imágenes originales, nombres y
+  enlaces estructurados reutilizables en la Web Semántica.
+  \item \textbf{LinkedGeoData}. Aporta recursos derivados de OpenStreetMap accesibles
+  mediante SPARQL, especialmente útiles para amenidades reales como Wi-Fi, piscina,
+  estacionamiento o cocina.
+\end{itemize}
+
+La aplicación ejecuta estas consultas en paralelo, deduplica por URI y por similitud de
+nombre/ciudad/tipo, y prioriza en la interfaz aquellos resultados que sí cuentan con
+imagen real disponible. Esta decisión no altera la semántica del resultado, pero mejora
+la legibilidad visual del catálogo \textit{online}.
 
 \subsection{Pruebas funcionales realizadas}
 
@@ -265,17 +276,19 @@ La validación funcional del prototipo se realizó sobre el dataset local cargad
 Fuseki y sobre la interfaz web. Entre los escenarios probados destacan:
 
 \begin{itemize}
-  \item Búsquedas en español, inglés y francés sobre el mismo catálogo.
-  \item Recuperación por ciudad y rango de precio.
-  \item Recuperación por tipo de propiedad y amenidades.
-  \item Presentación localizada de nombres, descripciones y categorías.
-  \item Consumo del endpoint local \texttt{/api/buscar} con respuestas consistentes por
-  idioma.
+  \item Búsquedas en español, inglés y francés sobre el mismo catálogo local.
+  \item Recuperación por ciudad, rango de precio, tipo de propiedad y amenidades.
+  \item Conmutación entre modo \textit{offline} y modo \textit{online} manteniendo la
+  misma interfaz y los mismos idiomas.
+  \item Priorización de resultados \textit{online} con imagen real por encima de tarjetas
+  sin evidencia visual.
+  \item Caída controlada a \textit{fallback} cuando una imagen externa ya no puede
+  descargarse en tiempo de ejecución.
 \end{itemize}
 
-Estas pruebas permitieron confirmar que el sistema cumple simultáneamente con los tres
-requisitos centrales del enunciado: uso de OWL/RDF, integración con DBpedia y soporte
-multilingüe.
+Estas pruebas permitieron confirmar que el sistema cumple con los requisitos centrales
+del enunciado y añade una comparación práctica entre un catálogo semántico local y un
+catálogo semántico federado con datos reales de la Web.
 
 \begin{table}[H]
 \centering
@@ -292,16 +305,22 @@ Inglés & apartment for remote work in Cochabamba with Wi-Fi and parking & Misma
 \hline
 Francés & appartement avec piscine a Santa Cruz & Recuperación localizada en francés a partir del mismo catálogo OWL. \\
 \hline
+Español (online) & hotel con wifi & Recuperación federada desde DBpedia, Wikidata y LinkedGeoData, priorizando recursos con evidencia visual real. \\
+\hline
+Español (online) & ITC Ratnadipa & Verificación puntual de publicación externa con imagen real y recurso navegable. \\
+\hline
+Español (online) & Gevora Hotel & Validación de recuperación puntual desde DBpedia con política de imagen original o \textit{fallback}. \\
+\hline
 \end{tabular}
 \end{table}
 
 \subsection{Evidencia del prototipo}
 
-Las figuras siguientes muestran el prototipo ejecutándose sobre la ontología cargada en
-Fuseki. Se incluyen vistas base en español, inglés y francés, además de capturas de
-consultas complejas una vez finalizada la recarga de resultados. Esto permite evidenciar
-que la interfaz no solo cambia textos estáticos, sino que recupera y presenta contenido
-semántico localizado.
+Las figuras siguientes muestran el prototipo ejecutándose tanto sobre la ontología
+cargada en Fuseki como sobre el agregador SPARQL externo del modo \textit{online}. Se
+incluyen vistas base en español, inglés y francés, capturas de consultas complejas en el
+catálogo local y capturas del catálogo federado con evidencia real de DBpedia,
+Wikidata y LinkedGeoData.
 
 \begin{figure}[H]
 \centering
@@ -345,11 +364,40 @@ semántico localizado.
 \label{fig:ui-en-compleja-1}
 \end{figure}
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{images/ui_inicio_online_es.png}
+\caption{Catálogo inicial del modo \textit{online} en español. La interfaz prioriza primero los resultados que sí publican imagen real en las fuentes externas.}
+\label{fig:ui-online-es}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{images/ui_busqueda_online_es_1.png}
+\caption{Consulta \texttt{hotel con wifi} en el modo \textit{online}, donde se combinan resultados de DBpedia, Wikidata y LinkedGeoData sin simular atributos faltantes.}
+\label{fig:ui-online-es-1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{images/ui_busqueda_online_es_2.png}
+\caption{Consulta puntual de \texttt{ITC Ratnadipa} en el modo \textit{online}, mostrando resolución de imagen original y navegación al recurso externo.}
+\label{fig:ui-online-es-2}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{images/ui_busqueda_online_es_3.png}
+\caption{Consulta puntual de \texttt{Gevora Hotel} en el modo \textit{online}, utilizada para validar la política de imagen original o \textit{fallback}.}
+\label{fig:ui-online-es-3}
+\end{figure}
+
 \subsection{Valor técnico del prototipo}
 
 La principal aportación técnica del sistema es demostrar que una ontología OWL puede ser
 el centro operativo de un prototipo moderno de búsqueda, y no solo un modelo teórico.
 La solución integra representación formal, consulta semántica, enriquecimiento con
-Linked Data, multilingüidad real y una interfaz web usable. En consecuencia, el
-proyecto cumple con el objetivo de aplicar investigación de Web Semántica en un
-artefacto de software funcional, defendible y alineado con el enunciado de la práctica.
+Linked Data, multilingüidad real, dos modos de recuperación y una interfaz web usable.
+En consecuencia, el proyecto cumple con el objetivo de aplicar investigación de Web
+Semántica en un artefacto de software funcional, defendible y alineado con el enunciado
+de la práctica.

@@ -24,8 +24,22 @@ internacionalización de forma nativa.
 Desde la perspectiva de ingeniería, el uso de Fuseki como \textit{triple store}, SPARQL
 como lenguaje de consulta y Next.js como capa de presentación permitió construir un
 prototipo funcional y cercano a un escenario real de uso. El sistema no quedó limitado
-a la teoría ontológica: ofrece interfaz web, resultados visuales, navegación por idioma
-y un flujo de búsqueda operable por el usuario final.
+a la teoría ontológica: ofrece interfaz web, resultados visuales, navegación por idioma,
+persistencia de modo de búsqueda y un flujo operable tanto sobre un catálogo local como
+sobre fuentes enlazadas externas.
+
+La incorporación del modo \textit{online} aportó una segunda evidencia relevante. Al
+consultar DBpedia, Wikidata y LinkedGeoData mediante SPARQL público, el proyecto pudo
+demostrar que la Web Semántica no solo sirve para poblar una ontología propia, sino
+también para recuperar recursos reales en tiempo de ejecución. Al mismo tiempo, esta
+integración dejó claro un límite práctico importante: la calidad del resultado externo
+depende de la completitud, estabilidad e imagen publicada por cada fuente.
+
+Precisamente por ello, la política final de imágenes del modo \textit{online} fue
+conservadora. El sistema muestra únicamente la imagen original si esta puede resolverse
+desde la fuente semántica externa; en caso contrario, presenta un \textit{fallback}
+explícito. Esta decisión refuerza la validez académica de la demostración porque evita
+introducir evidencia visual falsa en recursos incompletos.
 
 La validación con HermiT y las pruebas funcionales realizadas muestran que la solución es
 coherente tanto en el plano lógico como en el operativo. En consecuencia, se concluye
@@ -34,8 +48,9 @@ en OWL/RDF, enriquecido con DBpedia, con soporte multilingüe y materializado en
 aplicación de software defendible académicamente.
 
 Como trabajo futuro, el proyecto puede ampliarse con nuevas ciudades, más puntos de
-interés, consultas geográficas basadas en coordenadas, reglas de razonamiento más ricas
-y un módulo de administración de datos que permita poblar la ontología de forma más
-automatizada. Sin embargo, aun en su estado actual, el prototipo constituye una prueba
-completa de aplicación de técnicas de Web Semántica en un problema concreto del dominio
-de alojamiento temporal.
+interés, consultas geográficas basadas en coordenadas, reglas de razonamiento más ricas,
+una mejor resolución automática de imágenes desde Wikimedia Commons y un módulo de
+administración de datos que permita poblar la ontología de forma más automatizada. Sin
+embargo, aun en su estado actual, el prototipo constituye una prueba completa de
+aplicación de técnicas de Web Semántica en un problema concreto del dominio de
+alojamiento temporal.
