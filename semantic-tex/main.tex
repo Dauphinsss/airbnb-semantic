@@ -30,6 +30,33 @@
 \usepackage{forest}
 \usepackage{multicol}
 \usepackage{verbatim}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\definecolor{codebg}{rgb}{0.97,0.97,0.97}
+\definecolor{codeframe}{rgb}{0.88,0.88,0.88}
+\definecolor{codekeyword}{rgb}{0.0,0.4,0.7}
+\definecolor{codecomment}{rgb}{0.4,0.4,0.4}
+\definecolor{codestring}{rgb}{0.1,0.6,0.1}
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{codebg},
+  commentstyle=\color{codecomment}\itshape,
+  keywordstyle=\color{codekeyword}\bfseries,
+  stringstyle=\color{codestring},
+  breaklines=true,
+  frame=single,
+  rulecolor=\color{codeframe},
+  numbers=left,
+  numberstyle=\tiny\color{codecomment},
+  stepnumber=1,
+  numbersep=8pt,
+  showstringspaces=false,
+  captionpos=b,
+  keepspaces=true,
+  tabsize=2
+}
 
 \usepackage{tocloft}
 \setlength{\parindent}{0pt}

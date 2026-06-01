@@ -175,11 +175,11 @@ Las clases de tipos de propiedad se enlazaron con recursos de DBpedia mediante
 \parencite{dbpedia_house}, \texttt{Villa} \parencite{dbpedia_villa} y
 \texttt{Room} \parencite{dbpedia_room}.
 
-\begin{verbatim}
+\begin{lstlisting}[language=XML, caption={Alineación semántica de la clase Apartamento con DBpedia}, label={lst:owl-class-alignment}]
 <owl:Class rdf:about=".../Apartamento">
     <owl:equivalentClass rdf:resource="http://dbpedia.org/ontology/Apartment"/>
 </owl:Class>
-\end{verbatim}
+\end{lstlisting}
 
 \subsubsection{Alineación de amenidades}
 
@@ -204,7 +204,7 @@ Aunque el flujo principal del \textit{offline} trabaja sobre un dataset local en
 se definió también una consulta federada de validación con \texttt{SERVICE} para
 demostrar la conexión con el endpoint público de DBpedia.
 
-\begin{verbatim}
+\begin{lstlisting}[language=SQL, caption={Consulta SPARQL federada con cláusula SERVICE a DBpedia}, label={lst:sparql-service-federation}]
 SELECT ?zona ?etiquetaDBpedia
 WHERE {
   ?zona owl:sameAs ?recursoDBpedia .
@@ -213,7 +213,7 @@ WHERE {
     FILTER(LANG(?etiquetaDBpedia) = "es")
   }
 }
-\end{verbatim}
+\end{lstlisting}
 
 \subsection{Implementación del soporte multilingüe}
 
@@ -223,17 +223,49 @@ separados. La estrategia adoptada fue enriquecer la ontología con \texttt{rdfs:
 perfiles y propiedades publicadas. De esta manera, un mismo recurso RDF conserva una
 identidad única y solo cambia su representación textual según el idioma solicitado.
 
-En la capa SPARQL se implementó selección por idioma con \textit{fallback}. La
-aplicación intenta obtener primero el \textit{label} o \textit{comment} del idioma
-activo; si no existe, busca en otro idioma disponible y finalmente cae a los campos
-textuales heredados del modelo original.
+En la capa SPARQL se implementó un mecanismo dinámico de selección por idioma con tolerancia a fallos (\textit{fallback}). La aplicación web intenta recuperar primero las anotaciones \texttt{rdfs:label} y \texttt{rdfs:comment} correspondientes al idioma seleccionado por el usuario en la interfaz (español, inglés o francés). Si el recurso consultado carece de traducción en el idioma preferido, el motor realiza una caída en cascada buscando consecutivamente en los otros dos idiomas del catálogo; en caso de que no exista traducción alguna, cae finalmente a los campos de texto del modelo heredado original (\texttt{:nombrePropiedad} o \texttt{:descripcionPropiedad}).
+
+Para automatizar este comportamiento de forma transparente, se diseñó en el backend de consulta un generador de fragmentos SPARQL dinámicos. Este generador define variables preferidas, primarias y secundarias que luego unifica en una sola variable mediante la función de coalescencia de SPARQL. El siguiente bloque ilustra la estructura típica generada por el sistema para resolver de forma multilingüe las etiquetas de una propiedad:
+
+\begin{lstlisting}[language=SQL, caption={Resolución multilingüe dinámica de etiquetas mediante coalescencia en SPARQL}, label={lst:sparql-fallback}]
+OPTIONAL {
+  ?propiedad rdfs:label ?nombrePreferred .
+  FILTER(LANGMATCHES(LANG(?nombrePreferred), "es"))
+}
+OPTIONAL {
+  ?propiedad rdfs:label ?nombreFallback1 .
+  FILTER(LANGMATCHES(LANG(?nombreFallback1), "en"))
+}
+OPTIONAL {
+  ?propiedad rdfs:label ?nombreFallback2 .
+  FILTER(LANGMATCHES(LANG(?nombreFallback2), "fr"))
+}
+OPTIONAL {
+  ?propiedad :nombrePropiedad ?nombreLegacy
+}
+BIND(COALESCE(
+  ?nombrePreferred, 
+  ?nombreFallback1, 
+  ?nombreFallback2, 
+  ?nombreLegacy
+) AS ?nombre)
+\end{lstlisting}
+
+Esta estrategia de resolución basada en \texttt{COALESCE} y filtros \texttt{LANGMATCHES} garantiza la resiliencia lingüística del sistema. Permite que la interfaz web sea visualmente homogénea y que las consultas semánticas locales sigan operando con regularidad sin importar la cobertura de traducción disponible para un individuo particular del dominio.
 
 \subsection{Motor de búsqueda y procesamiento de consultas}
 
-El flujo de búsqueda se implementa en dos etapas. Primero, la consulta en lenguaje
-natural es interpretada por un módulo de procesamiento lingüístico, que la transforma en
-filtros estructurados sobre ciudad, zona, tipo de propiedad, amenidades, capacidad o
-rango de precio. Segundo, esos filtros se aplican sobre Fuseki mediante consultas SPARQL
+El flujo de búsqueda semántica se diseñó bajo un enfoque híbrido en cuatro fases que combinan el procesamiento cognitivo y la recuperación estructurada. Este diseño permite procesar lenguaje natural sin las restricciones sintácticas de una búsqueda rígida por palabras clave. Las fases implementadas en la solución son:
+
+\begin{enumerate}
+  \item \textbf{Fase 1: Generación de Vocabulario y prompt dinámico}. La aplicación web inspecciona dinámicamente el catálogo de la ontología en el arranque para compilar un diccionario de valores reales existentes (ciudades, zonas, tipos de propiedad, perfiles de huésped, categorías y nombres de amenidades). Este vocabulario sirve para alimentar el contexto de un Agente Cognitivo de Mapeo Semántico en la capa de backend, instruyéndolo para clasificar y traducir la consulta del usuario hacia un esquema JSON estrictamente acotado, mitigando alucinaciones semánticas.
+  
+  \item \textbf{Fase 2: Mapeo y Sanitización de criterios}. El Agente Cognitivo interpreta la consulta lingüística y decodifica la intención del usuario hacia un esquema JSON que contiene términos normalizados del vocabulario (ej. \texttt{"tiposPropiedad": ["Apartamento"]}). Posteriormente, se aplica un filtro de sanitización que valida las dependencias geográficas (ej. si la zona solicitada no pertenece a la ciudad encontrada, se descarta para evitar inconsistencias en el catálogo).
+  
+  \item \textbf{Fase 3: Ejecución de Filtros Duros en el Triplestore (SPARQL)}. Los criterios estructurados de tipo exacto (como la ciudad, la capacidad mínima de huéspedes y el precio máximo con una holgura del 25\% para no excluir resultados potencialmente interesantes) se traducen dinámicamente a una consulta SPARQL que se delega directamente al triplestore Apache Jena Fuseki. De esta forma, el motor de base de datos realiza el filtrado primario eficiente sobre el grafo local, devolviendo únicamente el conjunto de URIs que cumplen estrictamente con los requisitos básicos del usuario.
+  
+  \item \textbf{Fase 4: Puntuación de Filtros Blandos y Clasificación Relevante}. Una vez recuperadas las URIs pre-filtradas desde Fuseki, la capa de aplicación ejecuta una matriz de scoring heurístico para ordenar los alojamientos según la coincidencia de criterios suaves o contextuales. Se asignan puntuaciones positivas acumulativas por cada elemento coincidente: +4 para concordancia exacta en el tipo de propiedad, +3 para la zona geográfica y amenidades específicas, +2 si es compatible con el perfil de viajero deducido de la intención del usuario, y +1 por cada término de texto libre (\textit{keyword}) coincidente en la descripción indexada. Finalmente, las tarjetas de propiedad se presentan ordenadas de mayor a menor relevancia en la interfaz.
+\end{enumerate}
 y un proceso de ranking adicional en la capa de aplicación.
 
 En la implementación final, este flujo se especializa según el modo operativo. En
@@ -316,88 +348,98 @@ Español (online) & house & Validación de recuperación abierta en inglés dent
 
 \subsection{Evidencia del prototipo}
 
-Las figuras siguientes muestran el prototipo ejecutándose tanto sobre la ontología
-cargada en Fuseki como sobre el agregador SPARQL externo del modo \textit{online}. Se
-incluyen vistas base en español, inglés y francés, capturas de consultas complejas en el
-catálogo local y capturas del catálogo federado con evidencia real de DBpedia,
-Wikidata y LinkedGeoData.
+Las figuras siguientes muestran el prototipo ejecutándose tanto sobre la ontología cargada en Fuseki como sobre el agregador SPARQL externo del modo \textit{online}. Se incluyen vistas base en español, inglés y francés, capturas de consultas complejas en el catálogo local y capturas del catálogo federado con evidencia real de DBpedia, Wikidata y LinkedGeoData. Para evitar la acumulación de material gráfico sin contexto, cada figura es introducida y analizada individualmente en términos de su operación semántica subyacente.
+
+En primer lugar, se expone la interfaz de inicio del buscador configurada en idioma español. La figura \ref{fig:ui-es} ilustra cómo la aplicación recupera dinámicamente las etiquetas y descripciones en español directamente desde el almacén de triples local, cargando los recursos que disponen de la anotación \texttt{rdfs:label} calificada con la etiqueta de idioma \texttt{@es}.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.75\textwidth]{images/ui_inicio_es.png}
+\includegraphics[width=0.65\textwidth]{images/ui_inicio_es.png}
 \caption{Pantalla principal del buscador semántico en español.}
 \label{fig:ui-es}
 \end{figure}
 
+Al cambiar la preferencia lingüística del usuario a inglés, la aplicación ejecuta de forma transparente la consulta multilingüe con coalescencia en SPARQL. Como se evidencia en la figura \ref{fig:ui-en}, el sistema selecciona la etiqueta calificada con \texttt{@en} para todos los términos del catálogo y de la interfaz, demostrando la consistencia de una base de conocimiento única adaptada a múltiples contextos idiomáticos sin duplicación de instancias.
+
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.75\textwidth]{images/ui_inicio_en.png}
+\includegraphics[width=0.65\textwidth]{images/ui_inicio_en.png}
 \caption{Pantalla principal del buscador semántico en inglés sobre el mismo dataset OWL.}
 \label{fig:ui-en}
 \end{figure}
 
+La flexibilidad de este esquema de internacionalización semántica se ratifica en la figura \ref{fig:ui-fr}, que muestra la interfaz renderizada completamente en francés a través de la cláusula de fallback SPARQL que recupera los literales con la etiqueta de idioma \texttt{@fr}. Este comportamiento demuestra que la aplicación puede incorporar de forma ágil nuevos idiomas simplemente poblando anotaciones de etiquetas estandarizadas en el archivo de la ontología OWL.
+
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.75\textwidth]{images/ui_inicio_fr.png}
+\includegraphics[width=0.65\textwidth]{images/ui_inicio_fr.png}
 \caption{Pantalla principal del buscador semántico en francés sobre el mismo dataset OWL.}
 \label{fig:ui-fr}
 \end{figure}
 
+Pasando a la validación de búsquedas estructuradas complejas en el catálogo local offline, la figura \ref{fig:ui-es-compleja-1} presenta el resultado de la intención ``villa para familia en Santa Cruz con piscina y precio alto''. En esta captura se aprecia cómo el motor de búsqueda interpretó y tradujo la consulta en lenguaje natural a filtros exactos de ciudad, tipo de propiedad, perfil e inclinación de precio, ordenando las tarjetas resultantes mediante la matriz de scoring heurístico con el alojamiento más relevante al principio.
+
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.75\textwidth]{images/ui_busqueda_compleja_es_1.png}
+\includegraphics[width=0.65\textwidth]{images/ui_busqueda_compleja_es_1.png}
 \caption{Resultado de una búsqueda compleja en español orientada a villas familiares en Santa Cruz con piscina y sesgo de precio alto.}
 \label{fig:ui-es-compleja-1}
 \end{figure}
 
+De igual forma, la figura \ref{fig:ui-es-compleja-2} expone los alojamientos temporales filtrados y puntuados para un perfil de trabajo remoto en Cochabamba que exige Wi-Fi y estacionamiento. Se puede observar en la tarjeta de resultados que el sistema recupera únicamente aquellas instancias del grafo local que satisfacen las propiedades de objeto de la ontología (ej. \texttt{tieneAmenidad}) asociadas a los recursos de Wi-Fi y parqueo, validando la precisión conceptual de la consulta.
+
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.75\textwidth]{images/ui_busqueda_compleja_es_2.png}
+\includegraphics[width=0.65\textwidth]{images/ui_busqueda_compleja_es_2.png}
 \caption{Resultado de una búsqueda compleja en español orientada a trabajo remoto en Cochabamba con Wi-Fi y estacionamiento.}
 \label{fig:ui-es-compleja-2}
 \end{figure}
 
+Para comprobar la resiliencia lingüística cruzada (\textit{cross-lingual retrieval}), la figura \ref{fig:ui-en-compleja-1} muestra el resultado de formular la misma intención anterior en inglés (``apartment for remote work in Cochabamba with Wi-Fi and parking''). El Agente Cognitivo de Mapeo Semántico traduce la intención al mismo conjunto de restricciones ontológicas abstractas y el endpoint SPARQL recupera exactamente las mismas instancias del catálogo local, pero renderizadas en el idioma del usuario, confirmando la independencia entre la lógica semántica de recuperación y la presentación multilingüe del catálogo.
+
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.75\textwidth]{images/ui_busqueda_compleja_en_1.png}
+\includegraphics[width=0.65\textwidth]{images/ui_busqueda_compleja_en_1.png}
 \caption{Resultado de la misma intención de búsqueda compleja en inglés, evidenciando recuperación semántica multilingüe.}
 \label{fig:ui-en-compleja-1}
 \end{figure}
 
+En cuanto al modo federado online, la figura \ref{fig:ui-online-es} muestra la vista inicial del catálogo enlazado con la Web Semántica. Este catálogo no simula atributos: unifica en paralelo las respuestas de DBpedia, Wikidata y LinkedGeoData, deduplicando los alojamientos y presentándolos ordenados de acuerdo con la disponibilidad de metadatos reales, priorizando los que cuentan con evidencias físicas explícitas o enlaces visuales de Wikimedia Commons.
+
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.75\textwidth]{images/ui_inicio_online_es.png}
+\includegraphics[width=0.65\textwidth]{images/ui_inicio_online_es.png}
 \caption{Catálogo inicial del modo \textit{online} en español. La interfaz prioriza primero los resultados que sí publican imagen real en las fuentes externas.}
 \label{fig:ui-online-es}
 \end{figure}
 
+La consulta específica de amenidades federadas se ilustra en la figura \ref{fig:ui-online-es-1}, donde la búsqueda del término ``wifi'' intersecta dinámicamente nodos geográficos reales de OpenStreetMap a través de LinkedGeoData y hoteles registrados en DBpedia y Wikidata. El sistema combina los recursos deduplicados y presenta las amenidades recuperadas tal como han sido publicadas de forma pública en los repositorios externos de datos.
+
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.75\textwidth]{images/ui_busqueda_online_es_1.png}
+\includegraphics[width=0.65\textwidth]{images/ui_busqueda_online_es_1.png}
 \caption{Consulta \texttt{wifi} en el modo \textit{online}, donde se combinan resultados de DBpedia, Wikidata y LinkedGeoData priorizando evidencia real sobre amenidades y contexto del recurso.}
 \label{fig:ui-online-es-1}
 \end{figure}
 
+Para validar búsquedas por texto libre combinadas con geolocalización remota, la figura \ref{fig:ui-online-es-2} exhibe los resultados de la consulta ``centro'' sobre el modo online. En esta pantalla se verifica la efectividad de la recuperación federada al indexar hoteles y alojamientos urbanos cercanos a puntos neurálgicos, mostrando información heterogénea real que incluye nombres oficiales y calificaciones obtenidas mediante endpoints SPARQL remotos.
+
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.75\textwidth]{images/ui_busqueda_online_es_2.png}
+\includegraphics[width=0.65\textwidth]{images/ui_busqueda_online_es_2.png}
 \caption{Consulta \texttt{centro} en el modo \textit{online}, utilizada para mostrar recuperación por texto libre con varias tarjetas visibles y evidencia visual externa.}
 \label{fig:ui-online-es-2}
 \end{figure}
 
+Por último, la figura \ref{fig:ui-online-es-3} demuestra el comportamiento y la tolerancia a fallos de la interfaz ante recursos remotos incompletos al realizar la consulta ``house''. Cuando una fuente en DBpedia o Wikidata carece de fotografías o provee URLs inaccesibles, el sistema activa su directiva estricta de fallback visual, mostrando un texto descriptivo e identificador legible en lugar de enlaces caídos o imágenes de stock arbitrarias, preservando la honestidad académica de la integración.
+
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.75\textwidth]{images/ui_busqueda_online_es_3.png}
+\includegraphics[width=0.65\textwidth]{images/ui_busqueda_online_es_3.png}
 \caption{Consulta \texttt{house} en el modo \textit{online}, usada para validar recuperación abierta con resultados heterogéneos y política de imagen original o \textit{fallback}.}
 \label{fig:ui-online-es-3}
 \end{figure}
 
 \subsection{Valor técnico del prototipo}
 
-La principal aportación técnica del sistema es demostrar que una ontología OWL puede ser
-el centro operativo de un prototipo moderno de búsqueda, y no solo un modelo teórico.
-La solución integra representación formal, consulta semántica, enriquecimiento con
-Linked Data, multilingüidad real, dos modos de recuperación y una interfaz web usable.
-En consecuencia, el proyecto cumple con el objetivo de aplicar investigación de Web
-Semántica en un artefacto de software funcional, defendible y alineado con el enunciado
-de la práctica.
+La principal aportación técnica del sistema es demostrar que una ontología OWL puede ser el centro operativo de un prototipo moderno de búsqueda, y no solo un modelo teórico. La solución integra representación formal, consulta semántica, enriquecimiento con Linked Data, multilingüidad real, dos modos de recuperación y una interfaz web usable. En consecuencia, el proyecto cumple con el objetivo de aplicar investigación de Web Semántica en un artefacto de software funcional, defendible y alineado con el enunciado de la práctica.

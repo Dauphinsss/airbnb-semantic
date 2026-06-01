@@ -146,7 +146,13 @@ simple y estándar consiste en utilizar \texttt{rdfs:label} y \texttt{rdfs:comme
 con etiquetas como \texttt{@es}, \texttt{@en} o \texttt{@fr} \parencite{w3c-rdf2014}.
 
 Este enfoque tiene varias ventajas técnicas: evita duplicar la ontología, mantiene una
-única identidad semántica para cada recurso y permite seleccionar el idioma requerido en
-las consultas SPARQL mediante la función \texttt{LANG()} o estrategias de fallback.
-Precisamente esta capacidad fue aprovechada en el proyecto para servir resultados en
-español, inglés y francés desde un único dataset OWL cargado en Fuseki.
+  única identidad semántica para cada recurso y permite seleccionar el idioma requerido en
+  las consultas SPARQL mediante la función \texttt{LANG()} o estrategias de fallback.
+  Precisamente esta capacidad fue aprovechada en el proyecto para servir resultados en
+  español, inglés y francés desde un único dataset OWL cargado en Fuseki.
+
+\subsection{Mapeo Semántico y Agentes de Consulta Semántica}
+
+El mapeo semántico (\textit{semantic parsing}) es un área de intersección entre la computación y la representación del conocimiento que consiste en traducir expresiones en lenguaje natural libre a representaciones lógicas formales y ejecutables, tales como lenguajes de consulta estructurados (ej. SPARQL, SQL) o esquemas de datos intermedios (ej. JSON) \parencite{baader2003}. A diferencia de las búsquedas léxicas tradicionales, que asocian palabras clave de forma superficial, el mapeo semántico busca decodificar la intención completa del usuario para relacionarla de forma precisa con el vocabulario formal y las propiedades declaradas en una ontología.
+
+Con el surgimiento de los Modelos Fundacionales de Lenguaje (LLMs) de gran escala, este proceso ha evolucionado desde los analizadores gramaticales rígidos basados en reglas hacia motores cognitivos flexibles capaces de interpretar el contexto, la vaguedad sintáctica y las variaciones lingüísticas cotidianas. Un Agente Cognitivo de Consulta Semántica actúa como un puente interoperable y dinámico: recibe una consulta no estructurada (ej. ``departamento barato con piscina''), contrasta la intención del usuario con un vocabulario ontológico controlado de forma contextual, y genera un esquema estructurado libre de alucinaciones semánticas que puede ser mapeado de forma determinista hacia consultas sobre un almacén de triples (\textit{triplestore}). Esta arquitectura híbrida garantiza que el razonamiento conceptual sea flexible e intuitivo para el ser humano, mientras que la recuperación de datos e inferencias siga siendo rigurosa, precisa y consistente con la semántica del dominio.
