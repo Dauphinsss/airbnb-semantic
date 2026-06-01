@@ -39,3 +39,15 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# latex temporary files
+semantic-tex/*.aux
+semantic-tex/*.bbl
+semantic-tex/*.bcf
+semantic-tex/*.blg
+semantic-tex/*.fdb_latexmk
+semantic-tex/*.fls
+semantic-tex/*.log
+semantic-tex/*.out
+semantic-tex/*.run.xml
+semantic-tex/*.toc
