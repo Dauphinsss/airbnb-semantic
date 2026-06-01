@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, useSyncExternalStore, type FormEvent } from "react";
 import {
   Accessibility,
   BedDouble,
@@ -84,6 +84,37 @@ type SearchResponse = {
 };
 
 const SUGGESTION_ICONS = [Wifi, Heart, Sun, Laptop, MapPin, HomeIcon, Building2] as const;
+const SEARCH_MODE_EVENT = "search-mode-change";
+
+function readStoredMode(): "offline" | "online" {
+  if (typeof window === "undefined") return "offline";
+  const saved = window.localStorage.getItem("search-mode");
+  return saved === "online" || saved === "offline" ? saved : "offline";
+}
+
+function persistSearchMode(mode: "offline" | "online") {
+  localStorage.setItem("search-mode", mode);
+  window.dispatchEvent(new Event(SEARCH_MODE_EVENT));
+}
+
+function subscribeSearchMode(onStoreChange: () => void) {
+  if (typeof window === "undefined") {
+    return () => undefined;
+  }
+
+  const onStorage = (event: StorageEvent) => {
+    if (!event.key || event.key === "search-mode") {
+      onStoreChange();
+    }
+  };
+
+  window.addEventListener("storage", onStorage);
+  window.addEventListener(SEARCH_MODE_EVENT, onStoreChange);
+  return () => {
+    window.removeEventListener("storage", onStorage);
+    window.removeEventListener(SEARCH_MODE_EVENT, onStoreChange);
+  };
+}
 
 function localName(uri: string): string {
   const i = Math.max(uri.lastIndexOf("#"), uri.lastIndexOf("/"));
@@ -233,7 +264,7 @@ function SearchBox({
             }`}
           >
             <Building2 className="h-3.5 w-3.5" />
-            <span>{(dict as any).modeOffline}</span>
+            <span>{dict.modeOffline}</span>
           </button>
           <button
             type="button"
@@ -245,7 +276,7 @@ function SearchBox({
             }`}
           >
             <Waves className="h-3.5 w-3.5 animate-pulse" />
-            <span>{(dict as any).modeOnline}</span>
+            <span>{dict.modeOnline}</span>
           </button>
         </div>
 
@@ -255,6 +286,7 @@ function SearchBox({
             <Link
               key={locale}
               href={`/${locale}`}
+              onClick={() => persistSearchMode(mode)}
               className={`rounded-full border px-3 py-1 transition-colors ${
                 locale === lang
                   ? "border-[var(--color-cactus)] bg-[var(--color-cactus-soft)] text-[var(--color-cactus)]"
@@ -437,23 +469,21 @@ function ListingCard({
     >
       <div className="overflow-hidden rounded-md">
         <div className="relative">
-          {propiedad.urlImagen ? (
-            <Image
-              src={propiedad.urlImagen}
-              alt={imageAlt ? `${dict.imageAltPrefix} ${imageAlt}` : propiedad.nombre}
-              width={1200}
-              height={800}
-              loading={index < 3 ? "eager" : "lazy"}
-              sizes="(min-width: 1280px) 31vw, (min-width: 640px) 48vw, 100vw"
-              unoptimized={propiedad.uri.startsWith("http://www.wikidata.org")}
-              className="h-40 w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-            />
-          ) : (
-            <div className="h-40 w-full bg-[var(--color-cactus-soft)]" />
-          )}
+          <ListingImage
+            src={propiedad.urlImagen}
+            alt={imageAlt ? `${dict.imageAltPrefix} ${imageAlt}` : propiedad.nombre}
+            eager={index < 3}
+            unoptimized={mode === "online" || propiedad.uri.startsWith("http://www.wikidata.org")}
+          />
           <span className="absolute left-2 top-2 rounded-full bg-black/65 px-2 py-0.5 text-[10px] font-medium uppercase text-white backdrop-blur-sm">
             {dict.photoBadge}
           </span>
+          {mode === "online" && (
+            <span className="absolute right-2 top-2 rounded-full bg-[var(--color-terracotta)] px-2 py-0.5 text-[10px] font-semibold uppercase text-white backdrop-blur-sm shadow-sm flex items-center gap-1">
+              <MapPin className="h-2.5 w-2.5 animate-bounce" />
+              <span>SPARQL Live</span>
+            </span>
+          )}
         </div>
       </div>
 
@@ -513,6 +543,42 @@ function ListingCard({
   );
 }
 
+function ListingImage({
+  src,
+  alt,
+  eager,
+  unoptimized,
+}: {
+  src?: string;
+  alt: string;
+  eager: boolean;
+  unoptimized: boolean;
+}) {
+  const [failed, setFailed] = useState(false);
+
+  if (!src || failed) {
+    return (
+      <div className="flex h-40 w-full items-center justify-center bg-[var(--color-cactus-soft)] px-4 text-center text-xs font-medium uppercase tracking-wide text-[var(--color-muted)]">
+        No real image
+      </div>
+    );
+  }
+
+  return (
+    <Image
+      src={src}
+      alt={alt}
+      width={1200}
+      height={800}
+      loading={eager ? "eager" : "lazy"}
+      sizes="(min-width: 1280px) 31vw, (min-width: 640px) 48vw, 100vw"
+      unoptimized={unoptimized}
+      onError={() => setFailed(true)}
+      className="h-40 w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+    />
+  );
+}
+
 function Amenidades({ lang, amenidades }: { lang: Locale; amenidades: Amenidad[] }) {
   const dict = uiDictionary[lang];
   return (
@@ -561,7 +627,9 @@ function Perfiles({ lang, perfiles }: { lang: Locale; perfiles: Perfil[] }) {
               className="inline-flex items-center gap-1 rounded-full bg-[var(--color-maize-soft)] px-2 py-0.5 text-[11px] text-[var(--color-terracotta-dark)] transition-colors hover:bg-[var(--color-rose-soft)]"
             >
               <IconGlyph icon={PerfilIcon} className="h-3 w-3" />
-              {perfil.nombre}
+              <span>
+                {perfil.nombre}
+              </span>
             </li>
           );
         })}
@@ -578,20 +646,14 @@ export default function HomeClient({ lang }: { lang: Locale }) {
   const [error, setError] = useState<string | null>(null);
   const [ai, setAi] = useState<AIInfo | null>(null);
 
-  const [mode, setMode] = useState<"offline" | "online">("offline");
-  const [initialized, setInitialized] = useState(false);
+  const mode = useSyncExternalStore<"offline" | "online">(
+    subscribeSearchMode,
+    readStoredMode,
+    () => "offline",
+  );
   const [modalPropiedad, setModalPropiedad] = useState<Propiedad | null>(null);
 
   useEffect(() => {
-    const saved = localStorage.getItem("search-mode");
-    if (saved === "online" || saved === "offline") {
-      setMode(saved);
-    }
-    setInitialized(true);
-  }, []);
-
-  useEffect(() => {
-    if (!initialized) return;
     let cancelado = false;
 
     async function cargarCatalogo() {
@@ -615,7 +677,7 @@ export default function HomeClient({ lang }: { lang: Locale }) {
     return () => {
       cancelado = true;
     };
-  }, [dict.fallbackError, lang, mode, initialized]);
+  }, [dict.fallbackError, lang, mode]);
 
   async function buscarConModo(termino: string, targetMode: "offline" | "online") {
     setResultadosLoading(true);
@@ -639,9 +701,7 @@ export default function HomeClient({ lang }: { lang: Locale }) {
   }
 
   function handleModeChange(newMode: "offline" | "online") {
-    localStorage.setItem("search-mode", newMode);
-    setMode(newMode);
-    buscarConModo(q, newMode);
+    persistSearchMode(newMode);
   }
 
   function handleSelectCard(propiedad: Propiedad) {
@@ -729,14 +789,14 @@ export default function HomeClient({ lang }: { lang: Locale }) {
             <div className="mt-4 space-y-3">
               <p className="text-sm font-medium text-[var(--color-cactus)] uppercase tracking-wider flex items-center gap-1.5">
                 <MapPin className="h-4 w-4" />
-                <span>{modalPropiedad.tipo} · {modalPropiedad.ciudad || "Bolivia"}</span>
+                <span>{modalPropiedad.tipo} · {modalPropiedad.ciudad || "Web"}</span>
               </p>
               <p className="text-sm leading-relaxed text-[var(--color-muted)]">
-                {(dict as any).modalBody}
+                {dict.modalBody}
               </p>
               <div className="rounded-lg bg-[var(--color-cactus-soft)] p-3 text-xs border border-[var(--color-line)]">
                 <p className="font-semibold text-[var(--color-ink)] mb-1">
-                  {(dict as any).modalQuestion}
+                  {dict.modalQuestion}
                 </p>
                 <code className="block select-all bg-white/50 p-1.5 rounded border border-[var(--color-line)] break-all mt-2 dark:bg-black/20 text-[var(--color-cactus)]">
                   {modalPropiedad.uri}
@@ -750,14 +810,14 @@ export default function HomeClient({ lang }: { lang: Locale }) {
                 onClick={handleCloseModal}
                 className="rounded-md border border-[var(--color-line)] bg-white px-4 py-2 text-sm font-semibold text-[var(--color-ink)] shadow-sm hover:bg-[var(--color-line-soft)] active:scale-[0.98] transition-all"
               >
-                {(dict as any).modalBtnCancel}
+                {dict.modalBtnCancel}
               </button>
               <button
                 type="button"
                 onClick={handleConfirmNavigate}
                 className="rounded-md bg-[var(--color-terracotta)] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[var(--color-terracotta-dark)] active:scale-[0.98] transition-all"
               >
-                {(dict as any).modalBtnConfirm}
+                {dict.modalBtnConfirm}
               </button>
             </footer>
           </div>

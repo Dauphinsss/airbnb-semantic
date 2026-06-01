@@ -8,7 +8,7 @@ import {
   sanitizeStructuredFilters,
   searchOntology,
 } from "./ontology";
-import { searchWikidata } from "./wikidata";
+import { searchOnline } from "./online";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
 
   try {
     if (mode === "online") {
-      const propiedades = await searchWikidata(q, locale);
+      const propiedades = await searchOnline(q, locale);
       return Response.json({
         propiedades,
         total: propiedades.length,
