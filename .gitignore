@@ -51,3 +51,4 @@ semantic-tex/*.log
 semantic-tex/*.out
 semantic-tex/*.run.xml
 semantic-tex/*.toc
+semantic-tex/*.synctex.gz
