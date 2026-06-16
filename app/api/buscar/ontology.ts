@@ -107,6 +107,12 @@ type Propiedad = {
   calificacion?: number;
   ciudad?: string;
   zona?: string;
+  codigoPostal?: string;
+  sitioWeb?: string;
+  telefono?: string;
+  email?: string;
+  horario?: string;
+  fuente?: string;
   amenidades: Amenidad[];
   perfiles: Perfil[];
 };

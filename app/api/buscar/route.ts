@@ -8,7 +8,7 @@ import {
   sanitizeStructuredFilters,
   searchOntology,
 } from "./ontology";
-import { searchOnline } from "./online";
+import { searchOnline, searchOnlineSource, type OnlineSource } from "./online";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -18,10 +18,13 @@ export async function GET(request: NextRequest) {
   const useAi = request.nextUrl.searchParams.get("ai") !== "0";
   const locale = normalizeLocale(request.nextUrl.searchParams.get("lang"));
   const mode = request.nextUrl.searchParams.get("mode") ?? "offline";
+  const source = request.nextUrl.searchParams.get("source") as OnlineSource | null;
 
   try {
     if (mode === "online") {
-      const propiedades = await searchOnline(q, locale);
+      const propiedades = source
+        ? await searchOnlineSource(source, q, locale)
+        : await searchOnline(q, locale);
       return Response.json({
         propiedades,
         total: propiedades.length,

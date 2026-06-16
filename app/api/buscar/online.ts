@@ -8,14 +8,27 @@ const LINKEDGEODATA_ENDPOINT = "https://linkedgeodata.org/sparql";
 const NS = "http://www.semanticweb.org/steven/ontologies/2026/2/airbnb/";
 const REQUEST_TIMEOUT_MS = 6500;
 const WIKIDATA_TIMEOUT_MS = 15000;
+const LODGING_TYPE_PATTERN = "hotel|hostel|motel|lodge|guest.?house|resort|villa|chalet|apartment|aparthotel|apartment hotel|holiday home|cottage|accommodation";
+const DBPEDIA_RESULT_LIMIT = 12;
+const WIKIDATA_RESULT_LIMIT = 16;
+const WIKIDATA_SEARCH_LIMIT = 12;
+const LINKEDGEODATA_RESULT_LIMIT = 24;
+const ONLINE_RESULT_LIMIT = 24;
+const GENERIC_LINKEDGEODATA_TYPES = new Set(["Feature", "Node", "Amenity"]);
+
+type WikidataSeed = { uri: string; nombre: string; urlImagen?: string };
 
 type SparqlBinding = Record<string, { type: string; value: string } | undefined>;
 type SparqlResults = { results: { bindings: SparqlBinding[] } };
 type DbpediaPropiedad = Propiedad & { wikidataItem?: string };
+type OnlineSource = "dbpedia" | "wikidata" | "wikidata_context" | "osm";
 type CommonsApiResponse = {
   query?: {
     pages?: Record<string, { title?: string; imageinfo?: Array<{ url?: string }> }>;
   };
+};
+type WikidataEntitySearchResponse = {
+  search?: Array<{ id?: string; description?: string; label?: string }>;
 };
 
 function val(binding: SparqlBinding, key: string): string | undefined {
@@ -31,8 +44,109 @@ function localName(uri: string): string {
   return uri.slice(i + 1);
 }
 
+function formatTypeLabel(value: string | undefined): string | undefined {
+  if (!value) return undefined;
+  return value.replace(/[_-]+/g, " ").trim();
+}
+
+function presentTypeLabel(value: string | undefined, locale: Locale): string | undefined {
+  const label = formatTypeLabel(value);
+  if (!label) return undefined;
+
+  const normalized = normalize(label);
+  if (/aparthotel|apartment hotel/.test(normalized)) {
+    return locale === "fr" ? "Appart-hotel" : locale === "es" ? "Apartahotel" : "Aparthotel";
+  }
+  if (/apartment|apartamento|appartement/.test(normalized)) {
+    return locale === "fr" ? "Appartement" : locale === "es" ? "Apartamento" : "Apartment";
+  }
+  if (/guest.?house|casa de huespedes|maison d'hotes/.test(normalized)) {
+    return locale === "fr" ? "Maison d'hotes" : locale === "es" ? "Casa de huespedes" : "Guest house";
+  }
+  if (/holiday home|casa vacacional|maison de vacances/.test(normalized)) {
+    return locale === "fr" ? "Maison de vacances" : locale === "es" ? "Casa vacacional" : "Holiday home";
+  }
+  if (/cottage|cabana|cabanas|chalet/.test(normalized)) {
+    return locale === "fr" ? "Chalet" : locale === "es" ? "Cabana" : "Chalet";
+  }
+  if (/accommodation|alojamiento|hebergement/.test(normalized)) {
+    return locale === "fr" ? "Hebergement" : locale === "es" ? "Alojamiento" : "Accommodation";
+  }
+  if (/hostel|hotel|motel|inn|lodge|resort|villa/.test(normalized)) {
+    return label;
+  }
+
+  return label;
+}
+
+function rawAmenityLabel(value: string | undefined, locale: Locale): string | undefined {
+  const label = formatTypeLabel(value);
+  if (!label) return undefined;
+
+  const normalized = normalize(label);
+  if (/restaurant/.test(normalized)) {
+    return locale === "fr" ? "Restaurant" : locale === "es" ? "Restaurante" : "Restaurant";
+  }
+  if (/cafe/.test(normalized)) {
+    return locale === "fr" ? "Cafe" : locale === "es" ? "Cafe" : "Cafe";
+  }
+  if (/bar|pub/.test(normalized)) {
+    return locale === "fr" ? "Bar" : locale === "es" ? "Bar" : "Bar";
+  }
+  if (/fast.?food/.test(normalized)) {
+    return locale === "fr" ? "Restauration rapide" : locale === "es" ? "Comida rapida" : "Fast food";
+  }
+  if (/school/.test(normalized)) {
+    return locale === "fr" ? "Ecole" : locale === "es" ? "Escuela" : "School";
+  }
+  return label;
+}
+
+function rawAmenityCategory(value: string | undefined): Amenidad["categoria"] {
+  const normalized = normalize(value ?? "");
+  if (/wifi|internet|network|connect/.test(normalized)) return "Conectividad";
+  if (/restaurant|fast.?food|cafe|bar|pub|breakfast/.test(normalized)) return "Alimentacion";
+  if (/pool|spa|sauna|gym|fitness/.test(normalized)) return "Recreativa";
+  if (/parking|garage|transport/.test(normalized)) return "Transporte";
+  if (/kitchen|cocina/.test(normalized)) return "Cocina";
+  if (/air|conditioning|climat/.test(normalized)) return "Confort";
+  if (/wheelchair|accessible|accessib/.test(normalized)) return "Accesibilidad";
+  return "Otros";
+}
+
+function isLodgingType(value: string | undefined): boolean {
+  return Boolean(value) && new RegExp(LODGING_TYPE_PATTERN, "i").test(value as string);
+}
+
+function linkedGeoDataTypeAmenity(typeValue: string | undefined, _typeLabel: string | undefined, locale: Locale): string | undefined {
+  const local = formatTypeLabel(typeValue);
+  if (!local) return undefined;
+  if (GENERIC_LINKEDGEODATA_TYPES.has(local)) return undefined;
+  if (isLodgingType(local)) return undefined;
+  return rawAmenityLabel(local, locale) ?? local;
+}
+
 function normalize(value: string): string {
   return value.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
+}
+
+function matchesOnlineQuery(propiedad: Propiedad, query: string): boolean {
+  const term = normalize(query.trim());
+  if (!term) return true;
+  const haystack = normalize([
+    propiedad.nombre,
+    propiedad.descripcion,
+    propiedad.tipo,
+    propiedad.ciudad,
+    propiedad.zona,
+    propiedad.codigoPostal,
+    propiedad.sitioWeb,
+    propiedad.telefono,
+    propiedad.horario,
+    propiedad.fuente,
+    ...propiedad.amenidades.flatMap((amenidad) => [amenidad.nombre, amenidad.categoria]),
+  ].filter(Boolean).join(" "));
+  return haystack.includes(term);
 }
 
 function boolish(value?: string): boolean {
@@ -172,6 +286,18 @@ function localeList(locale: Locale): string {
   return localeChain(locale).join(",");
 }
 
+function uniqueBy<T>(items: T[], keyOf: (item: T) => string): T[] {
+  const seen = new Set<string>();
+  const result: T[] = [];
+  for (const item of items) {
+    const key = keyOf(item);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    result.push(item);
+  }
+  return result;
+}
+
 function dbpediaQuery(query: string, locale: Locale): string {
   const langs = localeChain(locale);
   const filters = [
@@ -226,59 +352,94 @@ WHERE {
   ${textFilter}
 }
 GROUP BY ?item
-LIMIT 12
+LIMIT ${DBPEDIA_RESULT_LIMIT}
 `.trim();
 }
 
-function wikidataSearchQuery(searchTerm: string, locale: Locale): string {
+function wikidataSearchSeedQuery(searchTerm: string, locale: Locale): string {
   const term = sparqlLiteral(searchTerm.trim());
   const languages = localeList(locale);
   return `
 PREFIX wikibase: <http://wikiba.se/ontology#>
 PREFIX bd: <http://www.bigdata.com/rdf#>
 PREFIX mwapi: <https://www.mediawiki.org/ontology#API/>
-PREFIX schema: <http://schema.org/>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT ?item
-       (SAMPLE(?itemLabel) AS ?itemLabel)
-       (SAMPLE(?description) AS ?description)
-       (SAMPLE(?image) AS ?image)
-       (SAMPLE(?cityLabel) AS ?cityLabel)
-       (SAMPLE(?instanceLabel) AS ?instanceLabel)
+SELECT DISTINCT ?item ?itemLabel
 WHERE {
   SERVICE wikibase:mwapi {
     bd:serviceParam wikibase:api "EntitySearch" .
     bd:serviceParam wikibase:endpoint "www.wikidata.org" .
     bd:serviceParam mwapi:search "${term}" .
     bd:serviceParam mwapi:language "${languages}" .
-    bd:serviceParam mwapi:limit "12" .
+    bd:serviceParam mwapi:limit "${WIKIDATA_SEARCH_LIMIT}" .
     ?item wikibase:apiOutputItem mwapi:item .
   }
-  OPTIONAL {
-    ?item schema:description ?description .
-    FILTER(LANG(?description) IN ("${locale}", "en", "fr", "es"))
-  }
-  OPTIONAL { ?item wdt:P18 ?image }
-  OPTIONAL {
-    ?item wdt:P131 ?city .
-    ?city rdfs:label ?cityLabel .
-    FILTER(LANG(?cityLabel) IN ("${locale}", "en", "fr", "es"))
-  }
-  OPTIONAL {
-    ?item wdt:P31 ?instance .
-    ?instance rdfs:label ?instanceLabel .
-    FILTER(LANG(?instanceLabel) = "en")
-  }
-  FILTER(BOUND(?instanceLabel) && REGEX(LCASE(STR(?instanceLabel)), "hotel|hostel|motel|inn|lodge|resort|villa|guest house|aparthotel|apartment hotel", "i"))
   SERVICE wikibase:label { bd:serviceParam wikibase:language "${languages}". }
 }
-GROUP BY ?item
-LIMIT 12
+LIMIT ${WIKIDATA_SEARCH_LIMIT}
 `.trim();
 }
 
-function wikidataDefaultQuery(locale: Locale): string {
+function wikidataContextEntityHotelsQuery(entityIds: string[], locale: Locale): string {
+  const languages = localeList(locale);
+  const values = entityIds.map((item) => `wd:${item}`).join(" ");
+  return `
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX wikibase: <http://wikiba.se/ontology#>
+PREFIX bd: <http://www.bigdata.com/rdf#>
+
+SELECT ?item
+       (SAMPLE(?itemLabel) AS ?itemLabel)
+       (SAMPLE(?placeLabel) AS ?placeLabel)
+WHERE {
+  VALUES ?needle { ${values} }
+  ?item wdt:P31 wd:Q27686 .
+  { ?item wdt:P17 ?needle }
+  UNION
+  { ?item wdt:P131 ?needle }
+  UNION
+  { ?item wdt:P276 ?needle }
+  OPTIONAL {
+    ?item wdt:P131 ?city .
+    ?city rdfs:label ?cityLabel .
+    FILTER(LANG(?cityLabel) IN ("${locale}", "en", "fr", "es", "de"))
+  }
+  OPTIONAL {
+    ?item wdt:P276 ?location .
+    ?location rdfs:label ?locationLabel .
+    FILTER(LANG(?locationLabel) IN ("${locale}", "en", "fr", "es", "de"))
+  }
+  OPTIONAL {
+    ?item wdt:P17 ?country .
+    ?country rdfs:label ?countryLabel .
+    FILTER(LANG(?countryLabel) IN ("${locale}", "en", "fr", "es", "de"))
+  }
+  BIND(COALESCE(?cityLabel, ?locationLabel, ?countryLabel) AS ?placeLabel)
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "${languages}". }
+}
+GROUP BY ?item
+LIMIT ${WIKIDATA_SEARCH_LIMIT}
+`.trim();
+}
+
+async function searchWikidataEntityIds(searchTerm: string, locale: Locale): Promise<string[]> {
+  for (const language of localeChain(locale)) {
+    const url = `https://www.wikidata.org/w/api.php?action=wbsearchentities&search=${encodeURIComponent(searchTerm)}&language=${encodeURIComponent(language)}&limit=6&format=json`;
+    const response = await fetch(url, {
+      cache: "no-store",
+      headers: { "User-Agent": "BuscadorSemantico/1.0 (academic project)" },
+    });
+    if (!response.ok) continue;
+    const data = (await response.json()) as WikidataEntitySearchResponse;
+    const preferred = data.search?.find((item) => item.id)?.id;
+    if (preferred) return [preferred];
+  }
+  return [];
+}
+
+function wikidataDefaultSeedQuery(locale: Locale): string {
   const languages = localeList(locale);
   return `
 PREFIX wd: <http://www.wikidata.org/entity/>
@@ -292,37 +453,116 @@ WHERE {
   OPTIONAL { ?item wdt:P18 ?image }
   SERVICE wikibase:label { bd:serviceParam wikibase:language "${languages}". }
 }
-LIMIT 12
+LIMIT ${WIKIDATA_RESULT_LIMIT}
 `.trim();
 }
 
-function linkedGeoDataQuery(query: string): string {
-  const term = normalize(query.trim());
-  const textFilter = term
-    ? `
-  FILTER(
-    CONTAINS(LCASE(STR(?label)), "${sparqlLiteral(term)}") ||
-    CONTAINS(LCASE(COALESCE(STR(?city), "")), "${sparqlLiteral(term)}") ||
-    CONTAINS(LCASE(COALESCE(STR(?street), "")), "${sparqlLiteral(term)}")
-  )`
-    : "";
+function wikidataDetailsQuery(itemIds: string[], locale: Locale): string {
+  const languages = localeList(locale);
+  const values = itemIds.map((item) => `wd:${item}`).join(" ");
+  return `
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX wikibase: <http://wikiba.se/ontology#>
+PREFIX bd: <http://www.bigdata.com/rdf#>
+PREFIX schema: <http://schema.org/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
+SELECT ?item
+       (SAMPLE(?description) AS ?description)
+       (SAMPLE(?image) AS ?image)
+       (SAMPLE(?placeLabel) AS ?placeLabel)
+       (SAMPLE(?instanceLabel) AS ?instanceLabel)
+WHERE {
+  VALUES ?item { ${values} }
+  OPTIONAL {
+    ?item schema:description ?description .
+    FILTER(LANG(?description) IN ("${locale}", "en", "fr", "es"))
+  }
+  OPTIONAL { ?item wdt:P18 ?image }
+  OPTIONAL {
+    ?item wdt:P131 ?city .
+    ?city rdfs:label ?cityLabel .
+    FILTER(LANG(?cityLabel) IN ("${locale}", "en", "fr", "es"))
+  }
+  OPTIONAL {
+    ?item wdt:P276 ?location .
+    ?location rdfs:label ?locationLabel .
+    FILTER(LANG(?locationLabel) IN ("${locale}", "en", "fr", "es"))
+  }
+  OPTIONAL {
+    ?item wdt:P17 ?country .
+    ?country rdfs:label ?countryLabel .
+    FILTER(LANG(?countryLabel) IN ("${locale}", "en", "fr", "es"))
+  }
+  OPTIONAL {
+    ?item wdt:P31 ?instance .
+    ?instance rdfs:label ?instanceLabel .
+    FILTER(LANG(?instanceLabel) IN ("${locale}", "en", "fr", "es"))
+  }
+  BIND(COALESCE(?cityLabel, ?locationLabel, ?countryLabel) AS ?placeLabel)
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "${languages}". }
+}
+GROUP BY ?item
+`.trim();
+}
+
+function linkedGeoDataQuery(): string {
   return `
 PREFIX lgdo: <http://linkedgeodata.org/ontology/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 
-SELECT DISTINCT ?item ?label ?type ?city ?street ?houseNumber ?website ?phone ?stars
-                ?internetAccess ?wifi ?pool ?swimmingPool ?parking ?breakfast ?kitchen ?pet ?pets ?airConditioning
+SELECT ?item
+       (SAMPLE(?label) AS ?label)
+       (SAMPLE(?lodgingType) AS ?lodgingType)
+       (SAMPLE(?lodgingTypeLabel) AS ?lodgingTypeLabel)
+       (SAMPLE(?city) AS ?city)
+       (SAMPLE(?country) AS ?country)
+       (SAMPLE(?street) AS ?street)
+       (SAMPLE(?houseNumber) AS ?houseNumber)
+       (SAMPLE(?website) AS ?website)
+       (SAMPLE(?phone) AS ?phone)
+       (SAMPLE(?postcode) AS ?postcode)
+       (SAMPLE(?email) AS ?email)
+       (SAMPLE(?openingHours) AS ?openingHours)
+       (SAMPLE(?internetAccess) AS ?internetAccess)
+       (SAMPLE(?wifi) AS ?wifi)
+       (SAMPLE(?pool) AS ?pool)
+       (SAMPLE(?swimmingPool) AS ?swimmingPool)
+       (SAMPLE(?parking) AS ?parking)
+       (SAMPLE(?breakfast) AS ?breakfast)
+       (SAMPLE(?kitchen) AS ?kitchen)
+       (SAMPLE(?pet) AS ?pet)
+       (SAMPLE(?pets) AS ?pets)
+       (SAMPLE(?airConditioning) AS ?airConditioning)
+       (GROUP_CONCAT(DISTINCT STR(?amenity); SEPARATOR="||") AS ?amenityValues)
+       (GROUP_CONCAT(DISTINCT STR(?type); SEPARATOR="||") AS ?typeValues)
 WHERE {
-  ?item a ?type ;
-        rdfs:label ?label .
-  VALUES ?type { lgdo:Hotel lgdo:Hostel lgdo:Motel lgdo:GuestHouse lgdo:Chalet }
+  {
+    SELECT DISTINCT ?item ?lodgingType ?label
+    WHERE {
+      ?item a ?lodgingType ;
+            rdfs:label ?label .
+      FILTER(REGEX(LCASE(STR(?lodgingType)), "${LODGING_TYPE_PATTERN}", "i"))
+    }
+    LIMIT ${LINKEDGEODATA_RESULT_LIMIT}
+  }
+  OPTIONAL { ?lodgingType rdfs:label ?lodgingTypeLabel }
+  OPTIONAL {
+    ?item a ?type .
+    FILTER(?type != ?lodgingType)
+  }
+  OPTIONAL { ?item <http://linkedgeodata.org/ontology/amenity> ?amenity }
   OPTIONAL { ?item <http://linkedgeodata.org/ontology/addr%3Acity> ?city }
+  OPTIONAL { ?item <http://linkedgeodata.org/ontology/addr%3Acountry> ?country }
   OPTIONAL { ?item <http://linkedgeodata.org/ontology/addr%3Astreet> ?street }
   OPTIONAL { ?item <http://linkedgeodata.org/ontology/addr%3Ahousenumber> ?houseNumber }
   OPTIONAL { ?item foaf:homepage ?website }
   OPTIONAL { ?item foaf:phone ?phone }
+  OPTIONAL { ?item <http://linkedgeodata.org/ontology/addr%3Apostcode> ?postcode }
+  OPTIONAL { ?item <http://linkedgeodata.org/ontology/email> ?email }
+  OPTIONAL { ?item <http://linkedgeodata.org/ontology/opening_hours> ?openingHours }
   OPTIONAL { ?item <http://linkedgeodata.org/ontology/stars> ?stars }
   OPTIONAL { ?item <http://linkedgeodata.org/ontology/internet_access> ?internetAccess }
   OPTIONAL { ?item <http://linkedgeodata.org/ontology/wifi> ?wifi }
@@ -334,9 +574,8 @@ WHERE {
   OPTIONAL { ?item <http://linkedgeodata.org/ontology/pet> ?pet }
   OPTIONAL { ?item <http://linkedgeodata.org/ontology/pets> ?pets }
   OPTIONAL { ?item <http://linkedgeodata.org/ontology/air_conditioning> ?airConditioning }
-  ${textFilter}
 }
-LIMIT 12
+GROUP BY ?item
 `.trim();
 }
 
@@ -351,8 +590,9 @@ async function searchDbpedia(query: string, locale: Locale): Promise<Propiedad[]
       nombre: val(binding, "label") ?? localName(uri),
       descripcion: val(binding, "abstract"),
       urlImagen: normalizeImageUrl(val(binding, "thumbnail")),
-      tipo: val(binding, "typeLabel") ?? localName(val(binding, "type") ?? uri),
+      tipo: presentTypeLabel(val(binding, "typeLabel") ?? localName(val(binding, "type") ?? uri), locale),
       ciudad: val(binding, "cityLabel"),
+      fuente: "DBpedia",
       zona: undefined,
       }),
       wikidataItem: val(binding, "wikidataItem") ? localName(val(binding, "wikidataItem") as string) : undefined,
@@ -377,32 +617,156 @@ async function searchDbpedia(query: string, locale: Locale): Promise<Propiedad[]
     const { wikidataItem, ...rest } = item;
     void wikidataItem;
     return rest;
-  });
+  }).filter((item) => matchesOnlineQuery(item, query));
 }
 
 async function searchWikidata(query: string, locale: Locale): Promise<Propiedad[]> {
-  const queryText = query.trim() ? wikidataSearchQuery(query, locale) : wikidataDefaultQuery(locale);
-  const result = await runSparql(WIKIDATA_ENDPOINT, queryText, {
-    "User-Agent": "BuscadorSemantico/1.0 (academic project)",
-  }, WIKIDATA_TIMEOUT_MS);
-  const mapped = result.results.bindings.map((binding) => {
+  const seedResult = await runSparql(
+    WIKIDATA_ENDPOINT,
+    query.trim() ? wikidataSearchSeedQuery(query, locale) : wikidataDefaultSeedQuery(locale),
+    { "User-Agent": "BuscadorSemantico/1.0 (academic project)" },
+    WIKIDATA_TIMEOUT_MS,
+  );
+
+  const seeds = seedResult.results.bindings.map((binding) => {
     const uri = val(binding, "item");
     if (!uri) return null;
-    return emptyPropiedad({
+    return {
       uri,
       nombre: val(binding, "itemLabel") ?? localName(uri),
-      descripcion: val(binding, "description"),
       urlImagen: normalizeImageUrl(val(binding, "image")),
-      tipo: val(binding, "instanceLabel"),
-      ciudad: val(binding, "cityLabel"),
+    } satisfies WikidataSeed;
+  }).filter((item): item is WikidataSeed => Boolean(item));
+
+  if (seeds.length === 0) return [];
+
+  return hydrateWikidataSeeds(seeds, query, locale, true);
+}
+
+async function searchWikidataContext(query: string, locale: Locale): Promise<Propiedad[]> {
+  if (!query.trim()) return [];
+  try {
+    const entityIds = await searchWikidataEntityIds(query, locale);
+
+    if (entityIds.length === 0) return [];
+
+    const relatedResult = await runSparql(
+        WIKIDATA_ENDPOINT,
+        wikidataContextEntityHotelsQuery(entityIds, locale),
+        { "User-Agent": "BuscadorSemantico/1.0 (academic project)" },
+        WIKIDATA_TIMEOUT_MS,
+      );
+
+    const seeds = uniqueBy(
+      relatedResult.results.bindings.map((binding) => {
+        const uri = val(binding, "item");
+        if (!uri) return null;
+        return {
+          uri,
+          nombre: val(binding, "itemLabel") ?? localName(uri),
+          urlImagen: undefined,
+        } satisfies WikidataSeed;
+      }).filter((item): item is WikidataSeed => Boolean(item)),
+      (item) => item.uri,
+    );
+
+    if (seeds.length === 0) return [];
+
+    try {
+      return await hydrateWikidataSeeds(seeds, query, locale, false);
+    } catch {
+      return relatedResult.results.bindings.map((binding) => {
+        const uri = val(binding, "item");
+        if (!uri) return null;
+        return emptyPropiedad({
+          uri,
+          nombre: val(binding, "itemLabel") ?? localName(uri),
+          tipo: presentTypeLabel("Hotel", locale),
+          ciudad: val(binding, "placeLabel"),
+          fuente: "Wikidata",
+          zona: undefined,
+        });
+      }).filter((item): item is Propiedad => Boolean(item));
+    }
+  } catch (error) {
+    if (error instanceof Error && (error.message.includes("(429)") || error.message.includes("aborted"))) {
+      return [];
+    }
+    throw error;
+  }
+}
+
+async function hydrateWikidataSeeds(
+  seeds: WikidataSeed[],
+  query: string,
+  locale: Locale,
+  applyQueryFilter: boolean,
+): Promise<Propiedad[]> {
+
+  const detailsResult = await runSparql(WIKIDATA_ENDPOINT, wikidataDetailsQuery(
+    seeds.map((item) => localName(item.uri)),
+    locale,
+  ), {
+    "User-Agent": "BuscadorSemantico/1.0 (academic project)",
+  }, WIKIDATA_TIMEOUT_MS);
+
+  const detailsByUri = new Map<string, SparqlBinding>();
+  for (const binding of detailsResult.results.bindings) {
+    const uri = val(binding, "item");
+    if (uri) detailsByUri.set(uri, binding);
+  }
+
+  const mapped = seeds.map((seed) => {
+    const binding = detailsByUri.get(seed.uri);
+    return emptyPropiedad({
+      uri: seed.uri,
+      nombre: seed.nombre,
+      descripcion: val(binding, "description"),
+      urlImagen: seed.urlImagen ?? normalizeImageUrl(val(binding, "image")),
+      tipo: presentTypeLabel(val(binding, "instanceLabel") ?? "Hotel", locale),
+      ciudad: val(binding, "placeLabel"),
+      fuente: "Wikidata",
       zona: undefined,
     });
-  }).filter((item): item is Propiedad => Boolean(item));
-  return hydrateRealImageUrls(mapped);
+  }).filter((item) => !query.trim() || isLodgingType(item.tipo));
+  const filtered = applyQueryFilter ? mapped.filter((item) => matchesOnlineQuery(item, query)) : mapped;
+  try {
+    return await hydrateRealImageUrls(filtered);
+  } catch {
+    return filtered;
+  }
 }
 
 function buildLinkedGeoDataAmenities(binding: SparqlBinding, locale: Locale): Amenidad[] {
   const amenidades: Amenidad[] = [];
+  const amenityValues = (val(binding, "amenityValues") ?? "")
+    .split("||")
+    .map((value) => value.trim())
+    .filter(Boolean);
+  const typeValues = (val(binding, "typeValues") ?? "")
+    .split("||")
+    .map((value) => value.trim())
+    .filter(Boolean);
+
+  for (const amenityValue of amenityValues) {
+    const rawAmenity = rawAmenityLabel(amenityValue.startsWith("http") ? localName(amenityValue) : amenityValue, locale);
+    if (!rawAmenity) continue;
+    addAmenity(amenidades, {
+      uri: amenityUri(`RawAmenity-${rawAmenity.replace(/\s+/g, "-")}`),
+      nombre: rawAmenity,
+      categoria: rawAmenityCategory(rawAmenity),
+    });
+  }
+
+  for (const typeValue of typeValues) {
+    const rawTypeAmenity = linkedGeoDataTypeAmenity(typeValue.startsWith("http") ? localName(typeValue) : typeValue, undefined, locale);
+    if (!rawTypeAmenity) continue;
+    addAmenity(amenidades, {
+      uri: amenityUri(`RawType-${rawTypeAmenity.replace(/\s+/g, "-")}`),
+      nombre: rawTypeAmenity,
+      categoria: rawAmenityCategory(rawTypeAmenity),
+    });
+  }
 
   if (boolish(val(binding, "wifi")) || boolish(val(binding, "internetAccess"))) {
     addAmenity(amenidades, {
@@ -456,7 +820,7 @@ function buildLinkedGeoDataAmenities(binding: SparqlBinding, locale: Locale): Am
 }
 
 async function searchLinkedGeoData(query: string, locale: Locale): Promise<Propiedad[]> {
-  const result = await runSparql(LINKEDGEODATA_ENDPOINT, linkedGeoDataQuery(query));
+  const result = await runSparql(LINKEDGEODATA_ENDPOINT, linkedGeoDataQuery());
   return result.results.bindings.map((binding) => {
     const uri = val(binding, "item");
     if (!uri) return null;
@@ -464,15 +828,21 @@ async function searchLinkedGeoData(query: string, locale: Locale): Promise<Propi
     const street = val(binding, "street");
     const houseNumber = val(binding, "houseNumber");
     const zona = [street, houseNumber].filter(Boolean).join(" ") || undefined;
-    const typeUri = val(binding, "type");
+    const typeUri = val(binding, "lodgingType");
     const property = emptyPropiedad({
       uri: linkedGeoDataResourceToOsmUrl(uri),
       nombre: val(binding, "label") ?? localName(uri),
       descripcion: undefined,
       urlImagen: undefined,
-      tipo: typeUri ? localName(typeUri) : undefined,
-      ciudad: val(binding, "city"),
+      tipo: presentTypeLabel(val(binding, "lodgingTypeLabel") ?? (typeUri ? localName(typeUri) : undefined), locale),
+      ciudad: val(binding, "city") ?? val(binding, "country"),
       zona,
+      codigoPostal: val(binding, "postcode"),
+      sitioWeb: val(binding, "website"),
+      telefono: val(binding, "phone"),
+      email: val(binding, "email"),
+      horario: val(binding, "openingHours"),
+      fuente: "OpenStreetMap",
       capacidadMaxima: undefined,
       calificacion: undefined,
       precioNoche: undefined,
@@ -480,7 +850,7 @@ async function searchLinkedGeoData(query: string, locale: Locale): Promise<Propi
 
     property.amenidades = buildLinkedGeoDataAmenities(binding, locale);
     return property;
-  }).filter((item): item is Propiedad => Boolean(item));
+  }).filter((item): item is Propiedad => Boolean(item)).filter((item) => matchesOnlineQuery(item, query));
 }
 
 function completeness(propiedad: Propiedad): number {
@@ -520,6 +890,12 @@ function mergePropiedades(base: Propiedad, incoming: Propiedad): Propiedad {
     calificacion: base.calificacion ?? incoming.calificacion,
     ciudad: base.ciudad ?? incoming.ciudad,
     zona: base.zona ?? incoming.zona,
+    codigoPostal: base.codigoPostal ?? incoming.codigoPostal,
+    sitioWeb: base.sitioWeb ?? incoming.sitioWeb,
+    telefono: base.telefono ?? incoming.telefono,
+    email: base.email ?? incoming.email,
+    horario: base.horario ?? incoming.horario,
+    fuente: base.fuente ?? incoming.fuente,
     amenidades,
     perfiles,
   };
@@ -564,7 +940,7 @@ function dedupe(propiedades: Propiedad[]): Propiedad[] {
     const byName = a.nombre.localeCompare(b.nombre);
     if (byName !== 0) return byName;
     return a.uri.localeCompare(b.uri);
-  });
+  }).slice(0, ONLINE_RESULT_LIMIT);
 }
 
 export async function searchOnline(query: string, locale: Locale): Promise<Propiedad[]> {
@@ -581,4 +957,15 @@ export async function searchOnline(query: string, locale: Locale): Promise<Propi
   return dedupe(merged);
 }
 
-export type { Perfil };
+export async function searchOnlineSource(source: OnlineSource, query: string, locale: Locale): Promise<Propiedad[]> {
+  const propiedades = source === "dbpedia"
+    ? await searchDbpedia(query, locale)
+    : source === "wikidata"
+      ? await searchWikidata(query, locale)
+      : source === "wikidata_context"
+        ? await searchWikidataContext(query, locale)
+      : await searchLinkedGeoData(query, locale);
+  return dedupe(propiedades);
+}
+
+export type { OnlineSource, Perfil };
