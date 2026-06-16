@@ -7,6 +7,7 @@
   --color-ink: #201b16;
   --color-muted: #75685d;
   --color-line: #e4d7c7;
+  --color-line-soft: #f3ece2;
   --color-terracotta: #b65335;
   --color-terracotta-dark: #74331f;
   --color-cactus: #256856;
@@ -35,6 +36,7 @@
     --color-ink: #fff8ec;
     --color-muted: #c7b7a8;
     --color-line: #49382d;
+    --color-line-soft: #312620;
     --color-terracotta: #df7a55;
     --color-terracotta-dark: #f1a180;
     --color-cactus: #73b59f;

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState, useSyncExternalStore, type FormEvent } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore, type FormEvent } from "react";
 import {
   Accessibility,
   BedDouble,
@@ -53,6 +53,12 @@ type Propiedad = {
   calificacion?: number;
   ciudad?: string;
   zona?: string;
+  codigoPostal?: string;
+  sitioWeb?: string;
+  telefono?: string;
+  email?: string;
+  horario?: string;
+  fuente?: string;
   amenidades: Amenidad[];
   perfiles: Perfil[];
 };
@@ -82,6 +88,8 @@ type SearchResponse = {
   ai?: AIInfo | null;
   error?: string;
 };
+
+type OnlineSource = "dbpedia" | "wikidata" | "wikidata_context" | "osm";
 
 const SUGGESTION_ICONS = [Wifi, Heart, Sun, Laptop, MapPin, HomeIcon, Building2] as const;
 const SEARCH_MODE_EVENT = "search-mode-change";
@@ -221,14 +229,81 @@ function chipsDeFiltros(filters: AIFilters, lang: Locale) {
   ].filter(Boolean);
 }
 
-async function obtenerResultados(lang: Locale, termino = "", mode = "offline"): Promise<SearchResponse> {
+async function obtenerResultados(
+  lang: Locale,
+  termino = "",
+  mode: "offline" | "online" = "offline",
+  source?: OnlineSource,
+): Promise<SearchResponse> {
   const params = new URLSearchParams({ lang, mode });
   if (termino.trim()) params.set("q", termino.trim());
+  if (source) params.set("source", source);
 
   const res = await fetch(`/api/buscar?${params.toString()}`);
   const data = (await res.json()) as SearchResponse;
   if (!res.ok) throw new Error(data.error ?? uiDictionary[lang].searchError);
   return data;
+}
+
+function completarPropiedad(propiedad: Propiedad): number {
+  return [
+    propiedad.descripcion,
+    propiedad.urlImagen,
+    propiedad.tipo,
+    propiedad.ciudad,
+    propiedad.zona,
+    propiedad.precioNoche,
+    propiedad.capacidadMaxima,
+    propiedad.calificacion,
+    propiedad.codigoPostal,
+    propiedad.sitioWeb,
+    propiedad.telefono,
+    propiedad.horario,
+  ].filter(Boolean).length + propiedad.amenidades.length;
+}
+
+function mergeOnlineResults(current: Propiedad[], incoming: Propiedad[]): Propiedad[] {
+  const byUri = new Map(current.map((item) => [item.uri, item]));
+
+  for (const propiedad of incoming) {
+    const existing = byUri.get(propiedad.uri);
+    if (!existing) {
+      byUri.set(propiedad.uri, propiedad);
+      continue;
+    }
+
+    byUri.set(
+      propiedad.uri,
+      completarPropiedad(existing) >= completarPropiedad(propiedad)
+        ? {
+            ...existing,
+            ...Object.fromEntries(Object.entries(propiedad).filter(([, value]) => value !== undefined)),
+            amenidades: [...existing.amenidades, ...propiedad.amenidades].filter(
+              (amenidad, index, list) => list.findIndex((item) => item.uri === amenidad.uri) === index,
+            ),
+            perfiles: [...existing.perfiles, ...propiedad.perfiles].filter(
+              (perfil, index, list) => list.findIndex((item) => item.uri === perfil.uri) === index,
+            ),
+          }
+        : {
+            ...propiedad,
+            ...Object.fromEntries(Object.entries(existing).filter(([, value]) => value !== undefined)),
+            amenidades: [...propiedad.amenidades, ...existing.amenidades].filter(
+              (amenidad, index, list) => list.findIndex((item) => item.uri === amenidad.uri) === index,
+            ),
+            perfiles: [...propiedad.perfiles, ...existing.perfiles].filter(
+              (perfil, index, list) => list.findIndex((item) => item.uri === perfil.uri) === index,
+            ),
+          },
+    );
+  }
+
+  return [...byUri.values()].sort((a, b) => {
+    if (Boolean(a.urlImagen) !== Boolean(b.urlImagen)) return a.urlImagen ? -1 : 1;
+    const diff = completarPropiedad(b) - completarPropiedad(a);
+    if (diff !== 0) return diff;
+    return a.nombre.localeCompare(b.nombre);
+  });
 }
 
 function SearchBox({
@@ -493,6 +568,11 @@ function ListingCard({
             {propiedad.nombre}
           </h2>
           <div className="mt-1 flex flex-wrap items-center gap-1.5 text-xs text-[var(--color-muted)]">
+            {mode === "online" && propiedad.fuente && (
+              <span className="inline-flex items-center gap-1 rounded-full border border-[var(--color-line)] bg-[var(--color-paper)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--color-cactus)]">
+                {propiedad.fuente}
+              </span>
+            )}
             {propiedad.tipo && (
               <span className="inline-flex items-center gap-1 rounded-full bg-[var(--color-sky-soft)] px-2 py-0.5 text-[var(--color-sky)]">
                 <IconGlyph icon={TipoIcon} className="h-3 w-3" />
@@ -652,13 +732,38 @@ export default function HomeClient({ lang }: { lang: Locale }) {
     () => "offline",
   );
   const [modalPropiedad, setModalPropiedad] = useState<Propiedad | null>(null);
+  const requestIdRef = useRef(0);
 
   useEffect(() => {
     let cancelado = false;
 
     async function cargarCatalogo() {
       setResultadosLoading(true);
+      setError(null);
       try {
+        if (mode === "online") {
+          const requestId = ++requestIdRef.current;
+          setResultados([]);
+          const sources: OnlineSource[] = ["dbpedia", "wikidata", "osm"];
+          let pending = sources.length;
+
+          await Promise.allSettled(
+            sources.map(async (source) => {
+              const data = await obtenerResultados(lang, "", "online", source);
+              if (cancelado || requestIdRef.current !== requestId) return;
+              setResultados((actual) => mergeOnlineResults(actual, data.propiedades ?? []));
+              pending -= 1;
+              if (pending === 0) setResultadosLoading(false);
+            }),
+          );
+
+          if (!cancelado && requestIdRef.current === requestId) {
+            setAi({ source: "fallback", filters: null, explanation: null });
+            setResultadosLoading(false);
+          }
+          return;
+        }
+
         const data = await obtenerResultados(lang, "", mode);
         if (cancelado) return;
         setResultados(data.propiedades ?? []);
@@ -680,19 +785,40 @@ export default function HomeClient({ lang }: { lang: Locale }) {
   }, [dict.fallbackError, lang, mode]);
 
   async function buscarConModo(termino: string, targetMode: "offline" | "online") {
+    const requestId = ++requestIdRef.current;
     setResultadosLoading(true);
     setError(null);
     setAi(null);
+    setResultados([]);
 
-    try {
+      try {
+        if (targetMode === "online") {
+        const sources: OnlineSource[] = termino.trim()
+          ? ["dbpedia", "wikidata", "osm", "wikidata_context"]
+          : ["dbpedia", "wikidata", "osm"];
+        await Promise.allSettled(
+          sources.map(async (source) => {
+            const data = await obtenerResultados(lang, termino, "online", source);
+            if (requestIdRef.current !== requestId) return;
+            setResultados((actual) => mergeOnlineResults(actual, data.propiedades ?? []));
+          }),
+        );
+        if (requestIdRef.current === requestId) {
+          setAi({ source: "fallback", filters: null, explanation: null });
+        }
+        return;
+      }
+
       const data = await obtenerResultados(lang, termino, targetMode);
+      if (requestIdRef.current !== requestId) return;
       setResultados(data.propiedades ?? []);
       setAi(data.ai ?? null);
     } catch (err) {
+      if (requestIdRef.current !== requestId) return;
       setError(err instanceof Error ? err.message : dict.fallbackError);
       setResultados([]);
     } finally {
-      setResultadosLoading(false);
+      if (requestIdRef.current === requestId) setResultadosLoading(false);
     }
   }
 
@@ -751,9 +877,9 @@ export default function HomeClient({ lang }: { lang: Locale }) {
         )}
 
         {!cargando && !error && <AiPanel lang={lang} ai={ai} />}
-        {cargando && <SkeletonGrid />}
+        {cargando && resultados.length === 0 && <SkeletonGrid />}
 
-        {!cargando && (
+        {resultados.length > 0 && (
           <section className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {resultados.map((propiedad, index) => (
               <ListingCard
@@ -777,8 +903,14 @@ export default function HomeClient({ lang }: { lang: Locale }) {
       </div>
 
       {modalPropiedad && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-fade-in">
-          <div className="relative w-full max-w-lg scale-[1] rounded-2xl border border-[var(--color-line)] bg-[var(--color-paper)] p-6 shadow-2xl transition-all duration-300 animate-scale-up text-left">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-fade-in"
+          onClick={handleCloseModal}
+        >
+          <div
+            className="relative w-full max-w-lg scale-[1] rounded-2xl border border-[var(--color-line)] bg-[var(--color-paper)] p-6 shadow-2xl transition-all duration-300 animate-scale-up text-left"
+            onClick={(event) => event.stopPropagation()}
+          >
             <header className="flex items-center gap-3 border-b border-[var(--color-line)] pb-3">
               <Sparkles className="h-6 w-6 text-[var(--color-terracotta)] animate-pulse" />
               <h2 className="text-xl font-bold text-[var(--color-ink)]">
@@ -791,27 +923,62 @@ export default function HomeClient({ lang }: { lang: Locale }) {
                 <MapPin className="h-4 w-4" />
                 <span>{modalPropiedad.tipo} · {modalPropiedad.ciudad || "Web"}</span>
               </p>
+              {modalPropiedad.fuente && (
+                <p className="text-xs font-semibold uppercase tracking-wide text-[var(--color-muted)]">
+                  Fuente: {modalPropiedad.fuente}
+                </p>
+              )}
               <p className="text-sm leading-relaxed text-[var(--color-muted)]">
                 {dict.modalBody}
               </p>
-              <div className="rounded-lg bg-[var(--color-cactus-soft)] p-3 text-xs border border-[var(--color-line)]">
+              {(modalPropiedad.zona || modalPropiedad.codigoPostal || modalPropiedad.sitioWeb || modalPropiedad.telefono || modalPropiedad.horario) && (
+                <div className="space-y-2 rounded-lg border border-[var(--color-line)] bg-[var(--color-paper)] p-3 text-xs text-[var(--color-muted)]">
+                  {modalPropiedad.zona && (
+                    <p>
+                      <span className="font-semibold text-[var(--color-ink)]">Direccion:</span> {modalPropiedad.zona}
+                    </p>
+                  )}
+                  {modalPropiedad.codigoPostal && (
+                    <p>
+                      <span className="font-semibold text-[var(--color-ink)]">Codigo postal:</span> {modalPropiedad.codigoPostal}
+                    </p>
+                  )}
+                  {modalPropiedad.horario && (
+                    <p>
+                      <span className="font-semibold text-[var(--color-ink)]">Horario:</span> {modalPropiedad.horario}
+                    </p>
+                  )}
+                  {modalPropiedad.telefono && (
+                    <p>
+                      <span className="font-semibold text-[var(--color-ink)]">Telefono:</span> {modalPropiedad.telefono}
+                    </p>
+                  )}
+                  {modalPropiedad.sitioWeb && (
+                    <p className="break-all">
+                      <span className="font-semibold text-[var(--color-ink)]">Sitio web:</span> {modalPropiedad.sitioWeb}
+                    </p>
+                  )}
+                </div>
+              )}
+              {modalPropiedad.amenidades.length > 0 && <Amenidades lang={lang} amenidades={modalPropiedad.amenidades} />}
+              <div className="rounded-lg border border-[var(--color-line)] bg-[var(--color-cactus-soft)] p-3 text-xs">
                 <p className="font-semibold text-[var(--color-ink)] mb-1">
                   {dict.modalQuestion}
                 </p>
-                <code className="block select-all bg-white/50 p-1.5 rounded border border-[var(--color-line)] break-all mt-2 dark:bg-black/20 text-[var(--color-cactus)]">
+                <code className="mt-2 block select-all break-all rounded border border-[var(--color-line)] bg-[var(--color-paper)] p-1.5 text-[var(--color-cactus)]">
                   {modalPropiedad.uri}
                 </code>
               </div>
             </div>
             
             <footer className="mt-6 flex items-center justify-end gap-3 border-t border-[var(--color-line)] pt-4">
-              <button
-                type="button"
-                onClick={handleCloseModal}
-                className="rounded-md border border-[var(--color-line)] bg-white px-4 py-2 text-sm font-semibold text-[var(--color-ink)] shadow-sm hover:bg-[var(--color-line-soft)] active:scale-[0.98] transition-all"
-              >
-                {dict.modalBtnCancel}
-              </button>
+                <button
+                  type="button"
+                  onClick={handleCloseModal}
+                  className="rounded-md border border-[var(--color-line)] bg-[var(--color-paper)] px-4 py-2 text-sm font-semibold text-[var(--color-ink)] shadow-sm transition-all hover:bg-[var(--color-line-soft)] active:scale-[0.98]"
+                >
+                  {dict.modalBtnCancel}
+                </button>
               <button
                 type="button"
                 onClick={handleConfirmNavigate}
