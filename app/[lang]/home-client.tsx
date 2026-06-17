@@ -819,6 +819,7 @@ export default function HomeClient({ lang }: { lang: Locale }) {
         if (mode === "online") {
           const requestId = ++requestIdRef.current;
           setResultados([]);
+          setAi(null);
           const sources: OnlineSource[] = ["dbpedia", "wikidata", "osm"];
           let pending = sources.length;
 
@@ -827,13 +828,19 @@ export default function HomeClient({ lang }: { lang: Locale }) {
               const data = await obtenerResultados(lang, "", "online", source);
               if (cancelado || requestIdRef.current !== requestId) return;
               setResultados((actual) => mergeOnlineResults(actual, data.propiedades ?? []));
+              if (data.ai && data.ai.source === "deepseek") {
+                setAi(data.ai);
+              }
               pending -= 1;
-              if (pending === 0) setResultadosLoading(false);
+              if (pending === 0) {
+                setAi((actual) => actual ?? { source: "fallback", filters: null, explanation: null });
+                setResultadosLoading(false);
+              }
             }),
           );
 
-          if (!cancelado && requestIdRef.current === requestId) {
-            setAi({ source: "fallback", filters: null, explanation: null });
+          if (!cancelado && requestIdRef.current === requestId && pending > 0) {
+            setAi((actual) => actual ?? { source: "fallback", filters: null, explanation: null });
             setResultadosLoading(false);
           }
           return;
@@ -866,20 +873,25 @@ export default function HomeClient({ lang }: { lang: Locale }) {
     setAi(null);
     setResultados([]);
 
-      try {
-        if (targetMode === "online") {
+    try {
+      if (targetMode === "online") {
         const sources: OnlineSource[] = termino.trim()
           ? ["dbpedia", "wikidata", "osm", "wikidata_context"]
           : ["dbpedia", "wikidata", "osm"];
+
         await Promise.allSettled(
           sources.map(async (source) => {
             const data = await obtenerResultados(lang, termino, "online", source);
             if (requestIdRef.current !== requestId) return;
             setResultados((actual) => mergeOnlineResults(actual, data.propiedades ?? []));
+            if (data.ai && data.ai.source === "deepseek") {
+              setAi(data.ai);
+            }
           }),
         );
+
         if (requestIdRef.current === requestId) {
-          setAi({ source: "fallback", filters: null, explanation: null });
+          setAi((actual) => actual ?? { source: "fallback", filters: null, explanation: null });
         }
         return;
       }

@@ -1,6 +1,6 @@
 import { type Locale } from "@/lib/i18n";
 
-import { type Amenidad, type Perfil, type Propiedad } from "./ontology";
+import { type Amenidad, type Perfil, type Propiedad, type StructuredFilters } from "./ontology";
 
 const DBPEDIA_ENDPOINT = "https://dbpedia.org/sparql";
 const WIKIDATA_ENDPOINT = "https://query.wikidata.org/sparql";
@@ -15,6 +15,26 @@ const WIKIDATA_SEARCH_LIMIT = 12;
 const LINKEDGEODATA_RESULT_LIMIT = 24;
 const ONLINE_RESULT_LIMIT = 24;
 const GENERIC_LINKEDGEODATA_TYPES = new Set(["Feature", "Node", "Amenity"]);
+const SEARCH_STOP_WORDS = new Set([
+  "a",
+  "an",
+  "and",
+  "avec",
+  "con",
+  "de",
+  "del",
+  "des",
+  "en",
+  "for",
+  "in",
+  "of",
+  "pour",
+  "the",
+  "un",
+  "una",
+  "une",
+  "y",
+]);
 
 type WikidataSeed = { uri: string; nombre: string; urlImagen?: string };
 
@@ -72,6 +92,9 @@ function presentTypeLabel(value: string | undefined, locale: Locale): string | u
   if (/accommodation|alojamiento|hebergement/.test(normalized)) {
     return locale === "fr" ? "Hebergement" : locale === "es" ? "Alojamiento" : "Accommodation";
   }
+  if (/gostinitsa|otel/.test(normalized)) {
+    return "Hotel";
+  }
   if (/hostel|hotel|motel|inn|lodge|resort|villa/.test(normalized)) {
     return label;
   }
@@ -127,12 +150,88 @@ function linkedGeoDataTypeAmenity(typeValue: string | undefined, _typeLabel: str
 }
 
 function normalize(value: string): string {
-  return value.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
+  const transliterated = value
+    .replace(/[Аа]/g, "a")
+    .replace(/[Бб]/g, "b")
+    .replace(/[Вв]/g, "v")
+    .replace(/[Гг]/g, "g")
+    .replace(/[Дд]/g, "d")
+    .replace(/[ЕеЁё]/g, "e")
+    .replace(/[Жж]/g, "zh")
+    .replace(/[Зз]/g, "z")
+    .replace(/[ИиЙй]/g, "i")
+    .replace(/[Кк]/g, "k")
+    .replace(/[Лл]/g, "l")
+    .replace(/[Мм]/g, "m")
+    .replace(/[Нн]/g, "n")
+    .replace(/[Оо]/g, "o")
+    .replace(/[Пп]/g, "p")
+    .replace(/[Рр]/g, "r")
+    .replace(/[Сс]/g, "s")
+    .replace(/[Тт]/g, "t")
+    .replace(/[Уу]/g, "u")
+    .replace(/[Фф]/g, "f")
+    .replace(/[Хх]/g, "h")
+    .replace(/[Цц]/g, "ts")
+    .replace(/[Чч]/g, "ch")
+    .replace(/[Шш]/g, "sh")
+    .replace(/[Щщ]/g, "shch")
+    .replace(/[Ыы]/g, "y")
+    .replace(/[Ээ]/g, "e")
+    .replace(/[Юю]/g, "yu")
+    .replace(/[Яя]/g, "ya")
+    .replace(/[ЪъЬь]/g, "");
+
+  return transliterated.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
+}
+
+function tokenizeQuery(value: string): string[] {
+  return normalize(value)
+    .split(/[^\p{Letter}\p{Number}]+/u)
+    .map((token) => token.trim())
+    .filter((token) => token.length > 1 && !SEARCH_STOP_WORDS.has(token));
+}
+
+function matchesAny(value: string | undefined, candidates: string[] | undefined): boolean {
+  if (!candidates || candidates.length === 0) return true;
+  if (!value) return false;
+  const normValue = normalize(value);
+  return candidates.some((candidate) => {
+    const normCand = normalize(candidate);
+    return normValue.includes(normCand) || normCand.includes(normValue);
+  });
+}
+
+function matchesAnyInList(values: string[], candidates: string[] | undefined): boolean {
+  if (!candidates || candidates.length === 0) return true;
+  if (values.length === 0) return false;
+  const normValues = values.map(normalize);
+  return candidates.some((candidate) => {
+    const normCand = normalize(candidate);
+    return normValues.some((value) => value.includes(normCand) || normCand.includes(value));
+  });
+}
+
+function countMatchesInList(values: string[], candidates: string[]): number {
+  if (candidates.length === 0 || values.length === 0) return 0;
+  const normValues = values.map(normalize);
+  let count = 0;
+  for (const candidate of candidates) {
+    const normCand = normalize(candidate);
+    if (normValues.some((value) => value.includes(normCand) || normCand.includes(value))) {
+      count += 1;
+    }
+  }
+  return count;
+}
+
+function hasCandidates(candidates: string[] | undefined): boolean {
+  return (candidates?.length ?? 0) > 0;
 }
 
 function matchesOnlineQuery(propiedad: Propiedad, query: string): boolean {
-  const term = normalize(query.trim());
-  if (!term) return true;
+  const terms = tokenizeQuery(query.trim());
+  if (terms.length === 0) return true;
   const haystack = normalize([
     propiedad.nombre,
     propiedad.descripcion,
@@ -146,7 +245,170 @@ function matchesOnlineQuery(propiedad: Propiedad, query: string): boolean {
     propiedad.fuente,
     ...propiedad.amenidades.flatMap((amenidad) => [amenidad.nombre, amenidad.categoria]),
   ].filter(Boolean).join(" "));
-  return haystack.includes(term);
+  return terms.every((term) => haystack.includes(term));
+}
+
+function buildOnlineSearchable(propiedad: Propiedad): string {
+  return normalize([
+    propiedad.uri,
+    propiedad.nombre,
+    propiedad.descripcion,
+    propiedad.tipo,
+    propiedad.ciudad,
+    propiedad.zona,
+    propiedad.codigoPostal,
+    propiedad.sitioWeb,
+    propiedad.telefono,
+    propiedad.email,
+    propiedad.horario,
+    propiedad.fuente,
+    propiedad.precioNoche?.toString(),
+    propiedad.capacidadMaxima?.toString(),
+    propiedad.calificacion?.toString(),
+    ...propiedad.amenidades.flatMap((amenidad) => [amenidad.nombre, amenidad.categoria]),
+    ...propiedad.perfiles.flatMap((perfil) => [perfil.nombre, perfil.tipoViajero]),
+  ].filter(Boolean).join(" "));
+}
+
+function sanitizeOnlineFilters(filters: StructuredFilters, propiedades: Propiedad[]): StructuredFilters {
+  if (!hasCandidates(filters.ciudades) || !hasCandidates(filters.zonas)) {
+    return filters;
+  }
+
+  const hasCityZoneMatch = propiedades.some(
+    (propiedad) =>
+      matchesAny(propiedad.ciudad, filters.ciudades) &&
+      matchesAny(propiedad.zona, filters.zonas),
+  );
+
+  return hasCityZoneMatch ? filters : { ...filters, zonas: [] };
+}
+
+export function applyStructuredOnlineSearch(filters: StructuredFilters, propiedades: Propiedad[]): Propiedad[] {
+  const deduped = dedupeOnlineResults(propiedades);
+  const sanitizedFilters = sanitizeOnlineFilters(filters, deduped);
+  const normalizedKeywords = (sanitizedFilters.keywords ?? [])
+    .map((keyword) => normalize(keyword.trim()))
+    .filter(Boolean);
+
+  const shouldApplyZoneFilter =
+    hasCandidates(sanitizedFilters.zonas) &&
+    (!hasCandidates(sanitizedFilters.ciudades) ||
+      deduped.some(
+        (propiedad) =>
+          matchesAny(propiedad.ciudad, sanitizedFilters.ciudades) &&
+          matchesAny(propiedad.zona, sanitizedFilters.zonas),
+      ));
+
+  const hardFiltered = deduped.filter((propiedad) => {
+    if (hasCandidates(sanitizedFilters.ciudades) && !matchesAny(propiedad.ciudad, sanitizedFilters.ciudades)) {
+      return false;
+    }
+    if (filters.precioMax !== undefined) {
+      if (propiedad.precioNoche === undefined || propiedad.precioNoche > filters.precioMax * 1.25) {
+        return false;
+      }
+    }
+    if (filters.precioMin !== undefined) {
+      if (propiedad.precioNoche === undefined || propiedad.precioNoche < filters.precioMin) {
+        return false;
+      }
+    }
+    if (filters.capacidadMin !== undefined) {
+      if (propiedad.capacidadMaxima === undefined || propiedad.capacidadMaxima < filters.capacidadMin) {
+        return false;
+      }
+    }
+    return true;
+  });
+
+  const strictCategorical = hardFiltered.filter((propiedad) => {
+    if (shouldApplyZoneFilter && !matchesAny(propiedad.zona, sanitizedFilters.zonas)) {
+      return false;
+    }
+    if (
+      hasCandidates(sanitizedFilters.tiposPropiedad) &&
+      !matchesAny(propiedad.tipo, sanitizedFilters.tiposPropiedad)
+    ) {
+      return false;
+    }
+    if (hasCandidates(sanitizedFilters.tiposViajero)) {
+      const tipos = propiedad.perfiles
+        .map((perfil) => perfil.tipoViajero)
+        .filter((tipo): tipo is string => Boolean(tipo));
+      if (!matchesAnyInList(tipos, sanitizedFilters.tiposViajero)) return false;
+    }
+    if (hasCandidates(sanitizedFilters.categoriasAmenidad)) {
+      const categorias = propiedad.amenidades
+        .map((amenidad) => amenidad.categoria)
+        .filter((categoria): categoria is string => Boolean(categoria));
+      if (!matchesAnyInList(categorias, sanitizedFilters.categoriasAmenidad)) return false;
+    }
+    if (hasCandidates(sanitizedFilters.amenidades)) {
+      const nombres = propiedad.amenidades.map((amenidad) => amenidad.nombre);
+      if (!matchesAnyInList(nombres, sanitizedFilters.amenidades)) return false;
+    }
+    return true;
+  });
+
+  const rankingPool = strictCategorical.length > 0 ? strictCategorical : hardFiltered;
+  const hasSoftCriteria =
+    normalizedKeywords.length > 0 ||
+    hasCandidates(sanitizedFilters.zonas) ||
+    hasCandidates(sanitizedFilters.tiposPropiedad) ||
+    hasCandidates(sanitizedFilters.tiposViajero) ||
+    hasCandidates(sanitizedFilters.categoriasAmenidad) ||
+    hasCandidates(sanitizedFilters.amenidades) ||
+    sanitizedFilters.calificacionMin !== undefined;
+
+  if (!hasSoftCriteria) {
+    return rankingPool;
+  }
+
+  const scored = rankingPool.map((propiedad) => {
+    const searchable = buildOnlineSearchable(propiedad);
+    let score = 0;
+
+    for (const keyword of normalizedKeywords) {
+      if (searchable.includes(keyword)) score += 1;
+    }
+    if (shouldApplyZoneFilter && matchesAny(propiedad.zona, sanitizedFilters.zonas)) {
+      score += 3;
+    }
+    if (
+      hasCandidates(sanitizedFilters.tiposPropiedad) &&
+      matchesAny(propiedad.tipo, sanitizedFilters.tiposPropiedad)
+    ) {
+      score += 4;
+    }
+    if (hasCandidates(sanitizedFilters.tiposViajero)) {
+      const tipos = propiedad.perfiles
+        .map((perfil) => perfil.tipoViajero)
+        .filter((tipo): tipo is string => Boolean(tipo));
+      score += countMatchesInList(tipos, sanitizedFilters.tiposViajero ?? []) * 2;
+    }
+    if (hasCandidates(sanitizedFilters.categoriasAmenidad)) {
+      const categorias = propiedad.amenidades
+        .map((amenidad) => amenidad.categoria)
+        .filter((categoria): categoria is string => Boolean(categoria));
+      score += countMatchesInList(categorias, sanitizedFilters.categoriasAmenidad ?? []);
+    }
+    if (hasCandidates(sanitizedFilters.amenidades)) {
+      const nombres = propiedad.amenidades.map((amenidad) => amenidad.nombre);
+      score += countMatchesInList(nombres, sanitizedFilters.amenidades ?? []) * 3;
+    }
+    if (sanitizedFilters.calificacionMin !== undefined) {
+      score +=
+        propiedad.calificacion !== undefined && propiedad.calificacion >= sanitizedFilters.calificacionMin
+          ? 2
+          : -1;
+    }
+
+    return { propiedad, score };
+  });
+
+  const positives = scored.filter((item) => item.score > 0);
+  return positives.length > 0 ? positives.map((item) => item.propiedad) : rankingPool;
 }
 
 function boolish(value?: string): boolean {
@@ -901,7 +1163,7 @@ function mergePropiedades(base: Propiedad, incoming: Propiedad): Propiedad {
   };
 }
 
-function dedupe(propiedades: Propiedad[]): Propiedad[] {
+export function dedupeOnlineResults(propiedades: Propiedad[]): Propiedad[] {
   const byUri = new Map<string, Propiedad>();
   for (const propiedad of propiedades) {
     const current = byUri.get(propiedad.uri);
@@ -944,17 +1206,20 @@ function dedupe(propiedades: Propiedad[]): Propiedad[] {
 }
 
 export async function searchOnline(query: string, locale: Locale): Promise<Propiedad[]> {
-  const [dbpedia, wikidata, linkedgeodata] = await Promise.allSettled([
+  const tasks = [
     searchDbpedia(query, locale),
     searchWikidata(query, locale),
     searchLinkedGeoData(query, locale),
-  ]);
+    ...(query.trim() ? [searchWikidataContext(query, locale)] : []),
+  ];
 
-  const merged = [dbpedia, wikidata, linkedgeodata].flatMap((result) =>
+  const settled = await Promise.allSettled(tasks);
+
+  const merged = settled.flatMap((result) =>
     result.status === "fulfilled" ? result.value : [],
   );
 
-  return dedupe(merged);
+  return dedupeOnlineResults(merged);
 }
 
 export async function searchOnlineSource(source: OnlineSource, query: string, locale: Locale): Promise<Propiedad[]> {
@@ -965,7 +1230,7 @@ export async function searchOnlineSource(source: OnlineSource, query: string, lo
       : source === "wikidata_context"
         ? await searchWikidataContext(query, locale)
       : await searchLinkedGeoData(query, locale);
-  return dedupe(propiedades);
+  return dedupeOnlineResults(propiedades);
 }
 
 export type { OnlineSource, Perfil };
