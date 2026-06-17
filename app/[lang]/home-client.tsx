@@ -98,8 +98,15 @@ const THEME_EVENT = "theme-change";
 const THEME_STORAGE_KEY = "theme-preference";
 
 function applyTheme(theme: "light" | "dark") {
-  document.documentElement.dataset.theme = theme;
-  document.documentElement.style.colorScheme = theme;
+  const root = document.documentElement;
+  // Desactiva transiciones durante el switch para que el cambio sea instantaneo,
+  // luego las restaura en el siguiente frame (los hovers vuelven a animar).
+  root.classList.add("theme-switching");
+  root.dataset.theme = theme;
+  root.style.colorScheme = theme;
+  window.requestAnimationFrame(() => {
+    window.requestAnimationFrame(() => root.classList.remove("theme-switching"));
+  });
 }
 
 function readStoredTheme(): "light" | "dark" {

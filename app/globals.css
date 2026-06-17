@@ -107,6 +107,14 @@ body {
   color: var(--color-ink);
 }
 
+/* Cambio de tema instantaneo: anula las transiciones (transition-all de hover)
+   solo durante el switch, para que no se animen los colores de todas las cards
+   a la vez. Los hovers siguen funcionando despues. */
+:root.theme-switching,
+:root.theme-switching * {
+  transition: none !important;
+}
+
 .font-serif {
   font-family: var(--font-serif), ui-serif, Georgia, serif;
 }
