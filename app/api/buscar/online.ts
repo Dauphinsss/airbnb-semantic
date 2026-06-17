@@ -731,6 +731,7 @@ PREFIX schema: <http://schema.org/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
 SELECT ?item
+       (SAMPLE(?itemLabel) AS ?itemLabel)
        (SAMPLE(?description) AS ?description)
        (SAMPLE(?image) AS ?image)
        (SAMPLE(?placeLabel) AS ?placeLabel)
@@ -893,9 +894,11 @@ async function searchWikidata(query: string, locale: Locale): Promise<Propiedad[
   const seeds = seedResult.results.bindings.map((binding) => {
     const uri = val(binding, "item");
     if (!uri) return null;
+    const rawLabel = val(binding, "itemLabel");
+    const nombre = rawLabel && !isWikidataId(rawLabel) ? rawLabel : localName(uri);
     return {
       uri,
-      nombre: val(binding, "itemLabel") ?? localName(uri),
+      nombre,
       urlImagen: normalizeImageUrl(val(binding, "image")),
     } satisfies WikidataSeed;
   }).filter((item): item is WikidataSeed => Boolean(item));
@@ -923,9 +926,11 @@ async function searchWikidataContext(query: string, locale: Locale): Promise<Pro
       relatedResult.results.bindings.map((binding) => {
         const uri = val(binding, "item");
         if (!uri) return null;
+        const rawLabel = val(binding, "itemLabel");
+        const nombre = rawLabel && !isWikidataId(rawLabel) ? rawLabel : localName(uri);
         return {
           uri,
-          nombre: val(binding, "itemLabel") ?? localName(uri),
+          nombre,
           urlImagen: undefined,
         } satisfies WikidataSeed;
       }).filter((item): item is WikidataSeed => Boolean(item)),
@@ -937,18 +942,36 @@ async function searchWikidataContext(query: string, locale: Locale): Promise<Pro
     try {
       return await hydrateWikidataSeeds(seeds, query, locale, false);
     } catch {
-      return relatedResult.results.bindings.map((binding) => {
+      const fallbackItems = relatedResult.results.bindings.map((binding) => {
         const uri = val(binding, "item");
         if (!uri) return null;
+        const rawLabel = val(binding, "itemLabel");
+        const nombre = rawLabel && !isWikidataId(rawLabel) ? rawLabel : localName(uri);
         return emptyPropiedad({
           uri,
-          nombre: val(binding, "itemLabel") ?? localName(uri),
+          nombre,
           tipo: presentTypeLabel("Hotel", locale),
           ciudad: val(binding, "placeLabel"),
           fuente: "Wikidata",
           zona: undefined,
         });
       }).filter((item): item is Propiedad => Boolean(item));
+
+      const badIds = fallbackItems
+        .filter((item) => isWikidataId(item.nombre))
+        .map((item) => localName(item.uri));
+      if (badIds.length > 0) {
+        const resolvedLabels = await resolveWikidataLabels(badIds, locale);
+        return fallbackItems.map((item) => {
+          if (!isWikidataId(item.nombre)) return item;
+          const apiLabel = resolvedLabels.get(localName(item.uri));
+          return apiLabel && !isWikidataId(apiLabel)
+            ? { ...item, nombre: apiLabel }
+            : item;
+        });
+      }
+
+      return fallbackItems;
     }
   } catch (error) {
     if (error instanceof Error && (error.message.includes("(429)") || error.message.includes("aborted"))) {
@@ -978,11 +1001,35 @@ async function hydrateWikidataSeeds(
     if (uri) detailsByUri.set(uri, binding);
   }
 
+  const qIdsWithBadNames = seeds
+    .filter((seed) => {
+      const detailsLabel = detailsByUri.get(seed.uri) ? val(detailsByUri.get(seed.uri)!, "itemLabel") : undefined;
+      const currentName = isWikidataId(seed.nombre)
+        ? (detailsLabel && !isWikidataId(detailsLabel) ? detailsLabel : seed.nombre)
+        : seed.nombre;
+      return isWikidataId(currentName);
+    })
+    .map((seed) => localName(seed.uri));
+
+  const resolvedLabels = await resolveWikidataLabels(qIdsWithBadNames, locale);
+
   const mapped = seeds.map((seed) => {
     const binding = detailsByUri.get(seed.uri);
+    const detailsLabel = binding ? val(binding, "itemLabel") : undefined;
+    let resolvedName = isWikidataId(seed.nombre)
+      ? (detailsLabel && !isWikidataId(detailsLabel) ? detailsLabel : localName(seed.uri))
+      : seed.nombre;
+
+    if (isWikidataId(resolvedName)) {
+      const apiLabel = resolvedLabels.get(resolvedName);
+      if (apiLabel && !isWikidataId(apiLabel)) {
+        resolvedName = apiLabel;
+      }
+    }
+
     return emptyPropiedad({
       uri: seed.uri,
-      nombre: seed.nombre,
+      nombre: resolvedName,
       descripcion: val(binding, "description"),
       urlImagen: seed.urlImagen ?? normalizeImageUrl(val(binding, "image")),
       tipo: presentTypeLabel(val(binding, "instanceLabel") ?? "Hotel", locale),
@@ -997,6 +1044,52 @@ async function hydrateWikidataSeeds(
   } catch {
     return filtered;
   }
+}
+
+async function resolveWikidataLabels(
+  ids: string[],
+  locale: Locale,
+): Promise<Map<string, string>> {
+  const unique = [...new Set(ids.filter((id) => isWikidataId(id)))];
+  if (unique.length === 0) return new Map();
+
+  const resolved = new Map<string, string>();
+  for (const lang of localeChain(locale)) {
+    if (unique.length === 0) break;
+    const idsToTry = unique.filter((id) => !resolved.has(id));
+    if (idsToTry.length === 0) break;
+
+    const chunkSize = 50;
+    for (let i = 0; i < idsToTry.length; i += chunkSize) {
+      const chunk = idsToTry.slice(i, i + chunkSize);
+      const idsParam = chunk.join("|");
+      const url = `https://www.wikidata.org/w/api.php?action=wbgetentities&ids=${encodeURIComponent(idsParam)}&props=labels&languages=${encodeURIComponent(lang)}&format=json&origin=*`;
+      try {
+        const response = await fetch(url, {
+          cache: "no-store",
+          headers: { "User-Agent": "BuscadorSemantico/1.0 (academic project)" },
+        });
+        if (!response.ok) continue;
+        const data = (await response.json()) as {
+          entities?: Record<string, { labels?: Record<string, { language?: string; value?: string }> }>;
+        };
+        for (const id of chunk) {
+          const label = data.entities?.[id]?.labels?.[lang]?.value;
+          if (label && !isWikidataId(label)) {
+            resolved.set(id, label);
+          }
+        }
+      } catch {
+        continue;
+      }
+    }
+  }
+
+  return resolved;
+}
+
+function isWikidataId(value: string): boolean {
+  return /^Q\d+$/.test(value);
 }
 
 function buildLinkedGeoDataAmenities(binding: SparqlBinding, locale: Locale): Amenidad[] {
