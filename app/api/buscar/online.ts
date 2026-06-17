@@ -890,7 +890,7 @@ async function searchWikidata(query: string, locale: Locale): Promise<Propiedad[
     WIKIDATA_TIMEOUT_MS,
   );
 
-  const seeds = seedResult.results.bindings.map((binding) => {
+  const seeds = seedResult.results.bindings.map((binding): WikidataSeed | null => {
     const uri = val(binding, "item");
     if (!uri) return null;
     return {
@@ -898,7 +898,7 @@ async function searchWikidata(query: string, locale: Locale): Promise<Propiedad[
       nombre: val(binding, "itemLabel") ?? localName(uri),
       urlImagen: normalizeImageUrl(val(binding, "image")),
     } satisfies WikidataSeed;
-  }).filter((item): item is WikidataSeed => Boolean(item));
+  }).filter((item): item is WikidataSeed => item !== null);
 
   if (seeds.length === 0) return [];
 
@@ -920,7 +920,7 @@ async function searchWikidataContext(query: string, locale: Locale): Promise<Pro
       );
 
     const seeds = uniqueBy(
-      relatedResult.results.bindings.map((binding) => {
+      relatedResult.results.bindings.map((binding): WikidataSeed | null => {
         const uri = val(binding, "item");
         if (!uri) return null;
         return {
@@ -928,7 +928,7 @@ async function searchWikidataContext(query: string, locale: Locale): Promise<Pro
           nombre: val(binding, "itemLabel") ?? localName(uri),
           urlImagen: undefined,
         } satisfies WikidataSeed;
-      }).filter((item): item is WikidataSeed => Boolean(item)),
+      }).filter((item): item is WikidataSeed => item !== null),
       (item) => item.uri,
     );
 
@@ -980,13 +980,14 @@ async function hydrateWikidataSeeds(
 
   const mapped = seeds.map((seed) => {
     const binding = detailsByUri.get(seed.uri);
+    const detail = (key: string) => (binding ? val(binding, key) : undefined);
     return emptyPropiedad({
       uri: seed.uri,
       nombre: seed.nombre,
-      descripcion: val(binding, "description"),
-      urlImagen: seed.urlImagen ?? normalizeImageUrl(val(binding, "image")),
-      tipo: presentTypeLabel(val(binding, "instanceLabel") ?? "Hotel", locale),
-      ciudad: val(binding, "placeLabel"),
+      descripcion: detail("description"),
+      urlImagen: seed.urlImagen ?? normalizeImageUrl(detail("image")),
+      tipo: presentTypeLabel(detail("instanceLabel") ?? "Hotel", locale),
+      ciudad: detail("placeLabel"),
       fuente: "Wikidata",
       zona: undefined,
     });
