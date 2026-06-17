@@ -18,6 +18,7 @@
   --color-maize-soft: #f4e5bd;
   --color-rose: #b4445a;
   --color-rose-soft: #f0d4d9;
+  color-scheme: light;
 }
 
 @theme inline {
@@ -28,8 +29,29 @@
   --font-mono: var(--font-mono);
 }
 
+:root[data-theme="dark"] {
+  --background: #0d1411;
+  --foreground: #fff8ec;
+  --color-paper: #241c16;
+  --color-ink: #fff8ec;
+  --color-muted: #c7b7a8;
+  --color-line: #49382d;
+  --color-line-soft: #312620;
+  --color-terracotta: #df7a55;
+  --color-terracotta-dark: #f1a180;
+  --color-cactus: #73b59f;
+  --color-cactus-soft: #203f35;
+  --color-sky: #79a9ca;
+  --color-sky-soft: #203948;
+  --color-maize: #e5b84a;
+  --color-maize-soft: #473718;
+  --color-rose: #df7d91;
+  --color-rose-soft: #4b2430;
+  color-scheme: dark;
+}
+
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme]) {
     --background: #0d1411;
     --foreground: #fff8ec;
     --color-paper: #241c16;
@@ -47,6 +69,7 @@
     --color-maize-soft: #473718;
     --color-rose: #df7d91;
     --color-rose-soft: #4b2430;
+    color-scheme: dark;
   }
 }
 
@@ -61,8 +84,16 @@ body {
   font-feature-settings: "ss01", "cv11";
 }
 
+:root[data-theme="dark"] body {
+  background:
+    radial-gradient(80% 60% at 50% 0%, rgba(115, 181, 159, 0.10), transparent 70%),
+    linear-gradient(180deg, rgba(115, 181, 159, 0.04) 0%, transparent 40%, var(--background) 100%),
+    var(--background);
+  background-attachment: fixed;
+}
+
 @media (prefers-color-scheme: dark) {
-  body {
+  :root:not([data-theme]) body {
     background:
       radial-gradient(80% 60% at 50% 0%, rgba(115, 181, 159, 0.10), transparent 70%),
       linear-gradient(180deg, rgba(115, 181, 159, 0.04) 0%, transparent 40%, var(--background) 100%),
@@ -129,8 +160,18 @@ body {
   animation: shimmer 1.4s linear infinite;
 }
 
+:root[data-theme="dark"] .skeleton {
+  background: linear-gradient(
+    90deg,
+    rgb(39 39 42) 0%,
+    rgb(52 52 56) 50%,
+    rgb(39 39 42) 100%
+  );
+  background-size: 400px 100%;
+}
+
 @media (prefers-color-scheme: dark) {
-  .skeleton {
+  :root:not([data-theme]) .skeleton {
     background: linear-gradient(
       90deg,
       rgb(39 39 42) 0%,

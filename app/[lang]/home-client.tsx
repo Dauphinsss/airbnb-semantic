@@ -24,6 +24,7 @@ import {
   Sparkles,
   Star,
   Sun,
+  Moon,
   Tag,
   UserRound,
   Users,
@@ -93,6 +94,55 @@ type OnlineSource = "dbpedia" | "wikidata" | "wikidata_context" | "osm";
 
 const SUGGESTION_ICONS = [Wifi, Heart, Sun, Laptop, MapPin, HomeIcon, Building2] as const;
 const SEARCH_MODE_EVENT = "search-mode-change";
+const THEME_EVENT = "theme-change";
+const THEME_STORAGE_KEY = "theme-preference";
+
+function applyTheme(theme: "light" | "dark") {
+  document.documentElement.dataset.theme = theme;
+  document.documentElement.style.colorScheme = theme;
+}
+
+function readStoredTheme(): "light" | "dark" {
+  if (typeof window === "undefined") return "light";
+  const saved = window.localStorage.getItem(THEME_STORAGE_KEY);
+  if (saved === "light" || saved === "dark") return saved;
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
+function persistTheme(theme: "light" | "dark") {
+  localStorage.setItem(THEME_STORAGE_KEY, theme);
+  applyTheme(theme);
+  window.dispatchEvent(new Event(THEME_EVENT));
+}
+
+function subscribeTheme(onStoreChange: () => void) {
+  if (typeof window === "undefined") {
+    return () => undefined;
+  }
+
+  const onStorage = (event: StorageEvent) => {
+    if (!event.key || event.key === THEME_STORAGE_KEY) {
+      onStoreChange();
+    }
+  };
+
+  const media = window.matchMedia("(prefers-color-scheme: dark)");
+  const onMediaChange = () => {
+    if (!window.localStorage.getItem(THEME_STORAGE_KEY)) {
+      onStoreChange();
+    }
+  };
+
+  window.addEventListener("storage", onStorage);
+  window.addEventListener(THEME_EVENT, onStoreChange);
+  media.addEventListener("change", onMediaChange);
+
+  return () => {
+    window.removeEventListener("storage", onStorage);
+    window.removeEventListener(THEME_EVENT, onStoreChange);
+    media.removeEventListener("change", onMediaChange);
+  };
+}
 
 function readStoredMode(): "offline" | "online" {
   if (typeof window === "undefined") return "offline";
@@ -314,6 +364,8 @@ function SearchBox({
   onSubmit,
   mode,
   onModeChange,
+  theme,
+  onThemeToggle,
 }: {
   lang: Locale;
   cargando: boolean;
@@ -322,11 +374,14 @@ function SearchBox({
   onSubmit: (event: FormEvent) => void;
   mode: "offline" | "online";
   onModeChange: (newMode: "offline" | "online") => void;
+  theme: "light" | "dark";
+  onThemeToggle: () => void;
 }) {
   const dict = uiDictionary[lang];
+  const isDark = theme === "dark";
   return (
-    <section className="mx-auto flex w-full max-w-3xl flex-col items-center gap-6 pt-6 pb-2 text-center">
-      <div className="flex w-full flex-col sm:flex-row items-center justify-between gap-4 text-xs font-semibold uppercase tracking-wide text-[var(--color-muted)] border-b border-[var(--color-line)] pb-4">
+    <section className="mx-auto flex w-full max-w-5xl flex-col items-center gap-6 pt-6 pb-2 text-center">
+      <div className="flex w-full flex-col gap-4 border-b border-[var(--color-line)] pb-4 text-xs font-semibold uppercase tracking-wide text-[var(--color-muted)] lg:flex-row lg:items-center lg:justify-between">
         {/* Toggle de Modo: Offline vs Online */}
         <div className="flex items-center gap-2 rounded-full border border-[var(--color-line)] bg-[var(--color-paper)] p-1 shadow-sm transition-all duration-300">
           <button
@@ -356,21 +411,32 @@ function SearchBox({
         </div>
 
         {/* Idiomas */}
-        <div className="flex flex-wrap gap-2">
-          {locales.map((locale) => (
-            <Link
-              key={locale}
-              href={`/${locale}`}
-              onClick={() => persistSearchMode(mode)}
-              className={`rounded-full border px-3 py-1 transition-colors ${
-                locale === lang
-                  ? "border-[var(--color-cactus)] bg-[var(--color-cactus-soft)] text-[var(--color-cactus)]"
-                  : "border-[var(--color-line)] hover:border-[var(--color-cactus)] hover:text-[var(--color-cactus)]"
-              }`}
-            >
-              {localeLabels[locale]}
-            </Link>
-          ))}
+        <div className="flex w-full items-center justify-between gap-3 lg:w-auto lg:flex-1 lg:justify-end">
+          <div className="flex flex-wrap justify-end gap-2">
+            {locales.map((locale) => (
+              <Link
+                key={locale}
+                href={`/${locale}`}
+                onClick={() => persistSearchMode(mode)}
+                className={`rounded-full border px-3 py-1 transition-colors ${
+                  locale === lang
+                    ? "border-[var(--color-cactus)] bg-[var(--color-cactus-soft)] text-[var(--color-cactus)]"
+                    : "border-[var(--color-line)] hover:border-[var(--color-cactus)] hover:text-[var(--color-cactus)]"
+                }`}
+              >
+                {localeLabels[locale]}
+              </Link>
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={onThemeToggle}
+            aria-label={isDark ? dict.themeLight : dict.themeDark}
+            title={isDark ? dict.themeLight : dict.themeDark}
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[var(--color-line)] bg-[var(--color-paper)] text-[var(--color-ink)] shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-[var(--color-cactus)] hover:text-[var(--color-cactus)] hover:shadow"
+          >
+            {isDark ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
+          </button>
         </div>
       </div>
 
@@ -401,7 +467,7 @@ function SearchBox({
               value={q}
               onChange={(event) => setQ(event.target.value)}
               placeholder={dict.searchPlaceholder}
-              className="w-full rounded-md border border-[var(--color-line)] bg-white/80 py-2 pl-9 pr-3 text-sm text-[var(--color-ink)] outline-none transition focus:border-[var(--color-cactus)] dark:bg-black/20"
+              className="w-full rounded-md border border-[var(--color-line)] bg-[var(--color-paper)] py-2 pl-9 pr-3 text-sm text-[var(--color-ink)] outline-none transition focus:border-[var(--color-cactus)]"
             />
           </div>
         </label>
@@ -481,7 +547,7 @@ function AiPanel({ lang, ai }: { lang: Locale; ai: AIInfo | null }) {
             {chips.map((tag, index) => (
               <span
                 key={`${tag}-${index}`}
-                className="rounded-full bg-white/70 px-2 py-0.5 dark:bg-black/20"
+                className="rounded-full bg-[var(--background)] px-2 py-0.5"
               >
                 {tag}
               </span>
@@ -731,8 +797,17 @@ export default function HomeClient({ lang }: { lang: Locale }) {
     readStoredMode,
     () => "offline",
   );
+  const theme = useSyncExternalStore<"light" | "dark">(
+    subscribeTheme,
+    readStoredTheme,
+    () => "light",
+  );
   const [modalPropiedad, setModalPropiedad] = useState<Propiedad | null>(null);
   const requestIdRef = useRef(0);
+
+  useEffect(() => {
+    applyTheme(theme);
+  }, [theme]);
 
   useEffect(() => {
     let cancelado = false;
@@ -830,6 +905,10 @@ export default function HomeClient({ lang }: { lang: Locale }) {
     persistSearchMode(newMode);
   }
 
+  function handleThemeToggle() {
+    persistTheme(theme === "dark" ? "light" : "dark");
+  }
+
   function handleSelectCard(propiedad: Propiedad) {
     setModalPropiedad(propiedad);
   }
@@ -866,6 +945,8 @@ export default function HomeClient({ lang }: { lang: Locale }) {
           onSubmit={onSubmit}
           mode={mode}
           onModeChange={handleModeChange}
+          theme={theme}
+          onThemeToggle={handleThemeToggle}
         />
 
         <SuggestionBar lang={lang} cargando={cargando} total={resultados.length} onSelect={onSugerencia} />
